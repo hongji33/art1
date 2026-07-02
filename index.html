@@ -1,1 +1,455 @@
 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고정관념을 찢다: 뱅크시 퀴즈 & 그라피티 앱</title>
+    <!-- Tailwind CSS for modern responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for beautiful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&family=Urbanist:wght@600;800&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #0f172a;
+        }
+        .urbanist {
+            font-family: 'Urbanist', sans-serif;
+        }
+        /* Canvas drawing styling */
+        #drawingCanvas {
+            touch-action: none;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-height-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
+                <span class="text-lime-400 urbanist font-extrabold uppercase">Banksy</span>
+                <span class="text-sm px-2 py-0.5 bg-lime-400/20 text-lime-400 rounded">Project</span>
+            </h1>
+            <div id="quizProgress" class="text-sm text-slate-400 font-medium">
+                미션 대기 중
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+        
+        <!-- STEP 1: Intro Screen -->
+        <div id="introStep" class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-10 text-center space-y-6">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-lime-400 text-slate-950 rounded-full text-4xl mb-2 animate-bounce">
+                <i class="fa-solid fa-mask"></i>
+            </div>
+            <h2 class="text-3xl font-bold">학교 고정관념 깨기 <span class="text-lime-400">도전장</span></h2>
+            <p class="text-slate-400 max-w-lg mx-auto leading-relaxed">
+                반갑습니다, 미래의 뱅크시 여러분! <br>
+                학교에 숨어 있는 당연함과 삭막한 일상에 위트를 불어넣을 준비가 되었나요? 
+                먼저 짧은 퀴즈를 모두 풀어 <strong>'그라피티 그리기 권한'</strong>을 획득하세요!
+            </p>
+            <button onclick="startQuiz()" class="bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-lime-400/20 text-lg w-full max-w-xs">
+                도전 시작하기 <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- STEP 2: Quiz Screen (Hidden by default) -->
+        <div id="quizStep" class="hidden bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
+            <div class="flex justify-between items-center text-sm text-slate-400">
+                <span id="questionNumber" class="font-bold text-lime-400">Question 1/5</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-award"></i> 만점 달성 시 권한 획득</span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="progressBar" class="bg-lime-400 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="space-y-4">
+                <h3 id="questionText" class="text-xl md:text-2xl font-bold leading-snug">질문이 로딩 중입니다...</h3>
+                <div id="optionsContainer" class="grid grid-cols-1 gap-3 pt-4">
+                    <!-- Option Buttons will be generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Quiz Feedback Modal (In-app overlay style instead of window.alert) -->
+            <div id="feedbackBox" class="hidden bg-slate-800/80 border border-slate-700 rounded-2xl p-4 text-center animate-fade-in">
+                <p id="feedbackText" class="font-bold text-lg mb-2"></p>
+                <button onclick="nextQuestion()" class="bg-slate-100 hover:bg-white text-slate-950 px-6 py-2 rounded-xl font-bold transition-all text-sm">
+                    다음 단계로 <i class="fa-solid fa-chevron-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Canvas Drawing Screen (Hidden by default) -->
+        <div id="canvasStep" class="hidden space-y-6">
+            
+            <!-- Success Message Box -->
+            <div class="bg-lime-400/10 border border-lime-400/30 rounded-2xl p-4 flex items-center gap-4 text-lime-300">
+                <div class="text-3xl"><i class="fa-solid fa-circle-check"></i></div>
+                <div>
+                    <h4 class="font-bold">그리기 권한 획득 성공!</h4>
+                    <p class="text-sm opacity-90">미션을 완벽히 이해했습니다. 촬영한 학교 사진을 불러와 자유롭게 그라피티를 그리세요.</p>
+                </div>
+            </div>
+
+            <!-- File Upload Area -->
+            <div id="uploadArea" class="bg-slate-900/50 border-2 border-dashed border-slate-700 hover:border-lime-400/50 rounded-3xl p-8 text-center cursor-pointer transition-all duration-300">
+                <input type="file" id="imageLoader" class="hidden" accept="image/*">
+                <label for="imageLoader" class="cursor-pointer space-y-4 block">
+                    <div class="text-5xl text-slate-500"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                    <div class="text-lg font-bold">1교시에 찍어온 학교 공간 사진 선택하기</div>
+                    <p class="text-sm text-slate-400">이곳을 클릭하거나 사진을 드래그하여 넣어주세요 (JPG, PNG)</p>
+                </label>
+            </div>
+
+            <!-- Canvas Workspace (Hidden until image uploaded) -->
+            <div id="workspace" class="hidden bg-slate-950 border border-slate-800 rounded-3xl p-4 md:p-6 space-y-4">
+                
+                <!-- Drawing Toolkit Toolbar -->
+                <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                    
+                    <!-- Color Palette -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-slate-400 mr-1 hidden sm:inline">색상:</span>
+                        <div class="flex gap-1.5">
+                            <button onclick="setColor('#deff9a')" class="w-8 h-8 rounded-full bg-[#deff9a] border-2 border-white focus:outline-none transition-all cursor-pointer" title="네온 그린"></button>
+                            <button onclick="setColor('#ef4444')" class="w-8 h-8 rounded-full bg-red-500 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="레드"></button>
+                            <button onclick="setColor('#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="블루"></button>
+                            <button onclick="setColor('#ffffff')" class="w-8 h-8 rounded-full bg-white hover:scale-110 focus:outline-none transition-all cursor-pointer" title="화이트"></button>
+                            <button onclick="setColor('#000000')" class="w-8 h-8 rounded-full bg-black border border-slate-700 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="블랙"></button>
+                        </div>
+                    </div>
+
+                    <!-- Brush Size -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-medium text-slate-400 hidden sm:inline">굵기:</span>
+                        <input type="range" id="brushSize" min="2" max="25" value="6" class="w-24 accent-lime-400 cursor-pointer">
+                    </div>
+
+                    <!-- Canvas Action Buttons -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold transition-all" title="초기화">
+                            <i class="fa-solid fa-trash-can mr-1"></i> 전체 지우기
+                        </button>
+                        <button onclick="saveAndDownload()" class="px-4 py-2 bg-lime-400 hover:bg-lime-300 text-slate-950 rounded-xl text-sm font-bold transition-all shadow-md shadow-lime-400/10">
+                            <i class="fa-solid fa-download mr-1"></i> 기기 저장
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Area wrapper to keep responsive aspect ratio -->
+                <div class="relative w-full flex justify-center bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" style="min-height: 350px;">
+                    <canvas id="drawingCanvas" class="max-w-full h-auto object-contain"></canvas>
+                </div>
+                
+                <p class="text-xs text-slate-400 text-center"><i class="fa-solid fa-circle-info"></i> 모바일/태블릿은 터치로, 데스크톱은 마우스 클릭으로 그리기 가능합니다. 저장 후 패들렛에 인증샷을 제출하세요.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-sm text-slate-500 px-4 mt-12">
+        <div class="max-w-4xl mx-auto space-y-2">
+            <p>교사 바이브 코딩 연계 미술 비평 & 창의 교육 프로그램</p>
+            <p class="opacity-60">&copy; 2026. Breaking the Frame. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script>
+        // 1. QUIZ DATA DEFINITION
+        const quizData = [
+            {
+                question: "뱅크시가 소더비 경매장에서 17억 원에 낙찰된 작품을 찢기 위해 액자 내부에 몰래 설치한 도구는 무엇인가요?",
+                options: ["압축기", "분쇄기", "인쇄기", "소화기"],
+                correct: 1,
+                feedback: "딩동댕! 뱅크시는 정교하게 짜인 쇼를 보여주듯 액자 안에 직접 수동 분쇄기를 조립해 장착해 두었습니다."
+            },
+            {
+                question: "뱅크시가 그림을 반쯤 찢어버린 후, 이 작품의 가치는 어떻게 변했나요?",
+                options: [
+                    "망가진 쓰레기가 되어 버려졌다.",
+                    "아무도 관심을 가지지 않아 가격이 폭락했다.",
+                    "파괴의 가치를 인정받아 가격이 약 20배(330억 원)로 폭등했다.",
+                    "경매 회사가 똑같은 그림으로 다시 그려주었다."
+                ],
+                correct: 2,
+                feedback: "대단합니다! 역설적이게도 이 그림은 사건 자체의 유일무이성을 얻어 미술사적인 엄청난 몸값 폭등을 이뤄냈습니다."
+            },
+            {
+                question: "뱅크시 같은 스트리트 아티스트들이 미술관 벽이 아닌 길거리 벽에 그림을 그리는 가장 큰 이유는 무엇일까요?",
+                options: [
+                    "종이와 캔버스 살 돈이 부족해서",
+                    "미술관에 갇힌 예술을 꺼내어, 일상의 모든 사람과 자유롭게 소통하기 위해서",
+                    "경찰과 숨바꼭질하는 스포츠를 즐기기 위해서",
+                    "밤에 잠이 안 와서 심심해서"
+                ],
+                correct: 1,
+                feedback: "정답! 미술관에 돈 많은 귀족들만 감상하는 예술을 박차고 나와 평범한 사회 구성원과 즉각적인 소통을 하기 위한 저항의 실천입니다."
+            },
+            {
+                question: "미술을 할 때 우리는 고정관념에서 벗어나야 합니다. 다음 중 '고정관념'에 사로잡힌 생각은 무엇일까요?",
+                options: [
+                    "거울은 얼굴을 비추는 곳이지만, 따뜻한 응원을 전하는 캔버스가 될 수도 있어.",
+                    "미술은 오직 깨끗한 도화지에 비싼 물감으로 정성스럽게 그려서 액자에 넣어야만 진짜 예술이야.",
+                    "정수기에 낙서처럼 캐릭터를 그려 넣는 것도 물 절약 캠페인 예술이 될 수 있어.",
+                    "복도 계단에 치타를 그리면 이동 통행을 더 재미있게 만들 수 있어."
+                ],
+                correct: 1,
+                feedback: "맞아요! 액자와 규칙에 예술을 한정 지을 때 우리의 자유로운 생각과 발상은 멈추게 됩니다."
+            },
+            {
+                question: "오늘 여러분은 학교의 특정 공간에 디지털 그라피티를 그리게 됩니다. 여러분이 오늘 깨부수고 싶은 가장 큰 '당연함'은 무엇인가요?",
+                options: [
+                    "학교 복도는 조용히 앞만 보고 걸어가야만 하는 '심심함'",
+                    "거울은 오직 내 외모의 단점만 지적하고 확인하는 '차가움'",
+                    "정수기나 사물함은 그저 기능만 하는 '무미건조함'",
+                    "교실 문을 열 때 느껴지는 알 수 없는 '긴장감과 지루함'"
+                ],
+                correct: -1, // Any choice is correct for open question
+                feedback: "어떤 대답이든 멋져요! 이제 여러분의 생각을 바탕으로 학교에 유머러스한 시도를 더하러 가봅시다."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Start Quiz
+        function startQuiz() {
+            document.getElementById('introStep').classList.add('hidden');
+            document.getElementById('quizStep').classList.remove('hidden');
+            document.getElementById('quizProgress').textContent = "퀴즈 미션 진행 중";
+            loadQuestion();
+        }
+
+        // Load Quiz Content
+        function loadQuestion() {
+            document.getElementById('feedbackBox').classList.add('hidden');
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // Progress Bar & Counter
+            const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}/${quizData.length}`;
+            
+            // Text loading
+            document.getElementById('questionText').textContent = currentQuestion.question;
+            
+            // Render Options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            currentQuestion.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-slate-800 hover:bg-slate-700/80 active:bg-slate-700 border border-slate-700 hover:border-lime-400/30 p-4 rounded-xl transition-all font-medium text-slate-200 cursor-pointer flex items-center justify-between";
+                btn.onclick = () => checkAnswer(idx, btn);
+                btn.innerHTML = `<span>${option}</span> <i class="fa-regular fa-circle text-slate-500 text-lg"></i>`;
+                container.appendChild(btn);
+            });
+        }
+
+        // Verify Student Selection
+        function checkAnswer(selectedIndex, buttonElement) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            const buttons = document.getElementById('optionsContainer').children;
+            
+            // Disable further clicks
+            for (let btn of buttons) {
+                btn.disabled = true;
+                btn.classList.add('opacity-55');
+            }
+            buttonElement.classList.remove('opacity-55');
+
+            // Open ended check or exact correct check
+            if (currentQuestion.correct === -1 || selectedIndex === currentQuestion.correct) {
+                buttonElement.classList.remove('bg-slate-800', 'border-slate-700');
+                buttonElement.classList.add('bg-lime-950/40', 'border-lime-400', 'text-lime-300');
+                buttonElement.querySelector('i').className = "fa-solid fa-circle-check text-lime-400 text-lg";
+                document.getElementById('feedbackText').className = "font-bold text-lg mb-2 text-lime-400";
+                document.getElementById('feedbackText').innerHTML = `<i class="fa-solid fa-thumbs-up mr-1"></i> 정답! ${currentQuestion.feedback}`;
+                score++;
+            } else {
+                buttonElement.classList.remove('bg-slate-800', 'border-slate-700');
+                buttonElement.classList.add('bg-red-950/40', 'border-red-400', 'text-red-300');
+                buttonElement.querySelector('i').className = "fa-solid fa-circle-xmark text-red-400 text-lg";
+                
+                // Show the actual correct answer
+                const correctBtn = buttons[currentQuestion.correct];
+                correctBtn.classList.remove('opacity-55', 'bg-slate-800');
+                correctBtn.classList.add('bg-lime-950/20', 'border-lime-400/50', 'text-lime-400');
+                
+                document.getElementById('feedbackText').className = "font-bold text-lg mb-2 text-red-400";
+                document.getElementById('feedbackText').innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> 오답! 다음엔 맞출 수 있을 거예요.<br><span class="text-sm font-normal text-slate-300">${currentQuestion.feedback}</span>`;
+            }
+
+            document.getElementById('feedbackBox').classList.remove('hidden');
+        }
+
+        // Proceed to next question or end quiz
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // Quiz Conclusion & Canvas unlock
+        function finishQuiz() {
+            document.getElementById('quizStep').classList.add('hidden');
+            document.getElementById('canvasStep').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = `100%`;
+            document.getElementById('quizProgress').textContent = "그라피티 캔버스 활성화";
+            
+            initCanvas();
+        }
+
+
+        // 2. CANVAS DRAWING LOGIC DEFINITION
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let drawColor = '#deff9a'; // Default Neon Green
+        let baseImage = null;
+
+        // Initialize Canvas file uploader listener
+        function initCanvas() {
+            const imageLoader = document.getElementById('imageLoader');
+            imageLoader.addEventListener('change', handleImageUpload, false);
+        }
+
+        // Draw Image onto Canvas while fitting aspect ratios
+        function handleImageUpload(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                baseImage = new Image();
+                baseImage.onload = function() {
+                    document.getElementById('uploadArea').classList.add('hidden');
+                    document.getElementById('workspace').classList.remove('hidden');
+                    
+                    // Constrain Canvas drawing area dynamically matching target device width limits
+                    const maxWidth = Math.min(window.innerWidth - 80, 800);
+                    const scaleRatio = maxWidth / baseImage.width;
+                    
+                    canvas.width = maxWidth;
+                    canvas.height = baseImage.height * scaleRatio;
+                    
+                    // Draw base photo background
+                    ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+                    
+                    setupDrawingListeners();
+                }
+                baseImage.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        // Set Color Palette Selection
+        function setColor(color) {
+            drawColor = color;
+            // Border highlight indication
+            const buttons = document.querySelectorAll('[onclick^="setColor"]');
+            buttons.forEach(btn => {
+                btn.classList.remove('border-2', 'border-white', 'scale-110');
+            });
+            event.target.classList.add('border-2', 'border-white', 'scale-110');
+        }
+
+        // Core Drawing Handler logic supporting Touch and Mouse
+        function setupDrawingListeners() {
+            const brushSizeInput = document.getElementById('brushSize');
+
+            function getCoordinates(e) {
+                const rect = canvas.getBoundingClientRect();
+                // Adaptive layout correction: scale mapping matching raw Canvas dimensions to layout bounding box
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+
+                if (e.touches && e.touches.length > 0) {
+                    return {
+                        x: (e.touches[0].clientX - rect.left) * scaleX,
+                        y: (e.touches[0].clientY - rect.top) * scaleY
+                    };
+                } else {
+                    return {
+                        x: (e.clientX - rect.left) * scaleX,
+                        y: (e.clientY - rect.top) * scaleY
+                    };
+                }
+            }
+
+            function startDraw(e) {
+                isDrawing = true;
+                const coords = getCoordinates(e);
+                ctx.beginPath();
+                ctx.moveTo(coords.x, coords.y);
+                ctx.strokeStyle = drawColor;
+                ctx.lineWidth = brushSizeInput.value;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                e.preventDefault();
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                const coords = getCoordinates(e);
+                ctx.lineTo(coords.x, coords.y);
+                ctx.stroke();
+                e.preventDefault();
+            }
+
+            function endDraw(e) {
+                if (isDrawing) {
+                    ctx.closePath();
+                    isDrawing = false;
+                }
+                e.preventDefault();
+            }
+
+            // Mouse Events
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            window.addEventListener('mouseup', endDraw);
+
+            // Touch Events (Mobile/Tablet Friendly)
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            window.addEventListener('touchend', endDraw, { passive: false });
+        }
+
+        // Reset canvas drawings keeping loaded background photo intact
+        function clearCanvas() {
+            if (!baseImage) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+        }
+
+        // Save & Download composite image file natively 
+        function saveAndDownload() {
+            // Check compatibility using execCommand fallback structure natively
+            try {
+                const dataURL = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.download = 'banksy_my_graffiti.png';
+                downloadLink.href = dataURL;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            } catch (err) {
+                alert("이미지 저장 시 브라우저 권한에 오류가 발생했습니다. 화면 스크린샷 캡쳐로 대체해 주세요.");
+            }
+        }
+    </script>
+</body>
+</html>
