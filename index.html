@@ -17,52 +17,63 @@
         .urbanist {
             font-family: 'Urbanist', sans-serif;
         }
-        /* Canvas drawing styling */
-        #drawingCanvas {
-            touch-action: none;
-            cursor: crosshair;
+        /* Custom scrollbar for Padlet horizontal layout */
+        .padlet-board::-webkit-scrollbar {
+            height: 8px;
+        }
+        .padlet-board::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .padlet-board::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 10px;
+        }
+        .padlet-board::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="text-slate-100 min-height-screen flex flex-col justify-between">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between">
 
     <!-- Header -->
     <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
                 <span class="text-lime-400 urbanist font-extrabold uppercase">Banksy</span>
                 <span class="text-sm px-2 py-0.5 bg-lime-400/20 text-lime-400 rounded">Project</span>
             </h1>
-            <div id="quizProgress" class="text-sm text-slate-400 font-medium">
-                미션 대기 중
+            <div id="quizProgress" class="text-sm text-slate-400 font-medium bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" id="statusDot"></span>
+                <span id="statusText">연결 준비 중</span>
             </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 space-y-12">
         
         <!-- STEP 1: Intro Screen -->
-        <div id="introStep" class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-10 text-center space-y-6">
+        <div id="introStep" class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-10 text-center space-y-6 max-w-2xl mx-auto">
             <div class="inline-flex items-center justify-center w-20 h-20 bg-lime-400 text-slate-950 rounded-full text-4xl mb-2 animate-bounce">
                 <i class="fa-solid fa-mask"></i>
             </div>
             <h2 class="text-3xl font-bold">학교 고정관념 깨기 <span class="text-lime-400">도전장</span></h2>
-            <p class="text-slate-400 max-w-lg mx-auto leading-relaxed">
+            <p class="text-slate-400 max-w-lg mx-auto leading-relaxed text-base">
                 반갑습니다, 미래의 뱅크시 여러분! <br>
-                학교에 숨어 있는 당연함과 삭막한 일상에 위트를 불어넣을 준비가 되었나요? 
+                학교에 숨어 있는 당연함과 삭막한 일상에 위트를 불어넣을 준비가 되었나요? <br>
                 먼저 짧은 퀴즈를 모두 풀어 <strong>'그라피티 그리기 권한'</strong>을 획득하세요!
             </p>
-            <button onclick="startQuiz()" class="bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-lime-400/20 text-lg w-full max-w-xs">
+            <button onclick="startQuiz()" class="bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-lime-400/20 text-lg w-full max-w-xs cursor-pointer">
                 도전 시작하기 <i class="fa-solid fa-arrow-right ml-2"></i>
             </button>
         </div>
 
         <!-- STEP 2: Quiz Screen (Hidden by default) -->
-        <div id="quizStep" class="hidden bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
+        <div id="quizStep" class="hidden bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 max-w-2xl mx-auto">
             <div class="flex justify-between items-center text-sm text-slate-400">
                 <span id="questionNumber" class="font-bold text-lime-400">Question 1/5</span>
-                <span class="flex items-center gap-1"><i class="fa-solid fa-award"></i> 만점 달성 시 권한 획득</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-award text-lime-400"></i> 만점 달성 시 권한 획득</span>
             </div>
             
             <!-- Progress Bar -->
@@ -78,17 +89,17 @@
                 </div>
             </div>
 
-            <!-- Quiz Feedback Modal (In-app overlay style instead of window.alert) -->
+            <!-- Quiz Feedback Modal -->
             <div id="feedbackBox" class="hidden bg-slate-800/80 border border-slate-700 rounded-2xl p-4 text-center animate-fade-in">
-                <p id="feedbackText" class="font-bold text-lg mb-2"></p>
-                <button onclick="nextQuestion()" class="bg-slate-100 hover:bg-white text-slate-950 px-6 py-2 rounded-xl font-bold transition-all text-sm">
+                <p id="feedbackText" class="font-bold text-base md:text-lg mb-2"></p>
+                <button onclick="nextQuestion()" class="bg-slate-100 hover:bg-white text-slate-950 px-6 py-2 rounded-xl font-bold transition-all text-sm cursor-pointer">
                     다음 단계로 <i class="fa-solid fa-chevron-right ml-1"></i>
                 </button>
             </div>
         </div>
 
         <!-- STEP 3: Canvas Drawing Screen (Hidden by default) -->
-        <div id="canvasStep" class="hidden space-y-6">
+        <div id="canvasStep" class="hidden space-y-6 max-w-4xl mx-auto">
             
             <!-- Success Message Box -->
             <div class="bg-lime-400/10 border border-lime-400/30 rounded-2xl p-4 flex items-center gap-4 text-lime-300">
@@ -115,49 +126,196 @@
                 <!-- Drawing Toolkit Toolbar -->
                 <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 p-3 rounded-2xl border border-slate-800">
                     
-                    <!-- Color Palette -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-slate-400 mr-1 hidden sm:inline">색상:</span>
-                        <div class="flex gap-1.5">
-                            <button onclick="setColor('#deff9a')" class="w-8 h-8 rounded-full bg-[#deff9a] border-2 border-white focus:outline-none transition-all cursor-pointer" title="네온 그린"></button>
-                            <button onclick="setColor('#ef4444')" class="w-8 h-8 rounded-full bg-red-500 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="레드"></button>
-                            <button onclick="setColor('#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="블루"></button>
-                            <button onclick="setColor('#ffffff')" class="w-8 h-8 rounded-full bg-white hover:scale-110 focus:outline-none transition-all cursor-pointer" title="화이트"></button>
-                            <button onclick="setColor('#000000')" class="w-8 h-8 rounded-full bg-black border border-slate-700 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="블랙"></button>
+                    <!-- Color Palette & Modes -->
+                    <div class="flex items-center flex-wrap gap-4">
+                        <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                            <button id="brushBtn" onclick="setDrawingMode('brush')" class="px-3 py-1.5 bg-lime-400 text-slate-950 rounded-lg text-xs font-bold transition-all cursor-pointer">
+                                <i class="fa-solid fa-paint-brush mr-1"></i> 브러시
+                            </button>
+                            <button id="eraserBtn" onclick="setDrawingMode('eraser')" class="px-3 py-1.5 text-slate-400 hover:text-slate-200 rounded-lg text-xs font-bold transition-all cursor-pointer">
+                                <i class="fa-solid fa-eraser mr-1"></i> 지우개
+                            </button>
+                        </div>
+
+                        <!-- Colors (Disabled in eraser mode) -->
+                        <div id="colorPaletteContainer" class="flex items-center gap-1.5">
+                            <button onclick="setColor('#deff9a')" class="color-dot w-8 h-8 rounded-full bg-[#deff9a] border-2 border-white focus:outline-none transition-all cursor-pointer" title="네온 그린"></button>
+                            <button onclick="setColor('#ef4444')" class="color-dot w-8 h-8 rounded-full bg-red-500 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="레드"></button>
+                            <button onclick="setColor('#3b82f6')" class="color-dot w-8 h-8 rounded-full bg-blue-500 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="블루"></button>
+                            <button onclick="setColor('#ffffff')" class="color-dot w-8 h-8 rounded-full bg-white hover:scale-110 focus:outline-none transition-all cursor-pointer" title="화이트"></button>
+                            <button onclick="setColor('#000000')" class="color-dot w-8 h-8 rounded-full bg-black border border-slate-700 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="블랙"></button>
                         </div>
                     </div>
 
                     <!-- Brush Size -->
                     <div class="flex items-center gap-3">
-                        <span class="text-sm font-medium text-slate-400 hidden sm:inline">굵기:</span>
-                        <input type="range" id="brushSize" min="2" max="25" value="6" class="w-24 accent-lime-400 cursor-pointer">
+                        <span id="brushSizeLabel" class="text-xs font-medium text-slate-400">브러시 굵기:</span>
+                        <input type="range" id="brushSize" min="2" max="40" value="6" class="w-24 accent-lime-400 cursor-pointer">
                     </div>
 
                     <!-- Canvas Action Buttons -->
                     <div class="flex items-center gap-2">
-                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold transition-all" title="초기화">
+                        <button onclick="undo()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="뒤로가기">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> 되돌리기
+                        </button>
+                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-red-950/40 hover:text-red-400 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="초기화">
                             <i class="fa-solid fa-trash-can mr-1"></i> 전체 지우기
                         </button>
-                        <button onclick="saveAndDownload()" class="px-4 py-2 bg-lime-400 hover:bg-lime-300 text-slate-950 rounded-xl text-sm font-bold transition-all shadow-md shadow-lime-400/10">
-                            <i class="fa-solid fa-download mr-1"></i> 기기 저장
+                        <button onclick="saveAndDownload()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-lime-400 rounded-xl text-sm font-bold transition-all border border-lime-400/20 cursor-pointer">
+                            <i class="fa-solid fa-download mr-1"></i> 파일 저장
                         </button>
                     </div>
                 </div>
 
-                <!-- Canvas Area wrapper to keep responsive aspect ratio -->
-                <div class="relative w-full flex justify-center bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" style="min-height: 350px;">
-                    <canvas id="drawingCanvas" class="max-w-full h-auto object-contain"></canvas>
+                <!-- Canvas Workspace Container (Dual Canvas Overlay) -->
+                <div class="relative w-full flex justify-center bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" style="min-height: 400px;">
+                    <div id="canvasContainer" class="relative">
+                        <!-- Canvas 1: Background Layer -->
+                        <canvas id="bgCanvas" class="block"></canvas>
+                        <!-- Canvas 2: Transparent Drawing Layer Overlay -->
+                        <canvas id="drawingCanvas" class="absolute top-0 left-0 block" style="touch-action: none; cursor: crosshair;"></canvas>
+                    </div>
                 </div>
                 
-                <p class="text-xs text-slate-400 text-center"><i class="fa-solid fa-circle-info"></i> 모바일/태블릿은 터치로, 데스크톱은 마우스 클릭으로 그리기 가능합니다. 저장 후 패들렛에 인증샷을 제출하세요.</p>
+                <p class="text-xs text-slate-400 text-center"><i class="fa-solid fa-circle-info text-lime-400"></i> 터치 스크린 혹은 마우스 드래그를 사용하여 그릴 수 있습니다. 지우개로 문지르면 배경 훼손 없이 그림만 정교하게 지워집니다.</p>
             </div>
         </div>
 
+        <!-- STEP 4: Padlet-like 7-Group Board -->
+        <section id="gallerySection" class="border-t border-slate-800 pt-10 space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-chalkboard text-lime-400"></i>
+                        <span>실시간 모둠 갤러리 보드</span>
+                        <span class="text-xs px-2.5 py-1 bg-lime-400/20 text-lime-400 rounded-full font-semibold border border-lime-400/25 animate-pulse"><i class="fa-solid fa-cloud"></i> 실시간 연동 중</span>
+                    </h2>
+                    <p class="text-sm text-slate-400">각 조당 최대 4개씩 작품을 등록할 수 있습니다. 친구들의 아이디어가 실시간으로 공유됩니다.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="resetBoardBtn" onclick="resetCloudGallery()" class="text-xs px-3 py-1.5 bg-slate-800 hover:bg-red-950/40 hover:text-red-400 text-slate-400 rounded-lg border border-slate-700/50 transition-all cursor-pointer hidden">
+                        <i class="fa-solid fa-rotate mr-1"></i> 전체 보드 초기화
+                    </button>
+                </div>
+            </div>
+
+            <!-- Horizontal Padlet Board Column Layout -->
+            <div class="padlet-board flex gap-6 overflow-x-auto pb-6 pt-2 items-start" style="min-height: 550px;">
+                <!-- Generated dynamically (Group 1 to 7) via JS -->
+            </div>
+        </section>
+
     </main>
+
+    <!-- Column Structure template -->
+    <template id="columnTemplate">
+        <div class="flex-shrink-0 w-80 bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col gap-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-lime-400"></span>
+                    <span class="group-title-text">X조</span>
+                </h3>
+                <span class="group-count text-xs font-semibold px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-400 rounded-full">0/4</span>
+            </div>
+            
+            <!-- Cards Container -->
+            <div class="cards-container flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-1">
+                <!-- Cards will go here -->
+            </div>
+
+            <!-- Add Button -->
+            <button class="add-btn w-full py-2.5 bg-slate-800/80 hover:bg-lime-400 hover:text-slate-950 text-slate-300 rounded-xl text-sm font-bold transition-all border border-dashed border-slate-700 hover:border-lime-400 flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-plus text-xs"></i> 작품 등록하기
+            </button>
+        </div>
+    </template>
+
+    <!-- Upload/Submission Dialog Modal -->
+    <div id="submitModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-scale-up">
+            <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-lime-400 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> <span id="modalTitle">모둠 갤러리 등록</span>
+                </h3>
+                <button onclick="closeSubmitModal()" class="text-slate-400 hover:text-slate-200 text-xl cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="submissionForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="modalGroupId">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">학번 <span class="text-red-400">*</span></label>
+                        <input type="text" id="studentId" required placeholder="예: 30101" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-lime-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">이름 <span class="text-red-400">*</span></label>
+                        <input type="text" id="studentName" required placeholder="예: 김미술" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-lime-400">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">그라피티 이미지 선택 <span class="text-red-400">*</span></label>
+                    
+                    <!-- Choice Segment -->
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button type="button" id="useCanvasBtn" onclick="toggleImageSource('canvas')" class="py-2 px-3 bg-lime-400 text-slate-950 font-bold text-xs rounded-xl border border-lime-400 transition-all cursor-pointer">
+                            내가 그린 그림 가져오기
+                        </button>
+                        <button type="button" id="useFileBtn" onclick="toggleImageSource('file')" class="py-2 px-3 bg-slate-950 text-slate-400 font-bold text-xs rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer">
+                            내 기기에서 직접 선택
+                        </button>
+                    </div>
+
+                    <!-- Options display container -->
+                    <div class="bg-slate-950 rounded-2xl border border-slate-800 p-3 flex items-center justify-center min-h-[100px]">
+                        <!-- Canvas Source Preview -->
+                        <div id="canvasSourcePreview" class="w-full text-center space-y-2">
+                            <p class="text-xs text-slate-400">캔버스에서 작업 중인 작품을 즉시 불러옵니다.</p>
+                            <div class="flex justify-center">
+                                <img id="importedCanvasPreview" class="h-20 object-contain rounded-lg border border-slate-800 hidden bg-slate-900">
+                                <span id="noCanvasAlert" class="text-xs text-amber-400 font-medium block"><i class="fa-solid fa-triangle-exclamation"></i> 캔버스에 이미지를 먼저 불러와 그림을 완성하세요!</span>
+                            </div>
+                        </div>
+                        <!-- File Upload Source -->
+                        <div id="fileSourceInput" class="hidden w-full text-center">
+                            <input type="file" id="manualImageLoader" class="hidden" accept="image/*" onchange="handleManualImageSelection(this)">
+                            <label for="manualImageLoader" class="cursor-pointer space-y-2 block py-2">
+                                <div class="text-3xl text-slate-600"><i class="fa-solid fa-file-image"></i></div>
+                                <span class="text-xs font-semibold text-slate-300 block">기기의 다른 그림 가져오기</span>
+                                <span id="manualFileName" class="text-xs text-lime-400 block max-w-xs truncate mx-auto"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">작품 설명 <span class="text-red-400">*</span></label>
+                    <textarea id="studentDesc" required rows="3" placeholder="예: 당연하게 고요해야 하는 복도 바닥에 웅장한 아프리카 초원을 덧그려 모두가 질주하고 싶은 유머러스한 해방감을 불어넣었습니다." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-lime-400 resize-none"></textarea>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeSubmitModal()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-750 font-bold rounded-xl text-sm transition-all cursor-pointer">
+                        취소
+                    </button>
+                    <button type="submit" class="flex-1 py-3 bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-lime-400/15 cursor-pointer">
+                        등록하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customized Toast Notification Box -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 border border-lime-400/40 text-slate-200 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-2xl z-50">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-lime-400 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">알림 메시지</span>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-sm text-slate-500 px-4 mt-12">
-        <div class="max-w-4xl mx-auto space-y-2">
+        <div class="max-w-7xl mx-auto space-y-2">
             <p>교사 바이브 코딩 연계 미술 비평 & 창의 교육 프로그램</p>
             <p class="opacity-60">&copy; 2026. Breaking the Frame. All rights reserved.</p>
         </div>
@@ -316,11 +474,19 @@
 
 
         // 2. CANVAS DRAWING LOGIC DEFINITION
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const drawingCanvas = document.getElementById('drawingCanvas');
+        const drawCtx = drawingCanvas.getContext('2d');
+        
         let isDrawing = false;
         let drawColor = '#deff9a'; // Default Neon Green
+        let currentDrawingMode = 'brush'; // 'brush' or 'eraser'
         let baseImage = null;
+
+        // Undo History Stack Setup
+        let undoStack = [];
+        const MAX_UNDO_STATES = 20;
 
         // Initialize Canvas file uploader listener
         function initCanvas() {
@@ -328,7 +494,7 @@
             imageLoader.addEventListener('change', handleImageUpload, false);
         }
 
-        // Draw Image onto Canvas while fitting aspect ratios
+        // Draw Image onto Background Canvas while fitting aspect ratios
         function handleImageUpload(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -341,12 +507,25 @@
                     const maxWidth = Math.min(window.innerWidth - 80, 800);
                     const scaleRatio = maxWidth / baseImage.width;
                     
-                    canvas.width = maxWidth;
-                    canvas.height = baseImage.height * scaleRatio;
+                    const calculatedWidth = maxWidth;
+                    const calculatedHeight = baseImage.height * scaleRatio;
+
+                    // Apply same dimensions to both layers
+                    bgCanvas.width = calculatedWidth;
+                    bgCanvas.height = calculatedHeight;
+                    drawingCanvas.width = calculatedWidth;
+                    drawingCanvas.height = calculatedHeight;
                     
                     // Draw base photo background
-                    ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+                    bgCtx.drawImage(baseImage, 0, 0, bgCanvas.width, bgCanvas.height);
                     
+                    // Clear drawing canvas overlay
+                    drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                    
+                    // Reset undo memory
+                    undoStack = [];
+                    saveUndoState(); // Store clean state
+
                     setupDrawingListeners();
                 }
                 baseImage.src = event.target.result;
@@ -354,15 +533,74 @@
             reader.readAsDataURL(e.target.files[0]);
         }
 
+        // Change mode: Brush vs Eraser
+        function setDrawingMode(mode) {
+            currentDrawingMode = mode;
+            const brushBtn = document.getElementById('brushBtn');
+            const eraserBtn = document.getElementById('eraserBtn');
+            const colorPalette = document.getElementById('colorPaletteContainer');
+
+            if (mode === 'eraser') {
+                drawCtx.globalCompositeOperation = 'destination-out';
+                brushBtn.className = "px-3 py-1.5 text-slate-400 hover:text-slate-200 rounded-lg text-xs font-bold transition-all cursor-pointer";
+                eraserBtn.className = "px-3 py-1.5 bg-lime-400 text-slate-950 rounded-lg text-xs font-bold transition-all cursor-pointer";
+                colorPalette.classList.add('opacity-30', 'pointer-events-none');
+                showToast("지우개 모드 활성화 - 그림만 쓱쓱 지울 수 있습니다.");
+            } else {
+                drawCtx.globalCompositeOperation = 'source-over';
+                brushBtn.className = "px-3 py-1.5 bg-lime-400 text-slate-950 rounded-lg text-xs font-bold transition-all cursor-pointer";
+                eraserBtn.className = "px-3 py-1.5 text-slate-400 hover:text-slate-200 rounded-lg text-xs font-bold transition-all cursor-pointer";
+                colorPalette.classList.remove('opacity-30', 'pointer-events-none');
+                showToast("브러시 모드 활성화");
+            }
+        }
+
         // Set Color Palette Selection
         function setColor(color) {
             drawColor = color;
             // Border highlight indication
-            const buttons = document.querySelectorAll('[onclick^="setColor"]');
+            const buttons = document.querySelectorAll('.color-dot');
             buttons.forEach(btn => {
                 btn.classList.remove('border-2', 'border-white', 'scale-110');
             });
             event.target.classList.add('border-2', 'border-white', 'scale-110');
+            
+            // Switch back to brush automatically if color is selected while in eraser mode
+            if (currentDrawingMode === 'eraser') {
+                setDrawingMode('brush');
+            }
+        }
+
+        // Save current stroke image state into Undo memory stack
+        function saveUndoState() {
+            if (undoStack.length >= MAX_UNDO_STATES) {
+                undoStack.shift();
+            }
+            // Save transparent canvas only
+            undoStack.push(drawingCanvas.toDataURL());
+        }
+
+        // Rollback drawing to previous step
+        function undo() {
+            if (undoStack.length > 1) { // We keep at least the starting clean state
+                undoStack.pop(); // Remove current state
+                const prevStateDataUrl = undoStack[undoStack.length - 1];
+                
+                const img = new Image();
+                img.onload = function() {
+                    drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                    // Temporarily reset composition mode to paint previous state faithfully
+                    const currentComp = drawCtx.globalCompositeOperation;
+                    drawCtx.globalCompositeOperation = 'source-over';
+                    drawCtx.drawImage(img, 0, 0);
+                    drawCtx.globalCompositeOperation = currentComp; // Restore
+                    showToast("이전 작업으로 되돌렸습니다.");
+                };
+                img.src = prevStateDataUrl;
+            } else {
+                drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                showToast("되돌릴 작업이 더 이상 없습니다.");
+            }
         }
 
         // Core Drawing Handler logic supporting Touch and Mouse
@@ -370,10 +608,9 @@
             const brushSizeInput = document.getElementById('brushSize');
 
             function getCoordinates(e) {
-                const rect = canvas.getBoundingClientRect();
-                // Adaptive layout correction: scale mapping matching raw Canvas dimensions to layout bounding box
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
+                const rect = drawingCanvas.getBoundingClientRect();
+                const scaleX = drawingCanvas.width / rect.width;
+                const scaleY = drawingCanvas.height / rect.height;
 
                 if (e.touches && e.touches.length > 0) {
                     return {
@@ -391,64 +628,483 @@
             function startDraw(e) {
                 isDrawing = true;
                 const coords = getCoordinates(e);
-                ctx.beginPath();
-                ctx.moveTo(coords.x, coords.y);
-                ctx.strokeStyle = drawColor;
-                ctx.lineWidth = brushSizeInput.value;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
+                drawCtx.beginPath();
+                drawCtx.moveTo(coords.x, coords.y);
+                drawCtx.strokeStyle = drawColor;
+                drawCtx.lineWidth = brushSizeInput.value;
+                drawCtx.lineCap = 'round';
+                drawCtx.lineJoin = 'round';
                 e.preventDefault();
             }
 
             function draw(e) {
                 if (!isDrawing) return;
                 const coords = getCoordinates(e);
-                ctx.lineTo(coords.x, coords.y);
-                ctx.stroke();
+                drawCtx.lineTo(coords.x, coords.y);
+                drawCtx.stroke();
                 e.preventDefault();
             }
 
+            // Touch / Mouse End
             function endDraw(e) {
                 if (isDrawing) {
-                    ctx.closePath();
+                    drawCtx.closePath();
                     isDrawing = false;
+                    saveUndoState(); // Store state after finishing a stroke
                 }
                 e.preventDefault();
             }
 
             // Mouse Events
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mousedown', startDraw);
+            drawingCanvas.addEventListener('mousemove', draw);
             window.addEventListener('mouseup', endDraw);
 
             // Touch Events (Mobile/Tablet Friendly)
-            canvas.addEventListener('touchstart', startDraw, { passive: false });
-            canvas.addEventListener('touchmove', draw, { passive: false });
+            drawingCanvas.addEventListener('touchstart', startDraw, { passive: false });
+            drawingCanvas.addEventListener('touchmove', draw, { passive: false });
             window.addEventListener('touchend', endDraw, { passive: false });
         }
 
         // Reset canvas drawings keeping loaded background photo intact
         function clearCanvas() {
             if (!baseImage) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+            if (confirm("정말로 그린 그림을 전체 삭제하시겠습니까? (배경 사진은 유지됩니다)")) {
+                drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                saveUndoState();
+                showToast("그림이 모두 지워졌습니다.");
+            }
+        }
+
+        // Merge Background & Drawing layers into one image
+        function getMergedDataURL() {
+            if (!baseImage) return null;
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = bgCanvas.width;
+            tempCanvas.height = bgCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Layer 1: Base Image
+            tempCtx.drawImage(bgCanvas, 0, 0);
+            // Layer 2: Transparent Drawings
+            tempCtx.drawImage(drawingCanvas, 0, 0);
+            
+            return tempCanvas.toDataURL('image/png');
         }
 
         // Save & Download composite image file natively 
         function saveAndDownload() {
-            // Check compatibility using execCommand fallback structure natively
             try {
-                const dataURL = canvas.toDataURL('image/png');
+                const mergedURL = getMergedDataURL();
+                if (!mergedURL) {
+                    showToast("그림을 먼저 불러와 주세요!", true);
+                    return;
+                }
                 const downloadLink = document.createElement('a');
                 downloadLink.download = 'banksy_my_graffiti.png';
-                downloadLink.href = dataURL;
+                downloadLink.href = mergedURL;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
+                showToast("파일이 기기에 저장되었습니다.");
             } catch (err) {
-                alert("이미지 저장 시 브라우저 권한에 오류가 발생했습니다. 화면 스크린샷 캡쳐로 대체해 주세요.");
+                showToast("저장 중 브라우저 오류가 발생했습니다. 화면 스크린샷으로 대체해 주세요.", true);
             }
         }
+
+
+        // 3. COLLABORATIVE PADLET BOARD LOGIC
+        const TOTAL_GROUPS = 7;
+        const MAX_CARDS_PER_GROUP = 4;
+        let localGalleryData = {}; // Stores latest structural view (synchronized with Cloud database)
+        let currentSubmissionImageSource = 'canvas'; // 'canvas' or 'file'
+        let selectedManualImageBase64 = null;
+
+        // Bridge function connecting modern module imports directly to standard procedural JS
+        window.updateLocalGalleryState = function(cloudData) {
+            localGalleryData = cloudData;
+            renderGalleryBoard();
+        };
+
+        // Renders Padlet UI Columns with cards and limits check
+        function renderGalleryBoard() {
+            const boardContainer = document.querySelector('.padlet-board');
+            if (!boardContainer) return;
+            boardContainer.innerHTML = '';
+            
+            const template = document.getElementById('columnTemplate');
+            if (!template) return;
+
+            for (let i = 1; i <= TOTAL_GROUPS; i++) {
+                const groupId = `group_${i}`;
+                const cards = localGalleryData[groupId] || [];
+
+                // Clone column template structure
+                const clone = template.content.cloneNode(true);
+                const columnTitle = clone.querySelector('.group-title-text');
+                const countBadge = clone.querySelector('.group-count');
+                const cardsContainer = clone.querySelector('.cards-container');
+                const addBtn = clone.querySelector('.add-btn');
+
+                columnTitle.textContent = `${i}조 (Group ${i})`;
+                countBadge.textContent = `${cards.length}/${MAX_CARDS_PER_GROUP}`;
+
+                // Max limit logic enforcement
+                if (cards.length >= MAX_CARDS_PER_GROUP) {
+                    addBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i> 등록 완료 (최대 4개)`;
+                    addBtn.className = "w-full py-2.5 bg-slate-800 text-slate-500 rounded-xl text-sm font-bold border border-slate-800 flex items-center justify-center gap-2 cursor-not-allowed";
+                    addBtn.disabled = true;
+                } else {
+                    addBtn.onclick = () => openSubmitModal(i);
+                }
+
+                // Render cards inside this column
+                cards.forEach((card, cardIndex) => {
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = "bg-slate-950/80 border border-slate-800 rounded-xl overflow-hidden p-3 space-y-3 shadow-md hover:border-lime-400/30 transition-all duration-300 relative group/card";
+                    
+                    cardDiv.innerHTML = `
+                        <!-- Card Image -->
+                        <div class="h-32 bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+                            <img src="${card.image}" class="w-full h-full object-cover" alt="Student Artwork">
+                        </div>
+                        <!-- Student details -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-lime-400">${card.studentId}</span>
+                                <span class="text-xs font-medium text-slate-200">${card.studentName}</span>
+                            </div>
+                            <p class="text-xs text-slate-400 line-clamp-3 leading-relaxed pt-1 border-t border-slate-900">${card.description}</p>
+                        </div>
+                        <!-- Quick Delete trigger button linked to cloud -->
+                        <button onclick="deleteCard('${groupId}', ${cardIndex})" class="absolute top-1.5 right-1.5 opacity-0 group-hover/card:opacity-100 bg-red-500/90 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all cursor-pointer shadow" title="삭제">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    `;
+                    cardsContainer.appendChild(cardDiv);
+                });
+
+                boardContainer.appendChild(clone);
+            }
+        }
+
+        // Open Dialog Overlay for submitting
+        function openSubmitModal(groupNum) {
+            document.getElementById('modalGroupId').value = groupNum;
+            document.getElementById('modalTitle').textContent = `${groupNum}조 작품 등록하기`;
+            
+            // Check canvas status to assist student previewing
+            const canvasData = getMergedDataURL();
+            const importedPreview = document.getElementById('importedCanvasPreview');
+            const noCanvasAlert = document.getElementById('noCanvasAlert');
+
+            if (canvasData) {
+                importedPreview.src = canvasData;
+                importedPreview.classList.remove('hidden');
+                noCanvasAlert.classList.add('hidden');
+            } else {
+                importedPreview.classList.add('hidden');
+                noCanvasAlert.classList.remove('hidden');
+            }
+
+            // Reset inputs
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentDesc').value = '';
+            document.getElementById('manualImageLoader').value = '';
+            document.getElementById('manualFileName').textContent = '';
+            selectedManualImageBase64 = null;
+            
+            toggleImageSource('canvas'); // Default choice selection
+
+            document.getElementById('submitModal').classList.remove('hidden');
+        }
+
+        // Close Dialog Overlay modal
+        function closeSubmitModal() {
+            document.getElementById('submitModal').classList.add('hidden');
+        }
+
+        // Toggle file import selector interface
+        function toggleImageSource(source) {
+            currentSubmissionImageSource = source;
+            const useCanvasBtn = document.getElementById('useCanvasBtn');
+            const useFileBtn = document.getElementById('useFileBtn');
+            const canvasSourcePreview = document.getElementById('canvasSourcePreview');
+            const fileSourceInput = document.getElementById('fileSourceInput');
+
+            if (source === 'canvas') {
+                useCanvasBtn.className = "py-2 px-3 bg-lime-400 text-slate-950 font-bold text-xs rounded-xl border border-lime-400 transition-all cursor-pointer";
+                useFileBtn.className = "py-2 px-3 bg-slate-950 text-slate-400 font-bold text-xs rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer";
+                canvasSourcePreview.classList.remove('hidden');
+                fileSourceInput.classList.add('hidden');
+            } else {
+                useCanvasBtn.className = "py-2 px-3 bg-slate-950 text-slate-400 font-bold text-xs rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer";
+                useFileBtn.className = "py-2 px-3 bg-lime-400 text-slate-950 font-bold text-xs rounded-xl border border-lime-400 transition-all cursor-pointer";
+                canvasSourcePreview.classList.add('hidden');
+                fileSourceInput.classList.remove('hidden');
+            }
+        }
+
+        // Read direct manual file selection base64 conversion
+        function handleManualImageSelection(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            document.getElementById('manualFileName').textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedManualImageBase64 = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Submission Form Execution logic
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const groupNum = document.getElementById('modalGroupId').value;
+            const groupId = `group_${groupNum}`;
+            const studentId = document.getElementById('studentId').value.trim();
+            const studentName = document.getElementById('studentName').value.trim();
+            const description = document.getElementById('studentDesc').value.trim();
+            let finalImage = null;
+
+            if (currentSubmissionImageSource === 'canvas') {
+                finalImage = getMergedDataURL();
+                if (!finalImage) {
+                    showToast("먼저 캔버스 미션에 사진을 열고 낙서를 남기세요!", true);
+                    return;
+                }
+            } else {
+                finalImage = selectedManualImageBase64;
+                if (!finalImage) {
+                    showToast("기기에 저장된 사진 파일을 선택하세요!", true);
+                    return;
+                }
+            }
+
+            // Setup new card payload
+            const newCard = {
+                studentId,
+                studentName,
+                description,
+                image: finalImage,
+                timestamp: Date.now()
+            };
+
+            // Call window-level cloud uploader bridged from Firebase module thread
+            if (typeof window.uploadCardToCloud === 'function') {
+                const success = await window.uploadCardToCloud(groupId, newCard);
+                if (success) {
+                    closeSubmitModal();
+                }
+            } else {
+                showToast("네트워크 모듈 로딩 중입니다. 잠시만 기다려 주세요.", true);
+            }
+        }
+
+        // Delete Individual student card (simulating admin permissions)
+        function deleteCard(groupId, index) {
+            if (confirm("정말로 이 모둠 작품을 삭제하시겠습니까? (이 작업은 되돌릴 수 없습니다.)")) {
+                if (typeof window.deleteCardFromCloud === 'function') {
+                    window.deleteCardFromCloud(groupId, index);
+                } else {
+                    showToast("네트워크 모듈 연결 유실", true);
+                }
+            }
+        }
+
+        // Soft Reset local state for classroom reuse
+        function resetCloudGallery() {
+            if (confirm("현재 모둠 보드에 등록된 모든 조원들의 작품들이 삭제됩니다. 전체 초기화하시겠습니까?")) {
+                if (typeof window.resetCloudBoard === 'function') {
+                    window.resetCloudBoard();
+                } else {
+                    showToast("네트워크 모듈 연결 유실", true);
+                }
+            }
+        }
+
+
+        // 4. UTILITIES (TOAST FEEDBACKS)
+        let toastTimeout = null;
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.textContent = message;
+
+            if (isError) {
+                toast.className = "fixed bottom-6 right-6 transform translate-y-0 opacity-100 transition-all duration-300 bg-red-950 border border-red-500 text-red-200 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-2xl z-50";
+                toastIcon.className = "fa-solid fa-circle-exclamation text-red-400 text-lg";
+            } else {
+                toast.className = "fixed bottom-6 right-6 transform translate-y-0 opacity-100 transition-all duration-300 bg-slate-900 border border-lime-400/40 text-slate-200 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-2xl z-50";
+                toastIcon.className = "fa-solid fa-circle-check text-lime-400 text-lg";
+            }
+
+            // Clear any active timeouts to allow instant sequential messaging
+            if (toastTimeout) clearTimeout(toastTimeout);
+
+            toastTimeout = setTimeout(() => {
+                toast.className = "fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 border border-lime-400/40 text-slate-200 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-2xl z-50";
+            }, 3000);
+        }
+    </script>
+
+    <!-- Firebase SDK Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global State & Firebase Config Parser
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'banksy-project-app-id';
+        const firebaseConfig = JSON.parse(__firebase_config);
+        
+        // Init Services
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let galleryData = {}; // Realtime Remote State
+
+        // Init Auth first as mandated by Rule 3
+        const initAuth = async () => {
+            try {
+                updateConnectionStatus("연결 인증 중...", "amber");
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Firebase Auth Error: ", err);
+                updateConnectionStatus("인증 에러", "red");
+                showToast("실시간 네트워크 인증에 실패했습니다.", true);
+            }
+        };
+
+        // Track Auth status
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                updateConnectionStatus("실시간 연동 완료", "lime");
+                
+                // Show clear board trigger button for teacher account/admin simulation
+                document.getElementById('resetBoardBtn').classList.remove('hidden');
+                
+                // Active Firestore Realtime Synchronizer
+                listenToCloudGallery();
+            } else {
+                currentUser = null;
+                updateConnectionStatus("오프라인 모드", "red");
+            }
+        });
+
+        // Update top-right connection badge UI
+        function updateConnectionStatus(text, color) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = text;
+            statusDot.className = `w-2 h-2 rounded-full bg-${color}-400 ${color === 'lime' || color === 'amber' ? 'animate-pulse' : ''}`;
+        }
+
+        // Rule 1: STRICT PATH FOR PUBLIC DATA (Ensures exactly 6 even segments)
+        // Path: /artifacts/{appId}/public/data/banksy_gallery/shared_board
+        const getGalleryDocRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'banksy_gallery', 'shared_board');
+
+        // Realtime sync from Cloud Firestore
+        function listenToCloudGallery() {
+            if (!currentUser) return;
+            
+            const docRef = getGalleryDocRef();
+            
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    galleryData = docSnap.data();
+                } else {
+                    // Seed initial blank data if document doesn't exist on cloud
+                    galleryData = {};
+                    for (let i = 1; i <= 7; i++) {
+                        galleryData[`group_${i}`] = [];
+                    }
+                    // Write back blank structural blueprint
+                    setDoc(docRef, galleryData);
+                }
+                // Push data to global app space and render
+                window.updateLocalGalleryState(galleryData);
+            }, (error) => {
+                console.error("Firestore sync fail: ", error);
+                showToast("데이터 동기화 실패. 새로고침을 해주세요.", true);
+            });
+        }
+
+        // Bridge function to expose remote writes safely to local JS
+        window.uploadCardToCloud = async function(groupId, newCard) {
+            if (!currentUser) {
+                showToast("네트워크가 연결되어 있지 않아 오프라인 저장으로 대체합니다.", true);
+                return false;
+            }
+
+            try {
+                const docRef = getGalleryDocRef();
+                const currentGroupList = galleryData[groupId] || [];
+                
+                if (currentGroupList.length >= 4) {
+                    showToast("해당 조는 이미 4개의 슬롯이 꽉 찼습니다.", true);
+                    return false;
+                }
+
+                currentGroupList.push(newCard);
+                galleryData[groupId] = currentGroupList;
+
+                // Sync to Cloud
+                await setDoc(docRef, galleryData);
+                return true;
+            } catch (err) {
+                console.error("Cloud push fail: ", err);
+                showToast("클라우드 전송 실패!", true);
+                return false;
+            }
+        };
+
+        // Realtime Delete function from Cloud
+        window.deleteCardFromCloud = async function(groupId, index) {
+            if (!currentUser) return;
+            try {
+                const docRef = getGalleryDocRef();
+                galleryData[groupId].splice(index, 1);
+                await setDoc(docRef, galleryData);
+                showToast("작품을 성공적으로 제거했습니다.");
+            } catch (err) {
+                console.error("Cloud delete fail: ", err);
+                showToast("삭제 연동 실패!", true);
+            }
+        };
+
+        // Realtime Reset Cloud Board Function
+        window.resetCloudBoard = async function() {
+            if (!currentUser) return;
+            try {
+                const docRef = getGalleryDocRef();
+                const resetData = {};
+                for (let i = 1; i <= 7; i++) {
+                    resetData[`group_${i}`] = [];
+                }
+                await setDoc(docRef, resetData);
+                showToast("모둠 보드가 깨끗하게 초기화되었습니다.");
+            } catch (err) {
+                console.error("Cloud reset fail: ", err);
+                showToast("초기화 실패!", true);
+            }
+        };
+
+        // Launch Auth Flow
+        initAuth();
     </script>
 </body>
 </html>
