@@ -193,6 +193,11 @@
                     <p class="text-sm text-slate-400">각 조당 최대 4개씩 작품을 등록할 수 있습니다. 친구들의 아이디어가 실시간으로 공유됩니다.</p>
                 </div>
                 <div class="flex gap-2">
+                    <!-- 우리 생각이 모이는 곳 (실시간 투표) 버튼 탑재 -->
+                    <button onclick="openVoteModal()" class="text-xs px-4.5 py-2 bg-gradient-to-r from-lime-400 to-emerald-500 hover:from-lime-300 hover:to-emerald-400 text-slate-950 font-bold rounded-xl border border-lime-400/20 transition-all cursor-pointer shadow-lg shadow-lime-400/10 flex items-center gap-1.5">
+                        <i class="fa-solid fa-square-poll-vertical text-sm"></i>
+                        <span>우리 생각이 모이는 곳 (투표 퀴즈)</span>
+                    </button>
                     <button id="resetBoardBtn" onclick="resetCloudGallery()" class="text-xs px-3 py-1.5 bg-slate-800 hover:bg-red-950/40 hover:text-red-400 text-slate-400 rounded-lg border border-slate-700/50 transition-all cursor-pointer hidden">
                         <i class="fa-solid fa-rotate mr-1"></i> 전체 보드 초기화
                     </button>
@@ -304,6 +309,115 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- 우리 생각이 모이는 곳 (실시간 퀴즈/투표) 모달 창 -->
+    <div id="voteModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-scale-up">
+            <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-lime-400 flex items-center gap-2">
+                    <i class="fa-solid fa-square-poll-vertical"></i> <span>우리 생각이 모이는 곳 (실시간 투표)</span>
+                </h3>
+                <button onclick="closeVoteModal()" class="text-slate-400 hover:text-slate-200 text-xl cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-6 max-h-[500px] overflow-y-auto">
+                <p class="text-xs text-slate-400 border-b border-slate-800 pb-2"><i class="fa-solid fa-info-circle text-lime-400"></i> 반 친구들의 실시간 참여 현황에 따라 즉시 비율이 변동되는 공유형 퀴즈입니다.</p>
+                
+                <!-- Question 1 -->
+                <div class="space-y-3 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+                    <h4 class="font-bold text-sm md:text-base text-slate-200">Q1. 17억짜리 그림을 그 자리에서 분쇄기로 찢은 뱅크시의 행동은?</h4>
+                    <div id="q1Options" class="grid grid-cols-1 gap-2">
+                        <!-- Option A -->
+                        <button onclick="submitVote('q1', 'a')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>자본주의 미술 시장을 꼬집은 <strong>멋진 예술이다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q1_a_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q1_a_progress_container">
+                            <div id="q1_a_progress" class="bg-lime-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <!-- Option B -->
+                        <button onclick="submitVote('q1', 'b')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>관심을 끌어 그림 값을 올리려는 <strong>얄팍한 어그로다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q1_b_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q1_b_progress_container">
+                            <div id="q1_b_progress" class="bg-lime-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <!-- Option C -->
+                        <button onclick="submitVote('q1', 'c')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>그냥 남의 돈을 허락 없이 훼손한 <strong>범죄일 뿐이다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q1_c_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q1_c_progress_container">
+                            <div id="q1_c_progress" class="bg-lime-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="space-y-3 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+                    <h4 class="font-bold text-sm md:text-base text-slate-200">Q2. 반쯤 찢겨진 그림이 330억에 다시 팔렸습니다. 이 거대한 가치는?</h4>
+                    <div id="q2Options" class="grid grid-cols-1 gap-2">
+                        <!-- Option A -->
+                        <button onclick="submitVote('q2', 'a')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>파괴라는 역사를 담은 <strong>진짜 예술적 가치다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q2_a_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q2_a_progress_container">
+                            <div id="q2_a_progress" class="bg-emerald-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <!-- Option B -->
+                        <button onclick="submitVote('q2', 'b')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>부자들이 돈 자랑하려고 만든 <strong>거품(자본의 가치)이다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q2_b_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q2_b_progress_container">
+                            <div id="q2_b_progress" class="bg-emerald-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="space-y-3 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+                    <h4 class="font-bold text-sm md:text-base text-slate-200">Q3. 내가 오늘 학교 복도 사진 위에 그린 '디지털 그라피티'는 예술일까?</h4>
+                    <div id="q3Options" class="grid grid-cols-1 gap-2">
+                        <!-- Option A -->
+                        <button onclick="submitVote('q3', 'a')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>내 생각과 유머를 담았으니 <strong>당연히 예술이다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q3_a_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q3_a_progress_container">
+                            <div id="q3_a_progress" class="bg-cyan-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <!-- Option B -->
+                        <button onclick="submitVote('q3', 'b')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>허락받지 않고 학교 공간을 가상 훼손했으니 <strong>예술이 아니다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q3_b_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q3_b_progress_container">
+                            <div id="q3_b_progress" class="bg-cyan-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <!-- Option C -->
+                        <button onclick="submitVote('q3', 'c')" class="vote-opt-btn w-full text-left bg-slate-900 hover:bg-slate-800 p-3 rounded-xl border border-slate-800 transition-all text-xs flex justify-between items-center cursor-pointer">
+                            <span>미술 시간에 시켜서 억지로 한 거니 <strong>그냥 수행평가다.</strong></span>
+                            <span class="text-lime-400 font-bold hidden" id="q3_c_count">0%</span>
+                        </button>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden hidden" id="q3_c_progress_container">
+                            <div id="q3_c_progress" class="bg-cyan-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-950 px-6 py-4 border-t border-slate-800 flex justify-end">
+                <button onclick="closeVoteModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm transition-all cursor-pointer">
+                    닫기
+                </button>
+            </div>
         </div>
     </div>
 
@@ -724,6 +838,9 @@
         window.updateLocalGalleryState = function(cloudData) {
             localGalleryData = cloudData;
             renderGalleryBoard();
+            if (window.updateVoteUI && localGalleryData.votes) {
+                window.updateVoteUI(localGalleryData.votes);
+            }
         };
 
         // Renders Padlet UI Columns with cards and limits check
@@ -874,7 +991,7 @@
             if (currentSubmissionImageSource === 'canvas') {
                 finalImage = getMergedDataURL();
                 if (!finalImage) {
-                    showToast("먼저 캔버스 미션에 사진을 열고 낙서를 남기세요!", true);
+                    showToast("먼저 캔버스 미션에 사진을 여고 낙서를 남기세요!", true);
                     return;
                 }
             } else {
@@ -924,6 +1041,26 @@
                 } else {
                     showToast("네트워크 모듈 연결 유실", true);
                 }
+            }
+        }
+
+        // 3-1. REAL-TIME MULTIPLE CHOICE VOTE (우리 생각이 모이는 곳)
+        function openVoteModal() {
+            document.getElementById('voteModal').classList.remove('hidden');
+        }
+
+        function closeVoteModal() {
+            document.getElementById('voteModal').classList.add('hidden');
+        }
+
+        async function submitVote(questionKey, optionKey) {
+            if (typeof window.submitVoteToCloud === 'function') {
+                const success = await window.submitVoteToCloud(questionKey, optionKey);
+                if (success) {
+                    showToast("투표가 실시간으로 반영되었습니다!");
+                }
+            } else {
+                showToast("실시간 연동 연동 중입니다. 잠시 후 시도하세요.", true);
             }
         }
 
@@ -1032,6 +1169,11 @@
                     for (let i = 1; i <= 7; i++) {
                         galleryData[`group_${i}`] = [];
                     }
+                    galleryData.votes = {
+                        q1: { a: 0, b: 0, c: 0 },
+                        q2: { a: 0, b: 0 },
+                        q3: { a: 0, b: 0, c: 0 }
+                    };
                     // Write back blank structural blueprint
                     setDoc(docRef, galleryData);
                 }
@@ -1095,12 +1237,74 @@
                 for (let i = 1; i <= 7; i++) {
                     resetData[`group_${i}`] = [];
                 }
+                resetData.votes = {
+                    q1: { a: 0, b: 0, c: 0 },
+                    q2: { a: 0, b: 0 },
+                    q3: { a: 0, b: 0, c: 0 }
+                };
                 await setDoc(docRef, resetData);
                 showToast("모둠 보드가 깨끗하게 초기화되었습니다.");
             } catch (err) {
                 console.error("Cloud reset fail: ", err);
                 showToast("초기화 실패!", true);
             }
+        };
+
+        // Realtime Quiz Vote sub-routine incrementer (Rule 2 Compound Query Guardrail satisfied)
+        window.submitVoteToCloud = async function(questionKey, optionKey) {
+            if (!currentUser) return false;
+            try {
+                const docRef = getGalleryDocRef();
+                
+                if (!galleryData.votes) {
+                    galleryData.votes = {
+                        q1: { a: 0, b: 0, c: 0 },
+                        q2: { a: 0, b: 0 },
+                        q3: { a: 0, b: 0, c: 0 }
+                    };
+                }
+                
+                if (!galleryData.votes[questionKey]) {
+                    galleryData.votes[questionKey] = {};
+                }
+                
+                // Increment vote locally first
+                const currentVal = galleryData.votes[questionKey][optionKey] || 0;
+                galleryData.votes[questionKey][optionKey] = currentVal + 1;
+                
+                await setDoc(docRef, galleryData);
+                return true;
+            } catch (err) {
+                console.error("Vote upload failure: ", err);
+                return false;
+            }
+        };
+
+        // Realtime Update dynamic UI for Polls
+        window.updateVoteUI = function(votes) {
+            const keys = ['q1', 'q2', 'q3'];
+            keys.forEach(qk => {
+                const qVotes = votes[qk] || {};
+                // Calculate Total Votes
+                const total = Object.values(qVotes).reduce((sum, val) => sum + val, 0);
+                
+                Object.keys(qVotes).forEach(ok => {
+                    const countSpan = document.getElementById(`${qk}_${ok}_count`);
+                    const progressBar = document.getElementById(`${qk}_${ok}_progress`);
+                    const progressContainer = document.getElementById(`${qk}_${ok}_progress_container`);
+                    
+                    if (countSpan && progressBar && progressContainer) {
+                        const count = qVotes[ok] || 0;
+                        const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+                        
+                        countSpan.textContent = `${percent}% (${count}표)`;
+                        countSpan.classList.remove('hidden');
+                        
+                        progressBar.style.width = `${percent}%`;
+                        progressContainer.classList.remove('hidden');
+                    }
+                });
+            });
         };
 
         // Launch Auth Flow
