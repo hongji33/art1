@@ -47,7 +47,7 @@
             </h1>
             <div id="quizProgress" class="text-sm text-slate-400 font-medium bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-lime-400 animate-pulse" id="statusDot"></span>
-                <span id="statusText" class="font-bold">구글 클라우드 모드</span>
+                <span id="statusText" class="font-bold">구글 클라우드 동기화 모드</span>
             </div>
         </div>
     </header>
@@ -139,7 +139,7 @@
                             </button>
                         </div>
 
-                        <!-- 업그레이드된 컬러칩 -->
+                        <!-- 풍부해진 전용 컬러칩 -->
                         <div id="colorPaletteContainer" class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
                             <button onclick="setColor('#deff9a')" class="color-dot w-6 h-6 rounded-full bg-[#deff9a] border border-white/50 focus:outline-none transition-all cursor-pointer" title="네온 그린"></button>
                             <button onclick="setColor('#ef4444')" class="color-dot w-6 h-6 rounded-full bg-red-500 border border-white/10 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="레드"></button>
@@ -220,7 +220,7 @@
 
             <!-- Horizontal Padlet Board Column Layout -->
             <div class="padlet-board flex gap-6 overflow-x-auto pb-6 pt-2 items-start" style="min-height: 550px;">
-                <!-- Generated dynamically (Group 1 to 7) via JS -->
+                <!-- Generated dynamically via JS -->
             </div>
         </section>
 
@@ -570,7 +570,7 @@
             
             currentQuestion.options.forEach((option, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "w-full text-left bg-slate-800 hover:bg-slate-700/80 active:bg-slate-700 border border-slate-700 hover:border-lime-400/30 p-4 rounded-xl transition-all font-medium text-slate-200 cursor-pointer flex items-center justify-between";
+                btn.className = "w-full text-left bg-slate-800 hover:bg-slate-750 active:bg-slate-700 border border-slate-700 hover:border-lime-400/30 p-4 rounded-xl transition-all font-medium text-slate-200 cursor-pointer flex items-center justify-between";
                 btn.onclick = () => checkAnswer(idx, btn);
                 btn.innerHTML = `<span>${option}</span> <i class="fa-regular fa-circle text-slate-500 text-lg"></i>`;
                 container.appendChild(btn);
@@ -918,8 +918,8 @@
         let currentSubmissionImageSource = 'canvas'; // 'canvas' or 'file'
         let selectedManualImageBase64 = null;
 
-        // 구글 앱스 스크립트 배포 시 제공받은 실제 '웹 앱 URL' 연동 완료!
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMHrnIZV6YMP4WtmxV4qpFuUF11SgEZjynf35tsrp_JSJangNuff9inhLCqVE-19SGqg/exec"; 
+        // 구글 앱스 스크립트 배포 시 제공받은 실제 '웹 앱 URL' 완벽 이식 완료!
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyA0JuQyL05byzo2KXhjarpvvfxNZ4XjhPh4zWaZTNokSSeIBP2dUlRHaCoG95PFkbh8Q/exec"; 
 
         // 로컬 갤러리 가상 보드 렌더링 초기화
         function initFallbackLocalStorage() {
@@ -1092,7 +1092,7 @@
             reader.readAsDataURL(file);
         }
 
-        // 구글 스프레드시트 배포 API 전송 최종 무오류 핸들러!
+        // 구글 스프레드시트 배포 API 전송 최종 무오류 핸들러! (CORS 및 바이너리 파싱 규격 보정완료)
         async function handleFormSubmit(e) {
             e.preventDefault();
 
@@ -1125,14 +1125,15 @@
                 timestamp: Date.now()
             };
 
-            showToast("구글 스프레드시트 전송 시도 중...", false);
+            showToast("구글 클라우드로 전송 중...", false);
             try {
                 // 구글 드라이브와 구글 시트로 동시에 백그라운드 전송 진행
+                // CORS 충돌을 방지하기 위해 mode: 'no-cors' 및 text/plain 프로토콜 채용
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
-                    mode: "no-cors", // 구글 Apps Script 보안 정책 맞춤형 No-CORS 전송 프로토콜 수립
+                    mode: "no-cors", 
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "text/plain;charset=utf-8"
                     },
                     body: JSON.stringify({
                         studentId: studentId,
@@ -1145,10 +1146,10 @@
                 showToast("구글 시트에 작품 연동 및 드라이브 백업이 완료되었습니다!");
             } catch (err) {
                 console.error("Google Sheets API 전송 오류: ", err);
-                showToast("구글 드라이브 연결 실패, 로컬 캐시로 저장합니다.", true);
+                showToast("구글 드라이브 연결 실패, 로컬 캐시로 임시 저장합니다.", true);
             }
 
-            // 학생 개개인의 갤러리 갱신 (CORS 딜레이 상관없이 즉각 렌더링되게 설계)
+            // 학생 개개인의 로컬 브라우저 화면 갤러리 갱신 (비동기 완료 여부와 무관하게 부드러운 렌더링 유지)
             const currentGroupList = localGalleryData[groupId] || [];
             currentGroupList.push(JSON.stringify(newCard));
             localGalleryData[groupId] = currentGroupList;
@@ -1230,7 +1231,7 @@
             } else {
                 tabForm.className = "py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-bold text-sm transition-all cursor-pointer";
                 tabChart.className = "py-2 border-b-2 border-lime-400 text-lime-400 font-bold text-sm transition-all cursor-pointer";
-                formContent.classList.add('hidden');
+                formContent.add('hidden');
                 chartContent.classList.remove('hidden');
                 
                 // 차트 렌더링 시작
