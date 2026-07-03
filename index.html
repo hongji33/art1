@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 고정관념을 찢다: 뱅크시 퀴즈 & 그라피티 앱 </title>
+    <title>고정관념을 찢다: 뱅크시 퀴즈 & 그라피티 앱</title>
     <!-- Tailwind CSS for modern responsive UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for beautiful icons -->
@@ -163,7 +163,7 @@
 
                     <!-- Brush Size -->
                     <div class="flex items-center gap-3">
-                        <span id="brushSizeLabel" class="text-xs font-medium text-slate-400">브러시 굵기:</span>
+                        <span id="brushSizeLabel" class="text-xs font-medium text-slate-400">바닐라 굵기:</span>
                         <input type="range" id="brushSize" min="2" max="40" value="6" class="w-24 accent-lime-400 cursor-pointer">
                     </div>
 
@@ -172,7 +172,7 @@
                         <button onclick="undo()" class="px-3 py-2 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="뒤로가기">
                             <i class="fa-solid fa-rotate-left mr-1"></i> 되돌리기
                         </button>
-                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-red-955/40 hover:text-red-400 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="초기화">
+                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-red-950/40 hover:text-red-400 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="초기화">
                             <i class="fa-solid fa-trash-can mr-1"></i> 전체 지우기
                         </button>
                         <button onclick="saveAndDownload()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-lime-400 rounded-xl text-sm font-bold transition-all border border-lime-400/20 cursor-pointer">
@@ -918,7 +918,7 @@
         let currentSubmissionImageSource = 'canvas'; // 'canvas' or 'file'
         let selectedManualImageBase64 = null;
 
-        // 구글 앱스 스크립트 배포 웹 앱 URL 연동 완료!
+        // 구글 앱스 스크립트 배포 시 제공받은 실제 '웹 앱 URL' 완벽 이식 완료!
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyA0JuQyL05byzo2KXhjarpvvfxNZ4XjhPh4zWaZTNokSSeIBP2dUlRHaCoG95PFkbh8Q/exec"; 
 
         // 로컬 갤러리 가상 보드 렌더링 초기화
@@ -1216,7 +1216,7 @@
             showToast("선택하신 의견이 성공적으로 반영되었습니다!");
         }
 
-        // 투표 모달 탭 전환기 및 차트 인스턴스 트리거 (classList 누락 오류 수정완료)
+        // 투표 모달 탭 전환기 및 차트 인스턴스 트리거
         function switchVoteTab(tabName) {
             const tabForm = document.getElementById('tabVoteForm');
             const tabChart = document.getElementById('tabVoteChart');
@@ -1231,7 +1231,7 @@
             } else {
                 tabForm.className = "py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-bold text-sm transition-all cursor-pointer";
                 tabChart.className = "py-2 border-b-2 border-lime-400 text-lime-400 font-bold text-sm transition-all cursor-pointer";
-                formContent.classList.add('hidden'); // classList 누락 에러 정정 완료
+                formContent.classList.add('hidden'); // classList 누락 버그 정정완료
                 chartContent.classList.remove('hidden');
                 
                 // 차트 렌더링 시작
