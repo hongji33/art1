@@ -139,7 +139,7 @@
                             </button>
                         </div>
 
-                        <!-- 풍부해진 전용 컬러칩 -->
+                        <!-- 업그레이드된 컬러칩 -->
                         <div id="colorPaletteContainer" class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
                             <button onclick="setColor('#deff9a')" class="color-dot w-6 h-6 rounded-full bg-[#deff9a] border border-white/50 focus:outline-none transition-all cursor-pointer" title="네온 그린"></button>
                             <button onclick="setColor('#ef4444')" class="color-dot w-6 h-6 rounded-full bg-red-500 border border-white/10 hover:scale-110 focus:outline-none transition-all cursor-pointer" title="레드"></button>
@@ -172,7 +172,7 @@
                         <button onclick="undo()" class="px-3 py-2 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="뒤로가기">
                             <i class="fa-solid fa-rotate-left mr-1"></i> 되돌리기
                         </button>
-                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-red-950/40 hover:text-red-400 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="초기화">
+                        <button onclick="clearCanvas()" class="px-3 py-2 bg-slate-800 hover:bg-red-955/40 hover:text-red-400 text-slate-300 rounded-xl text-sm font-bold transition-all cursor-pointer" title="초기화">
                             <i class="fa-solid fa-trash-can mr-1"></i> 전체 지우기
                         </button>
                         <button onclick="saveAndDownload()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-lime-400 rounded-xl text-sm font-bold transition-all border border-lime-400/20 cursor-pointer">
@@ -918,7 +918,7 @@
         let currentSubmissionImageSource = 'canvas'; // 'canvas' or 'file'
         let selectedManualImageBase64 = null;
 
-        // 구글 앱스 스크립트 배포 시 제공받은 실제 '웹 앱 URL' 완벽 이식 완료!
+        // 구글 앱스 스크립트 배포 웹 앱 URL 연동 완료!
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyA0JuQyL05byzo2KXhjarpvvfxNZ4XjhPh4zWaZTNokSSeIBP2dUlRHaCoG95PFkbh8Q/exec"; 
 
         // 로컬 갤러리 가상 보드 렌더링 초기화
@@ -1216,7 +1216,7 @@
             showToast("선택하신 의견이 성공적으로 반영되었습니다!");
         }
 
-        // 투표 모달 탭 전환기 및 차트 인스턴스 트리거
+        // 투표 모달 탭 전환기 및 차트 인스턴스 트리거 (classList 누락 오류 수정완료)
         function switchVoteTab(tabName) {
             const tabForm = document.getElementById('tabVoteForm');
             const tabChart = document.getElementById('tabVoteChart');
@@ -1231,7 +1231,7 @@
             } else {
                 tabForm.className = "py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-bold text-sm transition-all cursor-pointer";
                 tabChart.className = "py-2 border-b-2 border-lime-400 text-lime-400 font-bold text-sm transition-all cursor-pointer";
-                formContent.add('hidden');
+                formContent.classList.add('hidden'); // classList 누락 에러 정정 완료
                 chartContent.classList.remove('hidden');
                 
                 // 차트 렌더링 시작
