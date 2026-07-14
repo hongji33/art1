@@ -171,12 +171,19 @@
 
             <!-- 탭 2: 투표 및 퀴즈 실시간 통계 패널 -->
             <section id="vote-panel" class="hidden space-y-4">
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                    <h2 class="text-base font-extrabold text-slate-900 flex items-center">
-                        <span class="w-2 h-4 bg-amber-500 rounded-full mr-2"></span>
-                        우리 생각 실시간 투표 퀴즈
-                    </h2>
-                    <p class="text-[11px] text-slate-400 mt-0.5">오늘 모둠 협력 및 뱅크시 철학에 대한 학급 전체의 생각을 실시간 집계로 모아봅니다.</p>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h2 class="text-base font-extrabold text-slate-900 flex items-center">
+                            <span class="w-2 h-4 bg-amber-500 rounded-full mr-2"></span>
+                            우리 생각 실시간 투표 퀴즈
+                        </h2>
+                        <p class="text-[11px] text-slate-400 mt-0.5">오늘 모둠 협력 및 뱅크시 철학에 대한 학급 전체의 생각을 실시간 집계로 모아봅니다.</p>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button id="reset-votes-btn" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="설문 초기화">
+                            <i class="fa-solid fa-trash-can text-xs"></i> 투표 초기화
+                        </button>
+                    </div>
                 </div>
 
                 <div id="vote-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -185,11 +192,6 @@
             </section>
         </div>
     </main>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-900 text-slate-500 py-6 border-t border-slate-800 text-xs text-center mt-auto">
-        <p class="font-bold text-slate-400">© 2026 Art Realtime Classroom Collab Platform</p>
-    </footer>
 
     <!-- 모달 1: 뱅크시 창의력 탐구 퀴즈 (총 6문항) -->
     <div id="quiz-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -365,11 +367,24 @@
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"></textarea>
                 </div>
 
-                <!-- 업로드 이미지 미리보기 -->
+                <!-- 업로드 이미지 수동 선택 제어 영역 -->
+                <div id="manual-file-selector-section" class="space-y-1">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">작품 이미지 첨부 (자동 압축 최적화)</label>
+                    <div id="upload-file-trigger" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl mb-1"></i>
+                        <span class="text-xs font-bold text-slate-600">사진 파일 선택 (기기 앨범 또는 촬영)</span>
+                        <input id="upload-file-input" type="file" accept="image/*" class="hidden">
+                    </div>
+                </div>
+
+                <!-- 업로드 이미지 미리보기 컨테이너 -->
                 <div>
-                    <span class="block text-[11px] font-bold text-slate-400 uppercase mb-1">병합 가공 완료된 작품 이미지</span>
-                    <div class="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                    <span class="block text-[11px] font-bold text-slate-400 uppercase mb-1">제출작 미리보기</span>
+                    <div id="form-image-preview-container" class="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
                         <img id="form-image-preview" src="" alt="첨부 미리보기" class="w-full h-36 object-contain">
+                        <button id="remove-form-img-btn" type="button" class="absolute top-2 right-2 bg-rose-600 hover:bg-rose-700 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md" title="첨부 이미지 지우기">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -461,14 +476,26 @@
         </div>
     </div>
 
+    <!-- 모달 6: 커스텀 다이아로그 확인용 모달 (Browser confirm 완벽 대체용) -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-6 space-y-4 transform transition-all scale-95 duration-200">
+            <h3 id="confirm-title" class="font-extrabold text-slate-900 text-lg">작업 확인</h3>
+            <p id="confirm-message" class="text-xs text-slate-500 leading-relaxed"></p>
+            <div class="flex justify-end gap-2.5">
+                <button id="confirm-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">취소</button>
+                <button id="confirm-action" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all">실행</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 토스트 알림창 -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
-        // 선생님께서 설정하신 새로운 앱스스크립트 실제 연동용 URL로 완벽 고정 적용
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsPuPZLRv3ZlfJBjjGA9HQK0tdn8ATEaUOWccF19Q3z35Kn4BdoVUvJ7Hz327cYWChg/exec";
+        // 선생님께서 새로 발급해오신 최종 실사용 URL로 확실하게 보정 탑재
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -566,6 +593,7 @@
         const votePanel = document.getElementById('vote-panel');
         const padletCanvas = document.getElementById('padlet-canvas');
         const voteList = document.getElementById('vote-list');
+        const resetVotesBtn = document.getElementById('reset-votes-btn');
 
         const uploadModal = document.getElementById('upload-modal');
         const closeUploadBtn = document.getElementById('close-upload-btn');
@@ -585,6 +613,13 @@
         const deploymentGuideModal = document.getElementById('deployment-guide-modal');
         const closeGuideBtn = document.getElementById('close-guide-btn');
         const guideOkBtn = document.getElementById('guide-ok-btn');
+
+        // Custom Confirm Modal
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmCancelBtn = document.getElementById('confirm-cancel');
+        const confirmActionBtn = document.getElementById('confirm-action');
 
         // Quiz elements
         const startBanksyChallengeBtn = document.getElementById('start-banksy-challenge-btn');
@@ -614,6 +649,13 @@
         const customColorPicker = document.getElementById('custom-color-picker');
         const currentColorLamp = document.getElementById('current-color-lamp');
 
+        // 수동 업로드 관련 신규 선택자들
+        const manualFileSelectorSection = document.getElementById('manual-file-selector-section');
+        const uploadFileTrigger = document.getElementById('upload-file-trigger');
+        const uploadFileInput = document.getElementById('upload-file-input');
+        const formImagePreviewContainer = document.getElementById('form-image-preview-container');
+        const removeFormImgBtn = document.getElementById('remove-form-img-btn');
+
         // CANVAS GRAPHIC LOGIC STATE
         const ctx = sketchCanvas.getContext('2d');
         let isDrawing = false;
@@ -624,62 +666,36 @@
         let isEraserMode = false;
         let backgroundImgObject = null;
 
-        // TOAST NOTIFIER
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `p-4 rounded-xl shadow-xl flex items-center space-x-3 text-white font-medium text-xs transition-all duration-300 transform translate-y-5 opacity-0 ${
-                type === 'success' ? 'bg-indigo-600 shadow-indigo-100' : 
-                type === 'error' ? 'bg-rose-600 shadow-rose-100' : 'bg-slate-800 shadow-slate-100'
-            }`;
+        // Custom Confirm Callback
+        let pendingConfirmAction = null;
+
+        // CUSTOM CONFIRM SYSTEM (iframe 내 완벽 실행 보장)
+        function showCustomConfirm(title, message, callback, isDanger = true) {
+            confirmTitle.textContent = title;
+            confirmMessage.innerHTML = message;
             
-            const icon = document.createElement('i');
-            icon.className = type === 'success' ? 'fa-solid fa-circle-check text-base' : 
-                             type === 'error' ? 'fa-solid fa-circle-exclamation text-base' : 'fa-solid fa-circle-info text-base';
-            
-            const text = document.createElement('span');
-            text.textContent = message;
-
-            toast.appendChild(icon);
-            toast.appendChild(text);
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-5', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // TRIGGER ALIGN GUIDE POPUP FOR CORS / AUTHENTICATION ERRS
-        function triggerDeploymentErrorGuide(err) {
-            console.error("Critical Google Apps Script connectivity block detected:", err);
-            deploymentGuideModal.classList.remove('hidden');
-            setTimeout(() => {
-                deploymentGuideModal.classList.remove('scale-95');
-            }, 50);
-        }
-
-        closeGuideBtn.addEventListener('click', () => deploymentGuideModal.classList.add('hidden'));
-        guideOkBtn.addEventListener('click', () => {
-            deploymentGuideModal.classList.add('hidden');
-            // Allow teacher to inspect layout inside fallback demo environments gracefully
-            if(!currentClass) {
-                currentClass = "3-1";
-                classPassword = "1234";
-                classGroupCount = 7;
-                loginSection.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                classBadge.classList.remove('hidden');
-                logoutBtn.classList.remove('hidden');
-                teacherSettingsBtn.classList.remove('hidden');
-                currentClassName.textContent = "3학년 1반 (로컬 데모)";
-                initGroupUploadDropdown();
-                loadLocalDemoData();
+            if (isDanger) {
+                confirmActionBtn.className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all";
+            } else {
+                confirmActionBtn.className = "px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all";
             }
+            
+            pendingConfirmAction = callback;
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => confirmModal.classList.remove('scale-95'), 10);
+        }
+
+        confirmCancelBtn.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            confirmModal.classList.add('scale-95');
+            pendingConfirmAction = null;
+        });
+
+        confirmActionBtn.addEventListener('click', () => {
+            if (pendingConfirmAction) pendingConfirmAction();
+            confirmModal.classList.add('hidden');
+            confirmModal.classList.add('scale-95');
+            pendingConfirmAction = null;
         });
 
         // --- AUTH & CONFIG LOGIN ---
@@ -712,13 +728,11 @@
                     loadGalleryData();
                     loadVotesData();
                 } else if (result.status === "error") {
-                    // 구글 앱스 스크립트 내부에서 예외 오류가 반환된 경우 직접 원인 노출
                     showToast("서버 작동 에러: " + result.message, "error");
                 } else {
                     showToast("비밀번호가 일치하지 않습니다.", "error");
                 }
             } catch (err) {
-                // 어떤 비밀번호를 입력하든 통신 에러(CORS 차단 등)가 발생하면 자가진단 가이드 모달 실행
                 triggerDeploymentErrorGuide(err);
             }
         });
@@ -756,7 +770,6 @@
             if (!uploadSelect) return;
             uploadSelect.innerHTML = "";
             
-            // 안전장치: 모둠 수 로딩에 실패한 초기 상태라도 드롭다운이 공백으로 남지 않도록 기본 모둠값 주입
             const targetCount = classGroupCount || 7;
             for (let i = 1; i <= targetCount; i++) {
                 const opt = document.createElement('option');
@@ -771,12 +784,12 @@
             configGroupCount.value = classGroupCount;
             configClassPassword.value = classPassword;
             teacherModal.classList.remove('hidden');
-            document.getElementById('diagnostic-result').classList.add('hidden'); // 진단창 숨기기 초기화
+            document.getElementById('diagnostic-result').classList.add('hidden'); 
         });
 
         closeTeacherBtn.addEventListener('click', () => teacherModal.classList.add('hidden'));
 
-        // 실시간 자가 연동 진단기 엔진 소스 추가
+        // 실시간 자가 연동 진단기 엔진 소스
         document.getElementById('diagnostic-run-btn').addEventListener('click', async () => {
             const resultBox = document.getElementById('diagnostic-result');
             resultBox.classList.remove('hidden');
@@ -856,7 +869,6 @@
             };
 
             try {
-                // CORS-safe text/plain POST Request to bypass CORS preflight
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
@@ -953,13 +965,20 @@
                     resetSketchWorkspace();
                 } else {
                     showToast(`만점에 실패했습니다. 틀린 부분(${quizWrongCount}개)을 정답 해설로 다시 연습해보세요!`, "error");
+                    
+                    // Custom Confirm 대체 호출
                     setTimeout(() => {
-                        if (confirm(`총 ${banksyQuizList.length}문항 중 ${quizWrongCount}문항 오답이 감지되었습니다. 퀴즈에 재도전하시겠습니까?`)) {
-                            quizCurrentIndex = 0;
-                            quizWrongCount = 0;
-                            quizModal.classList.remove('hidden');
-                            loadQuizQuestion();
-                        }
+                        showCustomConfirm(
+                            "퀴즈 불합격",
+                            `총 ${banksyQuizList.length}문항 중 ${quizWrongCount}문항을 틀렸습니다. 다시 도전하여 만점을 달성하시겠습니까?`,
+                            () => {
+                                quizCurrentIndex = 0;
+                                quizWrongCount = 0;
+                                quizModal.classList.remove('hidden');
+                                loadQuizQuestion();
+                            },
+                            false
+                        );
                     }, 500);
                 }
             }
@@ -1078,7 +1097,6 @@
             lastY = coords.y;
         }
 
-        // 마우스 업 터치 종료 시 상태 초기화 강제 바인딩 (그리기 끊김 해소)
         function refreshCanvasState() {
             if (ctx) {
                 ctx.lineCap = 'round';
@@ -1163,20 +1181,88 @@
 
             const base64MergedResult = offscreenCanvas.toDataURL('image/jpeg', 0.82);
 
+            // 폼 이미지 타겟에 바인딩
             document.getElementById('form-image-preview').src = base64MergedResult;
+            
+            // 드로잉 병합 전송 시에는 파일 업로드 트리거 및 수동선택부를 감춤
+            manualFileSelectorSection.classList.add('hidden');
+            formImagePreviewContainer.classList.remove('hidden');
             
             sketchModal.classList.add('hidden');
             uploadModal.classList.remove('hidden');
         });
 
+        // 수동 파일 업로드 처리 로직 (CORS 우회 고속 압축 지원)
+        uploadFileTrigger.addEventListener('click', () => uploadFileInput.click());
+
+        uploadFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            showToast("미술 작품 파일 가져오는 중...", "info");
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 800;
+
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const oCtx = canvas.getContext('2d');
+                    oCtx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
+                    document.getElementById('form-image-preview').src = compressedBase64;
+                    
+                    uploadFileTrigger.classList.add('hidden');
+                    formImagePreviewContainer.classList.remove('hidden');
+                    showToast("작품 업로드 최적화 완료!");
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 수동 첨부 이미지 제거 기능 (모달 잔상 원천 차단)
+        removeFormImgBtn.addEventListener('click', () => {
+            uploadFileInput.value = "";
+            document.getElementById('form-image-preview').src = "";
+            formImagePreviewContainer.classList.add('hidden');
+            uploadFileTrigger.classList.remove('hidden');
+        });
+
+        // 자료 수동 올리기 클릭 시 (이전 미리보기 완벽 초기화)
         directUploadBtn.addEventListener('click', () => {
-            document.getElementById('form-image-preview').src = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=600&q=80";
+            uploadForm.reset();
+            uploadFileInput.value = "";
+            document.getElementById('form-image-preview').src = "";
+            formImagePreviewContainer.classList.add('hidden');
+            
+            // 수동 선택 업로드 영역 활성화 노출
+            manualFileSelectorSection.classList.remove('hidden');
+            uploadFileTrigger.classList.remove('hidden');
+            
             uploadModal.classList.remove('hidden');
         });
 
         closeUploadBtn.addEventListener('click', () => uploadModal.classList.add('hidden'));
 
-        // --- 3. 실시간 모둠 칸막이 렌더링 ---
+        // --- 3. 실시간 모둠 칸막이 렌더링 (삭제 제어 통합) ---
         async function loadGalleryData() {
             if(!currentClass) return;
 
@@ -1191,7 +1277,6 @@
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=getGallery&classId=${currentClass}`);
                 const data = await response.json();
                 
-                // 만약 에러 로그가 돌아왔다면 진단 경고 노출
                 if (data.status === "error") {
                     showToast(data.message, "error");
                     renderGalleryShelf();
@@ -1232,20 +1317,24 @@
                                 <span class="text-[10px] font-bold">비어있음</span>
                             </div>
                         ` : itemsInGroup.map(item => `
-                            <div class="bg-slate-50/50 border border-slate-200/60 rounded-xl p-3 space-y-2 hover:border-indigo-200 hover:bg-white transition-all shadow-2xs">
-                                <div class="relative h-32 rounded-lg overflow-hidden bg-slate-100">
-                                    <img src="${item.imageUrl || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=600&q=80'}" 
-                                         alt="모둠작품" 
-                                         class="w-full h-full object-cover"
-                                         onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=600&q=80'">
+                            <div class="bg-slate-50/50 border border-slate-200/60 rounded-xl p-3 space-y-2 hover:border-indigo-200 hover:bg-white transition-all shadow-2xs flex flex-col justify-between">
+                                <div class="space-y-2">
+                                    <div class="relative h-32 rounded-lg overflow-hidden bg-slate-100">
+                                        <img src="${item.imageUrl || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=600&q=80'}" 
+                                             alt="모둠작품" 
+                                             class="w-full h-full object-cover"
+                                             onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=600&q=80'">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <h4 class="text-xs font-extrabold text-slate-900 leading-normal line-clamp-1">${item.title}</h4>
+                                        <p class="text-[11px] text-slate-500 leading-normal line-clamp-3">${item.description}</p>
+                                    </div>
                                 </div>
-                                <div class="space-y-1">
-                                    <h4 class="text-xs font-extrabold text-slate-900 leading-normal line-clamp-1">${item.title}</h4>
-                                    <p class="text-[11px] text-slate-500 leading-normal line-clamp-3">${item.description}</p>
-                                </div>
-                                <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
+                                <div class="pt-2 mt-2 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
                                     <span class="font-bold text-indigo-600"><i class="fa-solid fa-user-pen mr-1"></i>${item.author}</span>
-                                    <span>${new Date(item.timestamp).toLocaleDateString()}</span>
+                                    <button onclick="deleteGalleryPost('${item.timestamp}')" class="text-rose-500 hover:text-rose-700 font-bold transition-all flex items-center gap-0.5" title="자료 삭제">
+                                        <i class="fa-solid fa-trash-can text-[10px]"></i> 삭제
+                                    </button>
                                 </div>
                             </div>
                         `).join('')}
@@ -1256,6 +1345,46 @@
             }
         }
 
+        // 실시간 자료 구글 클라우드 삭제 연동 함수
+        window.deleteGalleryPost = function(timestamp) {
+            showCustomConfirm(
+                "작품 삭제 확인",
+                "정말로 이 모둠 작품을 삭제하시겠습니까?<br>삭제 시 구글 드라이브 원본 파일과 시트 내용이 영구 소멸합니다.",
+                async () => {
+                    showToast("구글 클라우드와 연결해 자료 파쇄 요청 중...", "info");
+
+                    const payload = {
+                        action: "deleteGallery",
+                        classId: currentClass,
+                        password: classPassword,
+                        timestamp: timestamp
+                    };
+
+                    try {
+                        const response = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify(payload)
+                        });
+                        const result = await response.json();
+
+                        if (result.status === "success") {
+                            showToast("성공적으로 작품이 완전 삭제되었습니다.");
+                            loadGalleryData(); 
+                        } else {
+                            showToast("삭제 실패: " + result.message, "error");
+                        }
+                    } catch (err) {
+                        console.error("Deletion API failed, fallback to local removal", err);
+                        localGalleryData = localGalleryData.filter(item => String(item.timestamp) !== String(timestamp));
+                        renderGalleryShelf();
+                        showToast("통신 오류로 인해 브라우저 화면상에서만 임시 소멸 처리되었습니다.", "info");
+                    }
+                },
+                true
+            );
+        };
+
         // 최종 스프레드시트 서버 전송
         uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -1265,6 +1394,11 @@
             const title = document.getElementById('input-title').value.trim();
             const desc = document.getElementById('input-desc').value.trim();
             const imgBase64 = document.getElementById('form-image-preview').src;
+
+            if (!imgBase64) {
+                showToast("등록할 작품 이미지를 파일 첨부 또는 스케치북으로 작성해 주세요.", "error");
+                return;
+            }
 
             const submitBtn = document.getElementById('submit-post-btn');
             const originalBtnText = submitBtn.innerHTML;
@@ -1284,7 +1418,6 @@
             };
 
             try {
-                // CORS-safe text/plain POST Request
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
@@ -1303,7 +1436,6 @@
             } catch (err) {
                 triggerDeploymentErrorGuide(err);
                 
-                // 오프라인 상태 적재 시뮬레이션
                 const localItem = {
                     timestamp: new Date().toISOString(),
                     groupName: group,
@@ -1324,7 +1456,7 @@
 
         refreshGalleryBtn.addEventListener('click', loadGalleryData);
 
-        // --- 4. 실시간 생각 투표 통계 제어 ---
+        // --- 4. 실시간 생각 투표 통계 제어 및 전면 초기화 기능 ---
         const pollTopics = [
             {
                 id: "p1",
@@ -1423,7 +1555,6 @@
             };
 
             try {
-                // CORS-safe text/plain POST Request
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
@@ -1444,6 +1575,48 @@
                 renderPolls();
             }
         };
+
+        // 실시간 투표 데이터를 모두 소거하여 0으로 리셋하는 함수 (Browser confirm 완벽 대체형 커스텀 연동)
+        resetVotesBtn.addEventListener('click', function() {
+            if (!currentClass) return;
+            
+            showCustomConfirm(
+                "⚠️ 투표 초기화 확인",
+                `정말로 현재 학급(${currentClassName.textContent})의 실시간 생각 투표 통계를 전면 초기화하시겠습니까?<br>이 작업은 구글 시트의 기록을 완전히 삭제하여 모든 통계를 0표로 만듭니다.`,
+                async () => {
+                    showToast("서버와 통신하여 투표 퀴즈 기록을 소멸하는 중...", "info");
+
+                    const payload = {
+                        action: "resetVotes",
+                        classId: currentClass,
+                        password: classPassword
+                    };
+
+                    try {
+                        const response = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify(payload)
+                        });
+                        const result = await response.json();
+
+                        if (result.status === "success") {
+                            showToast("생각 투표 퀴즈가 성공적으로 리셋되었습니다! 현재 모든 득표수는 0입니다.");
+                            localVotesData = {};
+                            renderPolls();
+                        } else {
+                            showToast("리셋 실패: " + result.message, "error");
+                        }
+                    } catch (err) {
+                        triggerDeploymentErrorGuide(err);
+                        localVotesData = {};
+                        renderPolls();
+                        showToast("통신 지연으로 로컬 대시보드 뷰어만 리셋 처리되었습니다.", "info");
+                    }
+                },
+                true
+            );
+        });
 
         // --- 5. 로컬 데모 데이터 처리 ---
         function loadLocalDemoData() {
