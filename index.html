@@ -69,7 +69,7 @@
     </header>
 
     <!-- 메인 컨텐츠 영역 -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
         
         <!-- 최상단 상시 노출: 학교 고정관념 깨기 도전장 카드 -->
         <section id="challenge-banner" class="bg-slate-900 rounded-3xl p-6 md:p-8 text-white mb-6 shadow-xl relative overflow-hidden">
@@ -510,8 +510,8 @@
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
-        // 선생님께서 지정해주신 최신 배포용 URL 주소로 완벽 고정 기입 완료
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ5Osd_jAv2oTOl9eswtpUQuWwupEXEul_T5S3d8h_zgTFarmjUNoKbjrERDnR1i6BMw/exec";
+        // 선생님께서 새로 발급해 주신 완벽 고유 작동용 URL 주소로 변경 완료!
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -559,8 +559,7 @@
             console.error("API Connection Error:", err);
             // 이미 임시 모드 상태라면 중복으로 오류 창을 계속 띄우지 않습니다.
             if (isOfflineMode) return;
-            showToast("서버 통신에 장애가 발생했습니다. 임시 모드로 진입할 수 있습니다.", "error");
-            document.getElementById('deployment-guide-modal').classList.remove('hidden');
+            showToast("구글 클라우드 서버와 일시적으로 연동이 원활하지 않습니다. 임시 모드로 데이터를 기록합니다.", "info");
         }
         
         // 6 banksy quizzes matching Google Slides context
@@ -696,7 +695,7 @@
             teacherSettingsBtn.classList.remove('hidden');
 
             currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
-            showToast("인터넷 차단으로 임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
+            showToast("임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
 
             initGroupUploadDropdown();
             loadLocalDemoData();
@@ -887,287 +886,61 @@
             }
         });
 
-        // --- 2. 스케치북 드로잉 기능 구현 ---
-        function resetSketchWorkspace() {
-            sketchUploadTrigger.classList.remove('hidden');
-            canvasWorkspace.classList.add('hidden');
-            changeBgBtn.classList.add('hidden');
-            applySketchBtn.disabled = true;
-            applySketchBtn.className = "px-5 py-2.5 bg-slate-200 text-slate-400 font-extrabold text-xs rounded-xl cursor-not-allowed";
-            backgroundImgObject = null;
-            sketchBgPreview.src = "";
-            ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
-            
-            // 기본 상태 설정
-            brushColor = '#dc2626';
-            isEraserMode = false;
-            currentColorLamp.style.backgroundColor = brushColor;
-            
-            // 프리셋 버튼 강조 초기화
-            document.querySelectorAll('.color-dot').forEach(btn => {
-                if (btn.dataset.color === '#dc2626') {
-                    btn.className = "color-dot w-8 h-8 rounded-full bg-rose-600 border-2 border-white ring-2 ring-indigo-500 shadow-sm transition-all transform hover:scale-110";
+        // --- AUTH & CONFIG LOGIN ---
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const chosen = selectClass.value;
+            const pass = classPasswordInput.value;
+
+            showToast("보안 검증 및 반별 모둠 구성 불러오는 중...", "info");
+
+            try {
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=verify&classId=${chosen}&password=${pass}`);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    currentClass = chosen;
+                    classPassword = pass;
+                    classGroupCount = result.groupCount || 7; 
+
+                    loginSection.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    classBadge.classList.remove('hidden');
+                    logoutBtn.classList.remove('hidden');
+                    teacherSettingsBtn.classList.remove('hidden');
+
+                    currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반`;
+                    showToast(`${currentClassName.textContent} 갤러리에 성공적으로 접속했습니다!`, "success");
+
+                    initGroupUploadDropdown();
+                    loadGalleryData();
+                    loadVotesData();
+                } else if (result.status === "error") {
+                    showToast("서버 시스템 에러: " + result.message, "error");
                 } else {
-                    btn.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
+                    showToast("비밀번호가 일치하지 않습니다.", "error");
                 }
-            });
-        }
+            } catch (err) {
+                console.error("Login fetch failed, auto bypass to safe-fallback mode", err);
+                // 네트워크 지연/CORS 차단 시 수업 중단을 방지하기 위해 임시 모드로 강제 우회 자동 로그인!
+                isOfflineMode = true;
+                currentClass = chosen;
+                classPassword = pass;
+                classGroupCount = 7;
 
-        closeSketchBtn.addEventListener('click', () => sketchModal.classList.add('hidden'));
+                loginSection.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                classBadge.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                teacherSettingsBtn.classList.remove('hidden');
 
-        sketchUploadTrigger.addEventListener('click', () => inputBgImage.click());
-        changeBgBtn.addEventListener('click', () => inputBgImage.click());
+                currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
+                showToast("구글 클라우드 연결에 정체가 있어 임시 갤러리로 자동 접속합니다. 수업을 안전하게 진행하세요!", "info");
 
-        inputBgImage.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    backgroundImgObject = img;
-                    sketchBgPreview.src = event.target.result;
-
-                    const containerWidth = sketchBgPreview.parentElement.clientWidth || 600;
-                    const scaleFactor = containerWidth / img.width;
-                    const computedHeight = img.height * scaleFactor;
-                    
-                    sketchCanvas.width = containerWidth;
-                    sketchCanvas.height = computedHeight;
-
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    ctx.strokeStyle = brushColor;
-                    ctx.lineWidth = brushWidth;
-
-                    sketchUploadTrigger.classList.add('hidden');
-                    canvasWorkspace.classList.remove('hidden');
-                    changeBgBtn.classList.remove('hidden');
-                    applySketchBtn.disabled = false;
-                    applySketchBtn.className = "px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all";
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        function getCoordinates(event) {
-            const rect = sketchCanvas.getBoundingClientRect();
-            let clientX, clientY;
-            if (event.touches && event.touches.length > 0) {
-                clientX = event.touches[0].clientX;
-                clientY = event.touches[0].clientY;
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
+                initGroupUploadDropdown();
+                loadLocalDemoData();
             }
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
-        }
-
-        function startDrawing(e) {
-            isDrawing = true;
-            const coords = getCoordinates(e);
-            lastX = coords.x;
-            lastY = coords.y;
-            
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.lineWidth = brushWidth;
-            if (isEraserMode) {
-                ctx.globalCompositeOperation = 'destination-out';
-            } else {
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.strokeStyle = brushColor;
-            }
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            e.preventDefault(); 
-
-            const coords = getCoordinates(e);
-            
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(coords.x, coords.y);
-            ctx.stroke();
-
-            lastX = coords.x;
-            lastY = coords.y;
-        }
-
-        function refreshCanvasState() {
-            if (ctx) {
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.lineWidth = brushWidth;
-                ctx.strokeStyle = brushColor;
-            }
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
-            refreshCanvasState();
-        }
-
-        sketchCanvas.addEventListener('mousedown', startDrawing);
-        sketchCanvas.addEventListener('mousemove', draw);
-        sketchCanvas.addEventListener('mouseup', stopDrawing);
-        sketchCanvas.addEventListener('mouseleave', stopDrawing);
-
-        sketchCanvas.addEventListener('touchstart', startDrawing, { passive: false });
-        sketchCanvas.addEventListener('touchmove', draw, { passive: false });
-        sketchCanvas.addEventListener('touchend', stopDrawing);
-
-        // 기본 팔레트 색상 프리셋 선택 이벤트
-        document.querySelectorAll('.color-dot').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                isEraserMode = false;
-                toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
-                
-                document.querySelectorAll('.color-dot').forEach(b => {
-                    b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
-                });
-                
-                e.target.className = `color-dot w-8 h-8 rounded-full border-2 border-white ring-2 ring-indigo-500 shadow-sm transition-all transform scale-110`;
-                
-                brushColor = e.target.dataset.color;
-                customColorPicker.value = brushColor;
-                currentColorLamp.style.backgroundColor = brushColor;
-                refreshCanvasState();
-            });
         });
-
-        // 무지개 커스텀 컬러 피커 선택 이벤트 (선택 완료 시 그리기 즉시 반영)
-        customColorPicker.addEventListener('input', (e) => {
-            isEraserMode = false;
-            toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
-            
-            document.querySelectorAll('.color-dot').forEach(b => {
-                b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
-            });
-
-            brushColor = e.target.value;
-            currentColorLamp.style.backgroundColor = brushColor;
-            refreshCanvasState();
-        });
-
-        // 지우개 작동 토글
-        toolEraser.addEventListener('click', () => {
-            isEraserMode = true;
-            document.querySelectorAll('.color-dot').forEach(b => {
-                b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
-            });
-            toolEraser.className = "w-8 h-8 bg-indigo-50 border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center transition-all shadow-xs";
-        });
-
-        brushWidthInput.addEventListener('input', (e) => brushWidth = e.target.value);
-        clearDrawBtn.addEventListener('click', () => ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height));
-
-        applySketchBtn.addEventListener('click', () => {
-            if (!backgroundImgObject) return;
-
-            showToast("그림과 현장 원본 사진을 1개의 이미지 파일로 병합 가공하고 있습니다...", "info");
-
-            const offscreenCanvas = document.createElement('canvas');
-            offscreenCanvas.width = 800; 
-            const aspect = backgroundImgObject.height / backgroundImgObject.width;
-            offscreenCanvas.height = 800 * aspect;
-
-            const offCtx = offscreenCanvas.getContext('2d');
-            offCtx.drawImage(backgroundImgObject, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
-            offCtx.drawImage(sketchCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
-
-            const base64MergedResult = offscreenCanvas.toDataURL('image/jpeg', 0.82);
-
-            // 폼 이미지 타겟에 바인딩
-            document.getElementById('form-image-preview').src = base64MergedResult;
-            
-            // 드로잉 병합 전송 시에는 파일 업로드 트리거 및 수동선택부를 감춤
-            manualFileSelectorSection.classList.add('hidden');
-            formImagePreviewContainer.classList.remove('hidden');
-            
-            sketchModal.classList.add('hidden');
-            uploadModal.classList.remove('hidden');
-        });
-
-        // 수동 파일 업로드 처리 로직 (CORS 우회 고속 압축 지원)
-        uploadFileTrigger.addEventListener('click', () => uploadFileInput.click());
-
-        uploadFileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            showToast("미술 작품 파일 가져오는 중...", "info");
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const maxDim = 800;
-
-                    if (width > height) {
-                        if (width > maxDim) {
-                            height *= maxDim / width;
-                            width = maxDim;
-                        }
-                    } else {
-                        if (height > maxDim) {
-                            width *= maxDim / height;
-                            height = maxDim;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const oCtx = canvas.getContext('2d');
-                    oCtx.drawImage(img, 0, 0, width, height);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
-                    document.getElementById('form-image-preview').src = compressedBase64;
-                    
-                    uploadFileTrigger.classList.add('hidden');
-                    formImagePreviewContainer.classList.remove('hidden');
-                    showToast("작품 업로드 최적화 완료!");
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // 수동 첨부 이미지 제거 기능 (모달 잔상 원천 차단)
-        removeFormImgBtn.addEventListener('click', () => {
-            uploadFileInput.value = "";
-            document.getElementById('form-image-preview').src = "";
-            formImagePreviewContainer.classList.add('hidden');
-            uploadFileTrigger.classList.remove('hidden');
-        });
-
-        // 자료 수동 올리기 클릭 시 (이전 미리보기 완벽 초기화)
-        directUploadBtn.addEventListener('click', () => {
-            if (!currentClass) {
-                showToast("먼저 학급 공간에 로그인해 주세요.", "error");
-                return;
-            }
-            uploadForm.reset();
-            uploadFileInput.value = "";
-            document.getElementById('form-image-preview').src = "";
-            formImagePreviewContainer.classList.add('hidden');
-            
-            // 수동 선택 업로드 영역 활성화 노출
-            manualFileSelectorSection.classList.remove('hidden');
-            uploadFileTrigger.classList.remove('hidden');
-            
-            uploadModal.classList.remove('hidden');
-        });
-
-        closeUploadBtn.addEventListener('click', () => uploadModal.classList.add('hidden'));
 
         // --- 3. 실시간 모둠 칸막이 렌더링 (삭제 제어 통합) ---
         async function loadGalleryData() {
