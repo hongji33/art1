@@ -208,7 +208,7 @@
                     <h3 class="font-black text-sm tracking-wide uppercase">Banksy 창의성 탐구 퀴즈</h3>
                 </div>
                 <div class="flex items-center gap-2">
-                    <!-- 헤더 영역 언제든지 건너뛰기 버튼 추가 -->
+                    <!-- 헤더 영역 언제든지 건너뛰기 버튼 -->
                     <button id="skip-quiz-header-btn" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[10px] rounded-lg transition-all flex items-center gap-1">
                         퀴즈 건너뛰기 <i class="fa-solid fa-chevron-right"></i>
                     </button>
@@ -265,7 +265,7 @@
             <div class="p-4 space-y-4 overflow-y-auto flex-grow flex flex-col">
                 <p class="text-xs text-slate-500 leading-relaxed">
                     <i class="fa-solid fa-circle-info mr-1 text-indigo-500"></i>
-                    학교 공간 사진(복도, 계단, 소화기, 금지 표지판 등)을 올린 뒤, 그 위에 기발한 상상을 덧그려보세요!
+                    학교 공간 사진(복도, 계단, 소화기, 금지 표지판 등)을 올린 뒤, 그 위에 기발한 상상을 덧그려보세요! (배경사진 없이 흰 도화지에 그리기도 가능합니다.)
                 </p>
 
                 <!-- 사진 업로드 유도 영역 -->
@@ -292,7 +292,7 @@
                                 <div id="current-color-lamp" class="w-5 h-5 rounded-full border border-slate-300 shadow-inner" style="background-color: #dc2626;"></div>
                             </div>
 
-                            <!-- 기본 색상 버튼 (32px 크기로 확장) -->
+                            <!-- 기본 색상 버튼 (32px 크기) -->
                             <button class="color-dot w-8 h-8 rounded-full bg-rose-600 border-2 border-white ring-2 ring-indigo-500 shadow-sm transition-all transform hover:scale-110" data-color="#dc2626"></button>
                             <button class="color-dot w-8 h-8 rounded-full bg-amber-400 border-2 border-white shadow-sm transition-all transform hover:scale-110" data-color="#fbbf24"></button>
                             <button class="color-dot w-8 h-8 rounded-full bg-indigo-600 border-2 border-white shadow-sm transition-all transform hover:scale-110" data-color="#4f46e5"></button>
@@ -326,7 +326,7 @@
                     <div class="relative bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-inner max-w-full flex items-center justify-center" style="min-height:280px; width:100%;">
                         <div class="relative w-full h-full flex justify-center items-center">
                             <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 cursor-crosshair z-10"></canvas>
-                            <img id="sketch-bg-preview" class="object-contain w-full h-auto" src="" alt="배경공간">
+                            <img id="sketch-bg-preview" class="object-contain w-full h-auto hidden" src="" alt="배경공간">
                         </div>
                     </div>
                 </div>
@@ -335,10 +335,10 @@
             <!-- 스케치북 하단 제어 단추 -->
             <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex justify-between">
                 <button id="change-bg-btn" class="hidden px-3.5 py-2 text-slate-600 hover:text-slate-800 border border-slate-200 rounded-xl font-bold text-xs">
-                    <i class="fa-solid fa-rotate mr-1"></i> 사진 바꾸기
+                    <i class="fa-solid fa-rotate mr-1"></i> 배경 교체
                 </button>
                 <button id="apply-sketch-btn" disabled class="px-5 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 ml-auto">
-                    <i class="fa-solid fa-check"></i> 완성작 미술 보드에 등록하기
+                    <i class="fa-solid fa-check"></i> 완성작 보드에 전송하기
                 </button>
             </div>
         </div>
@@ -510,8 +510,8 @@
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
-        // 선생님께서 지정해주신 최신 배포용 URL 주소로 완벽 고정 기입 완료
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ5Osd_jAv2oTOl9eswtpUQuWwupEXEul_T5S3d8h_zgTFarmjUNoKbjrERDnR1i6BMw/exec";
+        // 구글 시트 및 드라이브 저장을 처리하는 백엔드 전용 API 주소 고정 기입 완료
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -519,7 +519,7 @@
         let classGroupCount = 7; // 기본값 7모둠
         let localGalleryData = [];
         let localVotesData = {};
-        let isOfflineMode = false; // 임시 오프라인 모드 플래그 (무한 팝업 방어 장치)
+        let isOfflineMode = false; // 임시 오프라인 모드 세션 플래그
         
         // --- 헬퍼 함수 선언 (토스트 알림 및 구글 오류 대응 시스템) ---
         function showToast(message, type = "success") {
@@ -557,9 +557,10 @@
 
         function triggerDeploymentErrorGuide(err) {
             console.error("API Connection Error:", err);
-            // 이미 임시 모드 상태라면 중복으로 오류 창을 계속 띄우지 않습니다.
+            // 이미 오프라인 fallback 모드 상태가 아니라면 팝업을 제공하여 진단 가능하도록 안내
             if (isOfflineMode) return;
-            showToast("구글 클라우드 서버와 일시적으로 연동이 원활하지 않습니다. 임시 모드로 데이터를 기록합니다.", "info");
+            showToast("스프레드시트 서버 통신 상태를 체크하고 있습니다. 일시적인 차단 시 임시 모드가 수행됩니다.", "info");
+            document.getElementById('deployment-guide-modal').classList.remove('hidden');
         }
         
         // 6 banksy quizzes matching Google Slides context
@@ -672,35 +673,6 @@
         const closeGuideBtn = document.getElementById('close-guide-btn');
         const guideOkBtn = document.getElementById('guide-ok-btn');
 
-        // 긴급 진단 안내 창 제어 및 오프라인 로그인 우회 연동
-        closeGuideBtn.addEventListener('click', () => {
-            deploymentGuideModal.classList.add('hidden');
-        });
-
-        guideOkBtn.addEventListener('click', () => {
-            deploymentGuideModal.classList.add('hidden');
-            
-            // 임시 오프라인 모드 기동
-            isOfflineMode = true;
-
-            // 오프라인 데모 가상 로그인 세션 수립
-            currentClass = selectClass.value || "3-1";
-            classPassword = classPasswordInput.value || "1234";
-            classGroupCount = 7;
-
-            loginSection.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            classBadge.classList.remove('hidden');
-            logoutBtn.classList.remove('hidden');
-            teacherSettingsBtn.classList.remove('hidden');
-
-            currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
-            showToast("임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
-
-            initGroupUploadDropdown();
-            loadLocalDemoData();
-        });
-
         // Custom Confirm Modal
         const confirmModal = document.getElementById('confirm-modal');
         const confirmTitle = document.getElementById('confirm-title');
@@ -740,7 +712,7 @@
         const customColorPicker = document.getElementById('custom-color-picker');
         const currentColorLamp = document.getElementById('current-color-lamp');
 
-        // 수동 업로드 관련 신규 선택자들
+        // 수동 업로드 관련 선택자들
         const manualFileSelectorSection = document.getElementById('manual-file-selector-section');
         const uploadFileTrigger = document.getElementById('upload-file-trigger');
         const uploadFileInput = document.getElementById('upload-file-input');
@@ -766,9 +738,9 @@
             confirmMessage.innerHTML = message;
             
             if (isDanger) {
-                confirmActionBtn.className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all";
+                confirmActionBtn.className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer";
             } else {
-                confirmActionBtn.className = "px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all";
+                confirmActionBtn.className = "px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer";
             }
             
             pendingConfirmAction = callback;
@@ -895,6 +867,7 @@
             showToast("보안 검증 및 반별 모둠 구성 불러오는 중...", "info");
 
             try {
+                // 구글 웹앱 서버에 가볍게 신호를 보내 로그인 인증을 처리
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=verify&classId=${chosen}&password=${pass}`);
                 const result = await response.json();
 
@@ -902,6 +875,7 @@
                     currentClass = chosen;
                     classPassword = pass;
                     classGroupCount = result.groupCount || 7; 
+                    isOfflineMode = false; // 정식 서버 연동 작동화
 
                     loginSection.classList.add('hidden');
                     mainContent.classList.remove('hidden');
@@ -922,6 +896,7 @@
                 }
             } catch (err) {
                 console.error("Login fetch failed, auto bypass to safe-fallback mode", err);
+                
                 // 네트워크 지연/CORS 차단 시 수업 중단을 방지하기 위해 임시 모드로 강제 우회 자동 로그인!
                 isOfflineMode = true;
                 currentClass = chosen;
@@ -935,11 +910,28 @@
                 teacherSettingsBtn.classList.remove('hidden');
 
                 currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
-                showToast("구글 클라우드 연결에 정체가 있어 임시 갤러리로 자동 접속합니다. 수업을 안전하게 진행하세요!", "info");
+                showToast("임시 로컬 모드로 가볍게 진입합니다. 그리기와 투표가 로컬 테스트 버전으로 가동됩니다.", "info");
 
                 initGroupUploadDropdown();
                 loadLocalDemoData();
             }
+        });
+
+        // --- 탭 전환 시 자동 데이터 동기화 리셋 보강 ---
+        tabGalleryBtn.addEventListener('click', () => {
+            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
+            galleryPanel.classList.remove('hidden');
+            votePanel.classList.add('hidden');
+            loadGalleryData(); // 갤러리 진입 시 실시간 데이터 자동 재적재
+        });
+
+        tabVoteBtn.addEventListener('click', () => {
+            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-amber-500 text-white shadow-sm";
+            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
+            votePanel.classList.remove('hidden');
+            galleryPanel.classList.add('hidden');
+            loadVotesData(); // 투표 탭 진입 시 누적 설문 데이터 자동 동기화
         });
 
         // --- 3. 실시간 모둠 칸막이 렌더링 (삭제 제어 통합) ---
@@ -1079,6 +1071,183 @@
             );
         };
 
+        // --- 2. 스케치북 드로잉 공간 핵심 리뉴얼 (사진 없는 빈 도화지 드로잉 완벽 복원) ---
+        function initCanvas(imgObj = null) {
+            const container = sketchBgPreview.parentElement;
+            const containerWidth = container.clientWidth || 550;
+            
+            if (imgObj) {
+                backgroundImgObject = imgObj;
+                const aspect = imgObj.height / imgObj.width;
+                sketchCanvas.width = containerWidth;
+                sketchCanvas.height = containerWidth * aspect;
+                sketchBgPreview.src = imgObj.src;
+                sketchBgPreview.classList.remove('hidden');
+            } else {
+                backgroundImgObject = null;
+                sketchCanvas.width = containerWidth;
+                sketchCanvas.height = 412; // 4:3 표준 드로잉 도화지 비율 세팅
+                sketchBgPreview.src = "";
+                sketchBgPreview.classList.add('hidden');
+                
+                // 투명 낙서 데이터 유실 방지를 위한 기본 깔끔한 흰색 도판 배경 채우기
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+            }
+            
+            // 캔버스 드로잉 속성 초기화 및 정상 연동
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = brushColor;
+            ctx.lineWidth = brushWidth;
+            
+            // 작업 영역 및 올리기 버튼 노출 활성화
+            canvasWorkspace.classList.remove('hidden');
+            applySketchBtn.disabled = false;
+            applySketchBtn.className = "px-5 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
+        }
+
+        function resetSketchWorkspace() {
+            sketchUploadTrigger.classList.remove('hidden');
+            changeBgBtn.classList.add('hidden');
+            initCanvas(null); // 진입하자마자 빈 도화지 상태로 즉시 그릴 수 있도록 초기 캔버스 구축
+        }
+
+        inputBgImage.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    initCanvas(img);
+                    sketchUploadTrigger.classList.add('hidden');
+                    changeBgBtn.classList.remove('hidden');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        applySketchBtn.addEventListener('click', () => {
+            showToast("그림 데이터를 전송용 규격으로 인코딩하고 있습니다...", "info");
+
+            const offscreenCanvas = document.createElement('canvas');
+            offscreenCanvas.width = 800;
+            
+            if (backgroundImgObject) {
+                const aspect = backgroundImgObject.height / backgroundImgObject.width;
+                offscreenCanvas.height = 800 * aspect;
+            } else {
+                offscreenCanvas.height = 600; // 흰 백지 4:3 해상도 고정 규격
+            }
+
+            const offCtx = offscreenCanvas.getContext('2d');
+            
+            if (backgroundImgObject) {
+                offCtx.drawImage(backgroundImgObject, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            } else {
+                offCtx.fillStyle = "#ffffff";
+                offCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            }
+            
+            // 덧그린 드로잉 이미지를 800px 규격 위에 자연스럽게 투영 병합
+            offCtx.drawImage(sketchCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+            const base64MergedResult = offscreenCanvas.toDataURL('image/jpeg', 0.85);
+
+            // 최종 폼 내부 미리보기 전송
+            document.getElementById('form-image-preview').src = base64MergedResult;
+            
+            // 병합 가공 시 수동 파일 선택부를 감추고 최종 조립작만 노출
+            manualFileSelectorSection.classList.add('hidden');
+            formImagePreviewContainer.classList.remove('hidden');
+            
+            sketchModal.classList.add('hidden');
+            uploadModal.classList.remove('hidden');
+        });
+
+        // 캔버스 낙서 전체 지우기 시 흰 백지가 투명/검정으로 죽지 않도록 방어 복원
+        clearDrawBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+            if (!backgroundImgObject) {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+            }
+        });
+
+        // 수동 파일 업로드 제어 및 이전 사진 잔상 정밀 리셋
+        uploadFileTrigger.addEventListener('click', () => uploadFileInput.click());
+
+        uploadFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            showToast("미술 작품 사진 파일 가공 중...", "info");
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 800;
+
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const oCtx = canvas.getContext('2d');
+                    oCtx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
+                    document.getElementById('form-image-preview').src = compressedBase64;
+                    
+                    uploadFileTrigger.classList.add('hidden');
+                    formImagePreviewContainer.classList.remove('hidden');
+                    showToast("선택된 사진 파일 적재 성공!");
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        removeFormImgBtn.addEventListener('click', () => {
+            uploadFileInput.value = "";
+            document.getElementById('form-image-preview').src = "";
+            formImagePreviewContainer.classList.add('hidden');
+            uploadFileTrigger.classList.remove('hidden');
+        });
+
+        directUploadBtn.addEventListener('click', () => {
+            if (!currentClass) {
+                showToast("먼저 학급 공간에 로그인해 주세요.", "error");
+                return;
+            }
+            uploadForm.reset();
+            uploadFileInput.value = "";
+            document.getElementById('form-image-preview').src = "";
+            formImagePreviewContainer.classList.add('hidden');
+            
+            manualFileSelectorSection.classList.remove('hidden');
+            uploadFileTrigger.classList.remove('hidden');
+            
+            uploadModal.classList.remove('hidden');
+        });
+
+        closeUploadBtn.addEventListener('click', () => uploadModal.classList.add('hidden'));
+
         // 최종 스프레드시트 서버 전송
         uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -1127,7 +1296,7 @@
                 uploadForm.reset();
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
-                showToast("오프라인 보드에 정상 등록되었습니다.", "success");
+                showToast("오프라인 보드에 임시 등록되었습니다.", "success");
                 return;
             }
 
@@ -1242,11 +1411,11 @@
 
                                     return `
                                         <div class="relative group cursor-pointer" onclick="submitLiveVote('${topic.id}', '${option}')">
-                                            <button class="w-full text-left relative z-10 px-3 py-2.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200 rounded-xl flex justify-between items-center transition-all">
+                                            <button class="w-full text-left relative z-10 px-3 py-2.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200 rounded-xl flex justify-between items-center transition-all cursor-pointer">
                                                 <span class="font-semibold text-xs text-slate-700 leading-normal">${option}</span>
                                                 <span class="text-xs font-extrabold text-indigo-600">${count}표 (${percent}%)</span>
                                             </button>
-                                            <div class="absolute inset-y-0 left-0 bg-indigo-100/30 rounded-xl transition-all duration-500" style="width: ${percent}%"></div>
+                                            <div class="absolute inset-y-0 left-0 bg-indigo-100/30 rounded-xl transition-all duration-500 animate-pulse-once" style="width: ${percent}%"></div>
                                         </div>
                                     `;
                                 }).join('')}
