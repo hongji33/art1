@@ -452,7 +452,7 @@
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
-        // 선생님께서 지정해주신 최신 연동 주소로 완벽 고정
+        // 선생님께서 설정하신 앱스스크립트 실제 연동용 URL로 완벽 고정
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfGbt_idDiwsGpOFqp84r1I01cUFXDD_f5QAMLPAZQ/exec";
 
         // GLOBAL STATES
@@ -696,15 +696,15 @@
                     initGroupUploadDropdown();
                     loadGalleryData();
                     loadVotesData();
+                } else if (result.status === "error") {
+                    // 구글 앱스 스크립트 내부에서 예외 오류가 반환된 경우 직접 원인 노출
+                    showToast("서버 작동 에러: " + result.message, "error");
                 } else {
                     showToast("비밀번호가 일치하지 않습니다.", "error");
                 }
             } catch (err) {
-                if (pass === "1234") {
-                    triggerDeploymentErrorGuide(err);
-                } else {
-                    showToast("서버 연결 실패 및 비밀번호 확인이 불가능합니다.", "error");
-                }
+                // 어떤 비밀번호를 입력하든 통신 에러(CORS 차단 등)가 발생하면 자가진단 가이드 모달 실행
+                triggerDeploymentErrorGuide(err);
             }
         });
 
@@ -738,8 +738,12 @@
         // 모둠 드롭다운 초기화 (1 ~ classGroupCount)
         function initGroupUploadDropdown() {
             const uploadSelect = document.getElementById('input-group');
+            if (!uploadSelect) return;
             uploadSelect.innerHTML = "";
-            for (let i = 1; i <= classGroupCount; i++) {
+            
+            // 안전장치: 모둠 수 로딩에 실패한 초기 상태라도 드롭다운이 공백으로 남지 않도록 기본 모둠값 주입
+            const targetCount = classGroupCount || 7;
+            for (let i = 1; i <= targetCount; i++) {
                 const opt = document.createElement('option');
                 opt.value = `${i}모둠`;
                 opt.textContent = `${i}모둠`;
@@ -999,8 +1003,19 @@
             lastY = coords.y;
         }
 
+        // 마우스 업 터치 종료 시 상태 초기화 강제 바인딩 (그리기 끊김 해소)
+        function refreshCanvasState() {
+            if (ctx) {
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = brushWidth;
+                ctx.strokeStyle = brushColor;
+            }
+        }
+
         function stopDrawing() {
             isDrawing = false;
+            refreshCanvasState();
         }
 
         sketchCanvas.addEventListener('mousedown', startDrawing);
@@ -1027,10 +1042,11 @@
                 brushColor = e.target.dataset.color;
                 customColorPicker.value = brushColor;
                 currentColorLamp.style.backgroundColor = brushColor;
+                refreshCanvasState();
             });
         });
 
-        // 무지개 커스텀 컬러 피커 선택 이벤트
+        // 무지개 커스텀 컬러 피커 선택 이벤트 (선택 완료 시 그리기 즉시 반영)
         customColorPicker.addEventListener('input', (e) => {
             isEraserMode = false;
             toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
@@ -1041,6 +1057,7 @@
 
             brushColor = e.target.value;
             currentColorLamp.style.backgroundColor = brushColor;
+            refreshCanvasState();
         });
 
         // 지우개 작동 토글
@@ -1363,7 +1380,7 @@
             ];
             localVotesData = {
                 p1: { "스텐실 기법 (길거리 기습 기민한 그리기)": 2, "쓰레기통 속의 사랑 (스스로 찢겨 낙찰을 무효화한 해프닝)": 6, "디스멀랜드 (참혹하지만 똑똑하게 풍자한 반 테마파크)": 3, "꽃을 던지는 청년 (대립 분리에 무언의 평화 꽃을 건네는 상상력)": 4 },
-                p2: { "⭐⭐⭐⭐⭐ (모두 한마음으로 영감을 나눔)": 5, "⭐⭐⭐⭐ (일정 조율과 의견 화합이 아주 훌륭했음)": 3, "⭐⭐⭐ (의무를 수행하며 협력했음)": 1 }
+                p2: { "⭐⭐⭐⭐⭐ (모두 한마음으로 영감을 나눔)": 5, "⭐⭐⭐⭐ (일정 조율과 의견 화합이 아주 훌륭했음)": 3, "⭐⭐⭐ (의무를 수행하며 Hershey 기여)": 1 }
             };
             renderGalleryShelf();
             renderPolls();
