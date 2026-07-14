@@ -380,32 +380,47 @@
         </div>
     </div>
 
-    <!-- 모달 4: 교사용 설정 화면 (모둠 수 및 비밀번호 제어) -->
+    <!-- 모달 4: 교사용 설정 화면 (모둠 수 및 비밀번호 제어 + 연동 상태 자가진단기 추가) -->
     <div id="teacher-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             <div class="px-5 py-4 bg-slate-800 text-white flex justify-between items-center">
                 <span class="font-extrabold text-sm"><i class="fa-solid fa-lock-open mr-1"></i> 교사 전용 제어판</span>
                 <button id="close-teacher-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <form id="teacher-config-form" class="p-5 space-y-4">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">학급 실시간 모둠 수 설정</label>
-                    <input id="config-group-count" type="number" min="1" max="15" value="7" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1">1모둠부터 입력하신 값 범위까지 칸막이가 생성됩니다. (최대 15)</p>
+            <div class="p-5 space-y-4 overflow-y-auto flex-grow">
+                <!-- 자가 진단 패널 -->
+                <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">
+                    <span class="text-xs font-black text-indigo-700 block mb-1.5"><i class="fa-solid fa-vial mr-1"></i> 구글 시트 연동 자가 진단기</span>
+                    <p class="text-[10px] text-indigo-500 mb-3">통신 장애나 'Failed to fetch' 오류가 발생하면 아래 버튼을 눌러 원인을 진단하세요.</p>
+                    <button type="button" id="diagnostic-run-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition-all shadow-sm">
+                        실시간 통계 & 저장 서버 상태 점검
+                    </button>
+                    <!-- 결과 창 -->
+                    <div id="diagnostic-result" class="hidden mt-3 p-3 bg-white rounded-xl border border-indigo-200 text-[11px] text-slate-600 space-y-1.5">
+                        <!-- 진단결과가 렌더링됩니다 -->
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">해당 학급 입장 비밀번호 변경</label>
-                    <input id="config-class-password" type="text" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
+                <form id="teacher-config-form" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">학급 실시간 모둠 수 설정</label>
+                        <input id="config-group-count" type="number" min="1" max="15" value="7" required
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <p class="text-[10px] text-slate-400 mt-1">1모둠부터 입력하신 값 범위까지 칸막이가 생성됩니다. (최대 15)</p>
+                    </div>
 
-                <button type="submit" id="save-config-btn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all">
-                    설정 즉시 저장 및 연동
-                </button>
-            </form>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">해당 학급 입장 비밀번호 변경</label>
+                        <input id="config-class-password" type="text" required
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <button type="submit" id="save-config-btn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all">
+                        설정 즉시 저장 및 연동
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -452,8 +467,8 @@
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
-        // 선생님께서 설정하신 앱스스크립트 실제 연동용 URL로 완벽 고정
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfGbt_idDiwsGpOFqp84r1I01cUFXDD_f5QAMLPAZQ/exec";
+        // 선생님께서 설정하신 새로운 앱스스크립트 실제 연동용 URL로 완벽 고정 적용
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ5Osd_jAv2oTOl9eswtpUQuWwupEXEul_T5S3d8h_zgTFarmjUNoKbjrERDnR1i6BMw/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -756,9 +771,69 @@
             configGroupCount.value = classGroupCount;
             configClassPassword.value = classPassword;
             teacherModal.classList.remove('hidden');
+            document.getElementById('diagnostic-result').classList.add('hidden'); // 진단창 숨기기 초기화
         });
 
         closeTeacherBtn.addEventListener('click', () => teacherModal.classList.add('hidden'));
+
+        // 실시간 자가 연동 진단기 엔진 소스 추가
+        document.getElementById('diagnostic-run-btn').addEventListener('click', async () => {
+            const resultBox = document.getElementById('diagnostic-result');
+            resultBox.classList.remove('hidden');
+            resultBox.innerHTML = `
+                <div class="flex items-center space-x-1 text-slate-400">
+                    <i class="fa-solid fa-spinner animate-spin"></i>
+                    <span>구글 클라우드와 보안 게이트웨이 테스트 중...</span>
+                </div>
+            `;
+
+            try {
+                const startTime = Date.now();
+                const testResponse = await fetch(`${APPS_SCRIPT_URL}?action=verify&classId=3-1&password=test_probe`);
+                const parseTime = Date.now() - startTime;
+                
+                if (!testResponse.ok) {
+                    throw new Error(`HTTP 상태 코드 에러: ${testResponse.status}`);
+                }
+
+                const testJson = await testResponse.json();
+
+                if (testJson.status === "error" && testJson.message.indexOf("바인딩") !== -1) {
+                    resultBox.innerHTML = `
+                        <div class="text-rose-600 font-extrabold flex items-center gap-1">
+                            <i class="fa-solid fa-triangle-exclamation"></i> 시트 연동 차단됨
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-normal mt-1">
+                            <strong>원인</strong>: 구글 드라이브에서 직접 독립 실행형 스크립트로 작성하셨습니다.<br>
+                            <strong>해결방법</strong>: 데이터를 저장할 <strong>스프레드시트를 새로 여신 뒤</strong>, 시트 상단 메뉴의 <code>[확장 프로그램] -> [Apps Script]</code>를 눌러 코드를 다시 넣고 새로 배포하셔야 정상 동작합니다.
+                        </p>
+                    `;
+                    return;
+                }
+
+                resultBox.innerHTML = `
+                    <div class="text-emerald-600 font-extrabold flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check"></i> 서버 정상 통신 중! (${parseTime}ms)
+                    </div>
+                    <p class="text-[10px] text-slate-500 leading-normal mt-1">
+                        구글 클라우드와의 교신 및 CORS 사전 인증 게이트 통과에 성공했습니다. 현재 정상적으로 시트에 접근하고 데이터 저장이 가능합니다.
+                    </p>
+                `;
+
+            } catch (err) {
+                resultBox.innerHTML = `
+                    <div class="text-rose-600 font-extrabold flex items-center gap-1">
+                        <i class="fa-solid fa-ban"></i> 연결 차단 (CORS / Failed to fetch)
+                    </div>
+                    <p class="text-[10px] text-slate-500 leading-normal mt-1">
+                        <strong>원인</strong>: 브라우저가 보안 검증 과정에서 서버 접속을 원천 차단했습니다.<br>
+                        <strong>자가진단 해결법</strong>:<br>
+                        1. 새로 작성한 <code>code.gs</code> 파일을 붙여넣고 배포 창에서 <strong>[액세스할 수 있는 사용자]</strong>를 반드시 <strong>'모든 사람(Anyone)'</strong>으로 설정했는지 확인하세요.<br>
+                        2. <strong>'새 배포 (New Deployment)'</strong>로 발행하여 URL 주소를 최신으로 교체했는지 체크해 주세요.
+                    </p>
+                `;
+            }
+        });
 
         teacherConfigForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1115,6 +1190,14 @@
             try {
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=getGallery&classId=${currentClass}`);
                 const data = await response.json();
+                
+                // 만약 에러 로그가 돌아왔다면 진단 경고 노출
+                if (data.status === "error") {
+                    showToast(data.message, "error");
+                    renderGalleryShelf();
+                    return;
+                }
+                
                 localGalleryData = data;
                 renderGalleryShelf();
             } catch (err) {
@@ -1269,6 +1352,12 @@
             try {
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=getVotes&classId=${currentClass}`);
                 const data = await response.json();
+                
+                if (data.status === "error") {
+                    showToast(data.message, "error");
+                    return;
+                }
+                
                 localVotesData = data;
                 renderPolls();
             } catch (err) {
@@ -1380,7 +1469,7 @@
             ];
             localVotesData = {
                 p1: { "스텐실 기법 (길거리 기습 기민한 그리기)": 2, "쓰레기통 속의 사랑 (스스로 찢겨 낙찰을 무효화한 해프닝)": 6, "디스멀랜드 (참혹하지만 똑똑하게 풍자한 반 테마파크)": 3, "꽃을 던지는 청년 (대립 분리에 무언의 평화 꽃을 건네는 상상력)": 4 },
-                p2: { "⭐⭐⭐⭐⭐ (모두 한마음으로 영감을 나눔)": 5, "⭐⭐⭐⭐ (일정 조율과 의견 화합이 아주 훌륭했음)": 3, "⭐⭐⭐ (의무를 수행하며 Hershey 기여)": 1 }
+                p2: { "⭐⭐⭐⭐⭐ (모두 한마음으로 영감을 나눔)": 5, "⭐⭐⭐⭐ (일정 조율과 의견 화합이 아주 훌륭했음)": 3, "⭐⭐⭐ (의무를 수행하며 협력했음)": 1 }
             };
             renderGalleryShelf();
             renderPolls();
