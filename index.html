@@ -519,6 +519,7 @@
         let classGroupCount = 7; // 기본값 7모둠
         let localGalleryData = [];
         let localVotesData = {};
+        let isOfflineMode = false; // 임시 오프라인 모드 플래그 (무한 팝업 방어 장치)
         
         // --- 헬퍼 함수 선언 (토스트 알림 및 구글 오류 대응 시스템) ---
         function showToast(message, type = "success") {
@@ -556,6 +557,8 @@
 
         function triggerDeploymentErrorGuide(err) {
             console.error("API Connection Error:", err);
+            // 이미 임시 모드 상태라면 중복으로 오류 창을 계속 띄우지 않습니다.
+            if (isOfflineMode) return;
             showToast("서버 통신에 장애가 발생했습니다. 임시 모드로 진입할 수 있습니다.", "error");
             document.getElementById('deployment-guide-modal').classList.remove('hidden');
         }
@@ -670,6 +673,35 @@
         const closeGuideBtn = document.getElementById('close-guide-btn');
         const guideOkBtn = document.getElementById('guide-ok-btn');
 
+        // 긴급 진단 안내 창 제어 및 오프라인 로그인 우회 연동
+        closeGuideBtn.addEventListener('click', () => {
+            deploymentGuideModal.classList.add('hidden');
+        });
+
+        guideOkBtn.addEventListener('click', () => {
+            deploymentGuideModal.classList.add('hidden');
+            
+            // 임시 오프라인 모드 기동
+            isOfflineMode = true;
+
+            // 오프라인 데모 가상 로그인 세션 수립
+            currentClass = selectClass.value || "3-1";
+            classPassword = classPasswordInput.value || "1234";
+            classGroupCount = 7;
+
+            loginSection.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            classBadge.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            teacherSettingsBtn.classList.remove('hidden');
+
+            currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
+            showToast("인터넷 차단으로 임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
+
+            initGroupUploadDropdown();
+            loadLocalDemoData();
+        });
+
         // Custom Confirm Modal
         const confirmModal = document.getElementById('confirm-modal');
         const confirmTitle = document.getElementById('confirm-title');
@@ -758,212 +790,7 @@
             pendingConfirmAction = null;
         });
 
-        // --- AUTH & CONFIG LOGIN ---
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const chosen = selectClass.value;
-            const pass = classPasswordInput.value;
-
-            showToast("보안 검증 및 반별 모둠 구성 불러오는 중...", "info");
-
-            try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?action=verify&classId=${chosen}&password=${pass}`);
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    currentClass = chosen;
-                    classPassword = pass;
-                    classGroupCount = result.groupCount || 7; 
-
-                    loginSection.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
-                    classBadge.classList.remove('hidden');
-                    logoutBtn.classList.remove('hidden');
-                    teacherSettingsBtn.classList.remove('hidden');
-
-                    currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반`;
-                    showToast(`${currentClassName.textContent} 갤러리에 접속했습니다.`, "success");
-
-                    initGroupUploadDropdown();
-                    loadGalleryData();
-                    loadVotesData();
-                } else if (result.status === "error") {
-                    showToast("서버 작동 에러: " + result.message, "error");
-                } else {
-                    showToast("비밀번호가 일치하지 않습니다.", "error");
-                }
-            } catch (err) {
-                triggerDeploymentErrorGuide(err);
-            }
-        });
-
-        logoutBtn.addEventListener('click', function() {
-            currentClass = "";
-            classPassword = "";
-            loginForm.reset();
-            loginSection.classList.remove('hidden');
-            mainContent.classList.add('hidden');
-            classBadge.classList.add('hidden');
-            logoutBtn.classList.add('hidden');
-            teacherSettingsBtn.classList.add('hidden');
-            showToast("로그아웃 되었습니다.");
-        });
-
-        // TABS SWITCHES
-        tabGalleryBtn.addEventListener('click', () => {
-            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
-            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
-            galleryPanel.classList.remove('hidden');
-            votePanel.classList.add('hidden');
-        });
-
-        tabVoteBtn.addEventListener('click', () => {
-            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-amber-500 text-white shadow-sm";
-            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
-            votePanel.classList.remove('hidden');
-            galleryPanel.classList.add('hidden');
-        });
-
-        // 모둠 드롭다운 초기화 (1 ~ classGroupCount)
-        function initGroupUploadDropdown() {
-            const uploadSelect = document.getElementById('input-group');
-            if (!uploadSelect) return;
-            uploadSelect.innerHTML = "";
-            
-            const targetCount = classGroupCount || 7;
-            for (let i = 1; i <= targetCount; i++) {
-                const opt = document.createElement('option');
-                opt.value = `${i}모둠`;
-                opt.textContent = `${i}모둠`;
-                uploadSelect.appendChild(opt);
-            }
-        }
-
-        // --- TEACHER MODAL CONTROL ---
-        teacherSettingsBtn.addEventListener('click', () => {
-            configGroupCount.value = classGroupCount;
-            configClassPassword.value = classPassword;
-            teacherModal.classList.remove('hidden');
-            document.getElementById('diagnostic-result').classList.add('hidden'); 
-        });
-
-        closeTeacherBtn.addEventListener('click', () => teacherModal.classList.add('hidden'));
-
-        // 실시간 자가 연동 진단기 엔진 소스
-        document.getElementById('diagnostic-run-btn').addEventListener('click', async () => {
-            const resultBox = document.getElementById('diagnostic-result');
-            resultBox.classList.remove('hidden');
-            resultBox.innerHTML = `
-                <div class="flex items-center space-x-1 text-slate-400">
-                    <i class="fa-solid fa-spinner animate-spin"></i>
-                    <span>구글 클라우드와 보안 게이트웨이 테스트 중...</span>
-                </div>
-            `;
-
-            try {
-                const startTime = Date.now();
-                const testResponse = await fetch(`${APPS_SCRIPT_URL}?action=verify&classId=3-1&password=test_probe`);
-                const parseTime = Date.now() - startTime;
-                
-                if (!testResponse.ok) {
-                    throw new Error(`HTTP 상태 코드 에러: ${testResponse.status}`);
-                }
-
-                const testJson = await testResponse.json();
-
-                if (testJson.status === "error" && testJson.message.indexOf("바인딩") !== -1) {
-                    resultBox.innerHTML = `
-                        <div class="text-rose-600 font-extrabold flex items-center gap-1">
-                            <i class="fa-solid fa-triangle-exclamation"></i> 시트 연동 차단됨
-                        </div>
-                        <p class="text-[10px] text-slate-500 leading-normal mt-1">
-                            <strong>원인</strong>: 구글 드라이브에서 직접 독립 실행형 스크립트로 작성하셨습니다.<br>
-                            <strong>해결방법</strong>: 데이터를 저장할 <strong>스프레드시트를 새로 여신 뒤</strong>, 시트 상단 메뉴의 <code>[확장 프로그램] -> [Apps Script]</code>를 눌러 코드를 다시 넣고 새로 배포하셔야 정상 동작합니다.
-                        </p>
-                    `;
-                    return;
-                }
-
-                resultBox.innerHTML = `
-                    <div class="text-emerald-600 font-extrabold flex items-center gap-1">
-                        <i class="fa-solid fa-circle-check"></i> 서버 정상 통신 중! (${parseTime}ms)
-                    </div>
-                    <p class="text-[10px] text-slate-500 leading-normal mt-1">
-                        구글 클라우드와의 교신 및 CORS 사전 인증 게이트 통과에 성공했습니다. 현재 정상적으로 시트에 접근하고 데이터 저장이 가능합니다.
-                    </p>
-                `;
-
-            } catch (err) {
-                resultBox.innerHTML = `
-                    <div class="text-rose-600 font-extrabold flex items-center gap-1">
-                        <i class="fa-solid fa-ban"></i> 연결 차단 (CORS / Failed to fetch)
-                    </div>
-                    <p class="text-[10px] text-slate-500 leading-normal mt-1">
-                        <strong>원인</strong>: 브라우저가 보안 검증 과정에서 서버 접속을 원천 차단했습니다.<br>
-                        <strong>자가진단 해결법</strong>:<br>
-                        1. 새로 작성한 <code>code.gs</code> 파일을 붙여넣고 배포 창에서 <strong>[액세스할 수 있는 사용자]</strong>를 반드시 <strong>'모든 사람(Anyone)'</strong>으로 설정했는지 확인하세요.<br>
-                        2. <strong>'새 배포 (New Deployment)'</strong>로 발행하여 URL 주소를 최신으로 교체했는지 체크해 주세요.
-                    </p>
-                `;
-            }
-        });
-
-        teacherConfigForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const count = parseInt(configGroupCount.value);
-            const pass = configClassPassword.value.trim();
-
-            if (count < 1 || count > 15) {
-                showToast("모둠 범위는 1~15까지만 지원 가능합니다.", "error");
-                return;
-            }
-
-            showToast("스프레드시트에 학급 설정을 반영하고 있습니다...", "info");
-
-            const payload = {
-                action: "updateConfig",
-                classId: currentClass,
-                password: classPassword,
-                newPassword: pass,
-                groupCount: count
-            };
-
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    classGroupCount = count;
-                    classPassword = pass;
-                    showToast("설정이 구글 시트에 업데이트 되었습니다!");
-                    teacherModal.classList.add('hidden');
-                    initGroupUploadDropdown();
-                    loadGalleryData(); 
-                } else {
-                    showToast("변경 실패: " + result.message, "error");
-                }
-            } catch (err) {
-                triggerDeploymentErrorGuide(err);
-            }
-        });
-
-        // --- 1. 퀴즈 프로세스 제어 엔진 ---
-        startBanksyChallengeBtn.addEventListener('click', () => {
-            if (!currentClass) {
-                showToast("먼저 학급 공간에 로그인해 주세요.", "error");
-                return;
-            }
-            quizCurrentIndex = 0;
-            quizWrongCount = 0;
-            quizModal.classList.remove('hidden');
-            loadQuizQuestion();
-        });
-
-        // 퀴즈 없이 바로 그리기판 열기 이벤트 리스너 추가
+        // 퀴즈 없이 바로 그리기판 열기 이벤트 리스너
         directDrawSkipBtn.addEventListener('click', () => {
             if (!currentClass) {
                 showToast("먼저 학급 공간에 로그인해 주세요.", "error");
@@ -1051,7 +878,7 @@
                     showToast("🎉 대단합니다! 6문제 모두 만점으로 뱅크시 도전 과제를 정복했습니다!", "success");
                 } else {
                     const correctCount = banksyQuizList.length - quizWrongCount;
-                    showToast(`👍 멋진 도전입니다! 6문제 중 ${correctCount}문제를 해결했습니다. 이제 창의적인 그림을 시작해 봅시다!`, "success");
+                    showToast("👍 멋진 도전입니다! 이제 창의적인 그림을 시작해 봅시다!", "success");
                 }
                 
                 // 스케치북 모달을 활성화하고 캔버스를 초기화해 줌
@@ -1346,6 +1173,12 @@
         async function loadGalleryData() {
             if(!currentClass) return;
 
+            // 오프라인 상태라면 서버 요청을 우회하여 중복 에러 발생 차단
+            if (isOfflineMode) {
+                renderGalleryShelf();
+                return;
+            }
+
             padletCanvas.innerHTML = `
                 <div class="col-span-full py-16 text-center text-slate-400 w-full">
                     <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-indigo-500"></i>
@@ -1431,6 +1264,14 @@
                 "작품 삭제 확인",
                 "정말로 이 모둠 작품을 삭제하시겠습니까?<br>삭제 시 구글 드라이브 원본 파일과 시트 내용이 영구 소멸합니다.",
                 async () => {
+                    // 오프라인 상태일 때는 시트 삭제 요청을 생략하고 화면만 즉시 갱신
+                    if (isOfflineMode) {
+                        localGalleryData = localGalleryData.filter(item => String(item.timestamp) !== String(timestamp));
+                        renderGalleryShelf();
+                        showToast("임시 모드에서 작품을 화면상에서 삭제했습니다.", "success");
+                        return;
+                    }
+
                     showToast("구글 클라우드와 연결해 자료 파쇄 요청 중...", "info");
 
                     const payload = {
@@ -1497,6 +1338,26 @@
                 imageUrl: imgBase64
             };
 
+            // 오프라인 상태일 때는 시뮬레이션용 로컬 데이터 추가 후 스킵
+            if (isOfflineMode) {
+                const localItem = {
+                    timestamp: new Date().toISOString(),
+                    groupName: group,
+                    author: author,
+                    title: title,
+                    description: desc,
+                    imageUrl: imgBase64
+                };
+                localGalleryData.unshift(localItem);
+                renderGalleryShelf();
+                uploadModal.classList.add('hidden');
+                uploadForm.reset();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                showToast("오프라인 보드에 정상 등록되었습니다.", "success");
+                return;
+            }
+
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
@@ -1561,6 +1422,11 @@
         ];
 
         async function loadVotesData() {
+            if (isOfflineMode) {
+                renderPolls();
+                return;
+            }
+
             try {
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=getVotes&classId=${currentClass}`);
                 const data = await response.json();
@@ -1626,6 +1492,14 @@
         window.submitLiveVote = async function(topicId, selectedOption) {
             showToast("선택 사항을 전송하는 중...", "info");
 
+            if (isOfflineMode) {
+                if (!localVotesData[topicId]) localVotesData[topicId] = {};
+                localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
+                renderPolls();
+                showToast("임시 모드에 투표 결과가 로컬 저장되었습니다!");
+                return;
+            }
+
             const payload = {
                 action: "addVote",
                 classId: currentClass,
@@ -1656,7 +1530,7 @@
             }
         };
 
-        // 실시간 투표 데이터를 모두 소거하여 0으로 리셋하는 함수 (Browser confirm 완벽 대체형 커스텀 연동)
+        // 실시간 투표 데이터를 모두 소거하여 0으로 리셋하는 함수
         resetVotesBtn.addEventListener('click', function() {
             if (!currentClass) return;
             
@@ -1664,6 +1538,13 @@
                 "⚠️ 투표 초기화 확인",
                 `정말로 현재 학급(${currentClassName.textContent})의 실시간 생각 투표 통계를 전면 초기화하시겠습니까?<br>이 작업은 구글 시트의 기록을 완전히 삭제하여 모든 통계를 0표로 만듭니다.`,
                 async () => {
+                    if (isOfflineMode) {
+                        localVotesData = {};
+                        renderPolls();
+                        showToast("임시 모드에서 투표 현황이 초기화되었습니다.");
+                        return;
+                    }
+
                     showToast("서버와 통신하여 투표 퀴즈 기록을 소멸하는 중...", "info");
 
                     const payload = {
