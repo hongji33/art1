@@ -86,9 +86,15 @@
                 <p class="text-sm md:text-base text-slate-300 mt-2 leading-relaxed">
                     거리의 예술가 뱅크시처럼 평범하고 당연한 우리 학교의 공간(소화기, 계단, 벽면 등)에 기발한 상상력을 발휘해 보세요. 일상 사물에 생각을 덧대어 고정관념을 깨는 특별한 공간 예술을 직접 기획하고 표현해 봅시다.
                 </p>
-                <button id="start-banksy-challenge-btn" class="mt-5 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-lg hover:shadow-indigo-500/20 flex items-center gap-2">
-                    <i class="fa-solid fa-unlock-keyhole"></i> 도전장 열고 뱅크시 퀴즈 풀기
-                </button>
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <button id="start-banksy-challenge-btn" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-lg hover:shadow-indigo-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-unlock-keyhole"></i> 도전장 열고 뱅크시 퀴즈 풀기
+                    </button>
+                    <!-- 새로 추가된 퀴즈 건너뛰기 다이렉트 버튼 -->
+                    <button id="direct-draw-skip-btn" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-extrabold text-sm rounded-xl transition-all shadow-lg flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-palette"></i> 퀴즈 없이 바로 그리기판 열기
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -201,7 +207,13 @@
                     <i class="fa-solid fa-palette text-amber-400"></i>
                     <h3 class="font-black text-sm tracking-wide uppercase">Banksy 창의성 탐구 퀴즈</h3>
                 </div>
-                <button id="close-quiz-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <div class="flex items-center gap-2">
+                    <!-- 헤더 영역 언제든지 건너뛰기 버튼 추가 -->
+                    <button id="skip-quiz-header-btn" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[10px] rounded-lg transition-all flex items-center gap-1">
+                        퀴즈 건너뛰기 <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button id="close-quiz-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
             </div>
             
             <div id="quiz-body" class="p-6 overflow-y-auto space-y-6 flex-grow">
@@ -227,7 +239,11 @@
                 </div>
             </div>
 
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                <!-- 하단에도 건너뛰기 옵션 지원 -->
+                <button id="skip-quiz-footer-btn" class="text-xs text-slate-400 hover:text-indigo-600 font-bold transition-all">
+                    <i class="fa-solid fa-forward"></i> 그냥 건너뛰고 바로 그릴래요
+                </button>
                 <button id="quiz-next-btn" disabled class="px-5 py-2.5 bg-slate-300 text-slate-500 font-extrabold text-xs rounded-xl cursor-not-allowed transition-all">
                     정답 확인 및 진행
                 </button>
@@ -494,8 +510,8 @@
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
-        // 선생님께서 새로 발급해오신 최종 실사용 URL로 확실하게 보정 탑재
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
+        // 선생님께서 지정해주신 최신 배포용 URL 주소로 완벽 고정 기입 완료
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ5Osd_jAv2oTOl9eswtpUQuWwupEXEul_T5S3d8h_zgTFarmjUNoKbjrERDnR1i6BMw/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -654,32 +670,6 @@
         const closeGuideBtn = document.getElementById('close-guide-btn');
         const guideOkBtn = document.getElementById('guide-ok-btn');
 
-        // 긴급 진단 안내 창 제어 및 오프라인 로그인 우회 연동
-        closeGuideBtn.addEventListener('click', () => {
-            deploymentGuideModal.classList.add('hidden');
-        });
-
-        guideOkBtn.addEventListener('click', () => {
-            deploymentGuideModal.classList.add('hidden');
-            
-            // 오프라인 데모 가상 로그인 세션 수립
-            currentClass = selectClass.value || "3-1";
-            classPassword = classPasswordInput.value || "1234";
-            classGroupCount = 7;
-
-            loginSection.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            classBadge.classList.remove('hidden');
-            logoutBtn.classList.remove('hidden');
-            teacherSettingsBtn.classList.remove('hidden');
-
-            currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반`;
-            showToast("인터넷 차단으로 임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
-
-            initGroupUploadDropdown();
-            loadLocalDemoData();
-        });
-
         // Custom Confirm Modal
         const confirmModal = document.getElementById('confirm-modal');
         const confirmTitle = document.getElementById('confirm-title');
@@ -689,6 +679,7 @@
 
         // Quiz elements
         const startBanksyChallengeBtn = document.getElementById('start-banksy-challenge-btn');
+        const directDrawSkipBtn = document.getElementById('direct-draw-skip-btn'); // 상시 노출 건너뛰기 버튼
         const quizModal = document.getElementById('quiz-modal');
         const closeQuizBtn = document.getElementById('close-quiz-btn');
         const quizProgress = document.getElementById('quiz-progress');
@@ -696,6 +687,9 @@
         const quizOptionsContainer = document.getElementById('quiz-options-container');
         const quizRationaleBox = document.getElementById('quiz-rationale-box');
         const quizNextBtn = document.getElementById('quiz-next-btn');
+
+        const skipQuizHeaderBtn = document.getElementById('skip-quiz-header-btn'); // 퀴즈 헤더 건너뛰기 버튼
+        const skipQuizFooterBtn = document.getElementById('skip-quiz-footer-btn'); // 퀴즈 푸터 건너뛰기 버튼
 
         // Sketch Canvas Elements
         const sketchModal = document.getElementById('sketch-modal');
@@ -959,11 +953,37 @@
 
         // --- 1. 퀴즈 프로세스 제어 엔진 ---
         startBanksyChallengeBtn.addEventListener('click', () => {
+            if (!currentClass) {
+                showToast("먼저 학급 공간에 로그인해 주세요.", "error");
+                return;
+            }
             quizCurrentIndex = 0;
             quizWrongCount = 0;
             quizModal.classList.remove('hidden');
             loadQuizQuestion();
         });
+
+        // 퀴즈 없이 바로 그리기판 열기 이벤트 리스너 추가
+        directDrawSkipBtn.addEventListener('click', () => {
+            if (!currentClass) {
+                showToast("먼저 학급 공간에 로그인해 주세요.", "error");
+                return;
+            }
+            sketchModal.classList.remove('hidden');
+            resetSketchWorkspace();
+            showToast("스케치북에 들어왔습니다. 상상을 시작해 볼까요?", "success");
+        });
+
+        // 퀴즈 내부 헤더/푸터 건너뛰기 기능 연결
+        const skipQuizHandler = () => {
+            quizModal.classList.add('hidden');
+            sketchModal.classList.remove('hidden');
+            resetSketchWorkspace();
+            showToast("퀴즈를 완료하고 스케치북으로 바로 진입했습니다!", "success");
+        };
+
+        skipQuizHeaderBtn.addEventListener('click', skipQuizHandler);
+        skipQuizFooterBtn.addEventListener('click', skipQuizHandler);
 
         closeQuizBtn.addEventListener('click', () => quizModal.classList.add('hidden'));
 
@@ -1304,6 +1324,10 @@
 
         // 자료 수동 올리기 클릭 시 (이전 미리보기 완벽 초기화)
         directUploadBtn.addEventListener('click', () => {
+            if (!currentClass) {
+                showToast("먼저 학급 공간에 로그인해 주세요.", "error");
+                return;
+            }
             uploadForm.reset();
             uploadFileInput.value = "";
             document.getElementById('form-image-preview').src = "";
