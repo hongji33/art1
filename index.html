@@ -495,7 +495,7 @@
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
         // 선생님께서 새로 발급해오신 최종 실사용 URL로 확실하게 보정 탑재
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZ5Osd_jAv2oTOl9eswtpUQuWwupEXEul_T5S3d8h_zgTFarmjUNoKbjrERDnR1i6BMw/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -503,6 +503,46 @@
         let classGroupCount = 7; // 기본값 7모둠
         let localGalleryData = [];
         let localVotesData = {};
+        
+        // --- 헬퍼 함수 선언 (토스트 알림 및 구글 오류 대응 시스템) ---
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            let bgClass = "bg-emerald-600";
+            let icon = '<i class="fa-solid fa-circle-check mr-2"></i>';
+            
+            if (type === "error") {
+                bgClass = "bg-rose-600";
+                icon = '<i class="fa-solid fa-circle-exclamation mr-2"></i>';
+            } else if (type === "info") {
+                bgClass = "bg-indigo-600";
+                icon = '<i class="fa-solid fa-spinner animate-spin mr-2 text-white"></i>';
+            }
+            
+            toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-lg flex items-center text-xs font-bold transition-all duration-300 opacity-0 transform translate-y-2 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            // 애니메이션 등장 효과
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 10);
+            
+            // 4초 후 자동 제거
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 4000);
+        }
+
+        function triggerDeploymentErrorGuide(err) {
+            console.error("API Connection Error:", err);
+            showToast("서버 통신에 장애가 발생했습니다. 임시 모드로 진입할 수 있습니다.", "error");
+            document.getElementById('deployment-guide-modal').classList.remove('hidden');
+        }
         
         // 6 banksy quizzes matching Google Slides context
         const banksyQuizList = [
@@ -613,6 +653,32 @@
         const deploymentGuideModal = document.getElementById('deployment-guide-modal');
         const closeGuideBtn = document.getElementById('close-guide-btn');
         const guideOkBtn = document.getElementById('guide-ok-btn');
+
+        // 긴급 진단 안내 창 제어 및 오프라인 로그인 우회 연동
+        closeGuideBtn.addEventListener('click', () => {
+            deploymentGuideModal.classList.add('hidden');
+        });
+
+        guideOkBtn.addEventListener('click', () => {
+            deploymentGuideModal.classList.add('hidden');
+            
+            // 오프라인 데모 가상 로그인 세션 수립
+            currentClass = selectClass.value || "3-1";
+            classPassword = classPasswordInput.value || "1234";
+            classGroupCount = 7;
+
+            loginSection.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            classBadge.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            teacherSettingsBtn.classList.remove('hidden');
+
+            currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반`;
+            showToast("인터넷 차단으로 임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
+
+            initGroupUploadDropdown();
+            loadLocalDemoData();
+        });
 
         // Custom Confirm Modal
         const confirmModal = document.getElementById('confirm-modal');
