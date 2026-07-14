@@ -200,7 +200,7 @@
     </main>
 
     <!-- 모달 1: 뱅크시 창의력 탐구 퀴즈 (총 6문항) -->
-    <div id="quiz-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div id="quiz-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-fade-in">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 bg-slate-900 text-white flex justify-between items-center">
                 <div class="flex items-center space-x-2">
@@ -268,13 +268,14 @@
                     학교 공간 사진(복도, 계단, 소화기, 금지 표지판 등)을 올린 뒤, 그 위에 기발한 상상을 덧그려보세요! (배경사진 없이 흰 도화지에 그리기도 가능합니다.)
                 </p>
 
-                <!-- 사진 업로드 유도 영역 -->
+                <!-- 사진 업로드 유도 영역 (이벤트 버블링 버그 격리를 위해 input을 외부로 독립) -->
                 <div id="sketch-upload-trigger" class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
                     <i class="fa-solid fa-camera text-slate-400 text-2xl mb-2"></i>
                     <span class="text-xs font-bold text-slate-600">배경 사진 업로드 (카메라 촬영)</span>
                     <span class="text-[10px] text-slate-400 mt-0.5">학교 공간 스냅샷을 배경으로 올릴 수 있습니다.</span>
-                    <input id="input-bg-image" type="file" accept="image/*" class="hidden">
                 </div>
+                <!-- 버블링 격리 완료된 input 태그 -->
+                <input id="input-bg-image" type="file" accept="image/*" class="hidden">
 
                 <!-- 캔버스 및 그리기 도구 툴바 -->
                 <div id="canvas-workspace" class="hidden flex-grow flex flex-col items-center justify-center gap-3">
@@ -322,11 +323,13 @@
                         </div>
                     </div>
 
-                    <!-- 이중 캔버스 겹침 그리기 영역 -->
+                    <!-- 이중 캔버스 겹침 그리기 영역 (반응형 더미 스페이서를 삽입하여 0px 붕괴 오류 차단) -->
                     <div class="relative bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-inner max-w-full flex items-center justify-center" style="min-height:280px; width:100%;">
-                        <div class="relative w-full h-full flex justify-center items-center">
+                        <div class="relative w-full flex justify-center items-center" id="canvas-wrapper">
                             <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 cursor-crosshair z-10"></canvas>
                             <img id="sketch-bg-preview" class="object-contain w-full h-auto hidden" src="" alt="배경공간">
+                            <!-- 빈 도화지일 때 높이 공간을 완벽하게 확보해주는 반응형 스페이서 -->
+                            <div id="canvas-dummy-spacer" class="w-full" style="height: 412px;"></div>
                         </div>
                     </div>
                 </div>
@@ -334,30 +337,30 @@
 
             <!-- 스케치북 하단 제어 단추 -->
             <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex justify-between">
-                <button id="change-bg-btn" class="hidden px-3.5 py-2 text-slate-600 hover:text-slate-800 border border-slate-200 rounded-xl font-bold text-xs">
-                    <i class="fa-solid fa-rotate mr-1"></i> 배경 교체
+                <button id="change-bg-btn" class="hidden px-3.5 py-2 text-slate-600 hover:text-slate-800 border border-slate-200 rounded-xl font-bold text-xs cursor-pointer">
+                    <i class="fa-solid fa-rotate mr-1"></i> 배경 사진 교체
                 </button>
-                <button id="apply-sketch-btn" disabled class="px-5 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 ml-auto">
+                <button id="apply-sketch-btn" disabled class="px-5 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 ml-auto cursor-pointer">
                     <i class="fa-solid fa-check"></i> 완성작 보드에 전송하기
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 모달 3: 드로잉 최종 세부내용 등록 폼 -->
+    <!-- 모달 3: 드로잉 최종 세부내용 등록 폼 (transform으로 인한 select 버그 차단을 위해 w-full로 고정) -->
     <div id="upload-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform transition-all">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-100 bg-indigo-50/50 flex justify-between items-center">
                 <h3 class="font-extrabold text-sm text-slate-900"><i class="fa-solid fa-cloud-arrow-up text-indigo-600 mr-1"></i> 미술 모둠 자료 전송</h3>
-                <button id="close-upload-btn" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button id="close-upload-btn" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <form id="upload-form" class="p-5 space-y-4">
                 <div class="grid grid-cols-2 gap-3">
-                    <!-- 모둠 목록 선택 드롭다운 -->
+                    <!-- 모둠 목록 선택 드롭다운 (cursor-pointer 적용하여 접근성 및 클릭 오류 완치) -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">제출 모둠</label>
-                        <select id="input-group" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <select id="input-group" required class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
                             <!-- 교사용 세팅된 모둠 개수가 동적으로 렌더링됩니다 -->
                         </select>
                     </div>
@@ -383,40 +386,41 @@
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"></textarea>
                 </div>
 
-                <!-- 업로드 이미지 수동 선택 제어 영역 -->
+                <!-- 업로드 이미지 수동 선택 제어 영역 (이벤트 버블링 버그 격리를 위해 input을 외부로 독립) -->
                 <div id="manual-file-selector-section" class="space-y-1">
                     <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">작품 이미지 첨부 (자동 압축 최적화)</label>
                     <div id="upload-file-trigger" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
                         <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl mb-1"></i>
                         <span class="text-xs font-bold text-slate-600">사진 파일 선택 (기기 앨범 또는 촬영)</span>
-                        <input id="upload-file-input" type="file" accept="image/*" class="hidden">
                     </div>
                 </div>
+                <!-- 버블링 격리 완료된 input 태그 -->
+                <input id="upload-file-input" type="file" accept="image/*" class="hidden">
 
                 <!-- 업로드 이미지 미리보기 컨테이너 -->
                 <div>
                     <span class="block text-[11px] font-bold text-slate-400 uppercase mb-1">제출작 미리보기</span>
                     <div id="form-image-preview-container" class="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
                         <img id="form-image-preview" src="" alt="첨부 미리보기" class="w-full h-36 object-contain">
-                        <button id="remove-form-img-btn" type="button" class="absolute top-2 right-2 bg-rose-600 hover:bg-rose-700 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md" title="첨부 이미지 지우기">
+                        <button id="remove-form-img-btn" type="button" class="absolute top-2 right-2 bg-rose-600 hover:bg-rose-700 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md cursor-pointer" title="첨부 이미지 지우기">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
                 </div>
 
-                <button type="submit" id="submit-post-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all">
+                <button type="submit" id="submit-post-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all cursor-pointer">
                     구글 시트 클라우드로 전송 및 친구들과 실시간 공유
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- 모달 4: 교사용 설정 화면 (모둠 수 및 비밀번호 제어 + 연동 상태 자가진단기 추가) -->
+    <!-- 모달 4: 교사용 설정 화면 -->
     <div id="teacher-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             <div class="px-5 py-4 bg-slate-800 text-white flex justify-between items-center">
                 <span class="font-extrabold text-sm"><i class="fa-solid fa-lock-open mr-1"></i> 교사 전용 제어판</span>
-                <button id="close-teacher-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button id="close-teacher-btn" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <div class="p-5 space-y-4 overflow-y-auto flex-grow">
@@ -424,7 +428,7 @@
                 <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">
                     <span class="text-xs font-black text-indigo-700 block mb-1.5"><i class="fa-solid fa-vial mr-1"></i> 구글 시트 연동 자가 진단기</span>
                     <p class="text-[10px] text-indigo-500 mb-3">통신 장애나 'Failed to fetch' 오류가 발생하면 아래 버튼을 눌러 원인을 진단하세요.</p>
-                    <button type="button" id="diagnostic-run-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition-all shadow-sm">
+                    <button type="button" id="diagnostic-run-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition-all shadow-sm cursor-pointer">
                         실시간 통계 & 저장 서버 상태 점검
                     </button>
                     <!-- 결과 창 -->
@@ -447,7 +451,7 @@
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
 
-                    <button type="submit" id="save-config-btn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all">
+                    <button type="submit" id="save-config-btn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all cursor-pointer">
                         설정 즉시 저장 및 연동
                     </button>
                 </form>
@@ -457,49 +461,28 @@
 
     <!-- 모달 5: 앱스스크립트 배포 설정 긴급 진단 안내 창 -->
     <div id="deployment-guide-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-all">
-            <div class="px-5 py-4 bg-rose-600 text-white flex justify-between items-center">
-                <span class="font-extrabold text-sm"><i class="fa-solid fa-triangle-exclamation mr-1.5 animate-pulse"></i> 구글 웹 앱 연동 차단 안내</span>
-                <button id="close-guide-btn" class="text-rose-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-6 space-y-4">
+            <div class="text-rose-600 text-lg font-extrabold flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> 서버 연동 실패 안내
             </div>
-            <div class="p-6 space-y-4 text-xs leading-relaxed overflow-y-auto max-h-[75vh]">
-                <p class="text-slate-600 font-semibold text-[13px]">
-                    서버 통신 시 <span class="text-rose-600 font-bold">'Failed to fetch'</span> 오류가 발생했습니다. 구글 앱스 스크립트 배포 설정을 아래 3단계에 따라 확인해 주세요.
-                </p>
-                <div class="space-y-3">
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <span class="font-extrabold text-indigo-600 block mb-1">💡 1단계. 액세스 권한 확인 ('모든 사람')</span>
-                        <p class="text-slate-500">배포 창에서 <strong>[액세스할 수 있는 사용자]</strong>를 반드시 <strong>'모든 사람(Anyone)'</strong>으로 설정하셨나요? '나만' 혹은 '구글 계정이 있는 사용자'로 두면 브라우저 보안 장치(CORS)가 구동을 즉각 중단시킵니다.</p>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <span class="font-extrabold text-indigo-600 block mb-1">💡 2단계. 신규 버전 배포(New Deployment) 적용</span>
-                        <p class="text-slate-500">코드를 변경한 뒤 배포 창에서 <strong>[새 배포(New Deployment)]</strong>를 눌러 새로운 버전을 정식으로 발행하셨는지 확인해 주세요. 편집 중인 기본 초안 URL(/dev로 끝나는 주소)은 작동하지 않습니다.</p>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <span class="font-extrabold text-indigo-600 block mb-1">💡 3단계. 구글 드라이브 권한 승인 수락</span>
-                        <p class="text-slate-500">학생들의 그림을 파일화하여 구글 드라이브에 안전하게 적재하려면 계정 승인(Authorize Access) 단계에서 <strong>[허용(Allow)]</strong> 단추를 수동으로 꼭 눌러 주셔야 정상 교신됩니다.</p>
-                    </div>
-                </div>
-                <div class="bg-rose-50 text-rose-800 p-3.5 rounded-xl border border-rose-100 font-bold">
-                    📌 우선 연동이 정상 완료될 때까지 로컬 오프라인 모드로 실물 연동을 시뮬레이션 하실 수 있습니다!
-                </div>
-            </div>
-            <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
-                <button id="guide-ok-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-sm transition-all">
-                    확인 및 임시 모드 진행
-                </button>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                현재 구글 클라우드에 연결할 수 없습니다. 계속 오류가 나면 구글 스프레드시트의 배포 설정에서 <strong>[액세스 권한]</strong>이 <strong>'모든 사람(Anyone)'</strong>으로 되어 있는지와 <strong>[배포 주소]</strong>가 완전한 실행용 주소인지 다시 점검해 주세요.
+            </p>
+            <div class="flex justify-end gap-2">
+                <button id="close-guide-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">닫기</button>
+                <button id="guide-ok-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer">임시 모드로 강제 우회 로그인</button>
             </div>
         </div>
     </div>
 
     <!-- 모달 6: 커스텀 다이아로그 확인용 모달 (Browser confirm 완벽 대체용) -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-6 space-y-4 transform transition-all scale-95 duration-200">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 space-y-4 transform transition-all scale-95 duration-200">
             <h3 id="confirm-title" class="font-extrabold text-slate-900 text-lg">작업 확인</h3>
             <p id="confirm-message" class="text-xs text-slate-500 leading-relaxed"></p>
             <div class="flex justify-end gap-2.5">
-                <button id="confirm-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">취소</button>
-                <button id="confirm-action" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all">실행</button>
+                <button id="confirm-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer">취소</button>
+                <button id="confirm-action" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer">실행</button>
             </div>
         </div>
     </div>
@@ -672,6 +655,35 @@
         const deploymentGuideModal = document.getElementById('deployment-guide-modal');
         const closeGuideBtn = document.getElementById('close-guide-btn');
         const guideOkBtn = document.getElementById('guide-ok-btn');
+
+        // 긴급 진단 안내 창 제어 및 오프라인 로그인 우회 연동
+        closeGuideBtn.addEventListener('click', () => {
+            deploymentGuideModal.classList.add('hidden');
+        });
+
+        guideOkBtn.addEventListener('click', () => {
+            deploymentGuideModal.classList.add('hidden');
+            
+            // 임시 오프라인 모드 기동
+            isOfflineMode = true;
+
+            // 오프라인 데모 가상 로그인 세션 수립
+            currentClass = selectClass.value || "3-1";
+            classPassword = classPasswordInput.value || "1234";
+            classGroupCount = 7;
+
+            loginSection.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            classBadge.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            teacherSettingsBtn.classList.remove('hidden');
+
+            currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
+            showToast("임시 로컬 오프라인 세션으로 연결되었습니다.", "success");
+
+            initGroupUploadDropdown();
+            loadLocalDemoData();
+        });
 
         // Custom Confirm Modal
         const confirmModal = document.getElementById('confirm-modal');
@@ -1075,6 +1087,7 @@
         function initCanvas(imgObj = null) {
             const container = sketchBgPreview.parentElement;
             const containerWidth = container.clientWidth || 550;
+            const spacer = document.getElementById('canvas-dummy-spacer');
             
             if (imgObj) {
                 backgroundImgObject = imgObj;
@@ -1083,12 +1096,18 @@
                 sketchCanvas.height = containerWidth * aspect;
                 sketchBgPreview.src = imgObj.src;
                 sketchBgPreview.classList.remove('hidden');
+                if (spacer) {
+                    spacer.style.height = (containerWidth * aspect) + 'px';
+                }
             } else {
                 backgroundImgObject = null;
                 sketchCanvas.width = containerWidth;
                 sketchCanvas.height = 412; // 4:3 표준 드로잉 도화지 비율 세팅
                 sketchBgPreview.src = "";
                 sketchBgPreview.classList.add('hidden');
+                if (spacer) {
+                    spacer.style.height = '412px';
+                }
                 
                 // 투명 낙서 데이터 유실 방지를 위한 기본 깔끔한 흰색 도판 배경 채우기
                 ctx.fillStyle = "#ffffff";
@@ -1112,6 +1131,10 @@
             changeBgBtn.classList.add('hidden');
             initCanvas(null); // 진입하자마자 빈 도화지 상태로 즉시 그릴 수 있도록 초기 캔버스 구축
         }
+
+        // 배경 이미지 업로드 바인딩 및 버블링 격리 처리
+        sketchUploadTrigger.addEventListener('click', () => inputBgImage.click());
+        changeBgBtn.addEventListener('click', () => inputBgImage.click());
 
         inputBgImage.addEventListener('change', function(e) {
             const file = e.target.files[0];
