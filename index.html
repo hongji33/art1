@@ -495,7 +495,7 @@
     <script>
         // BACKEND ENDPOINT GOOGLE SCRIPT WEBAPP
         // 선생님께서 새로 발급해오신 최종 실사용 URL로 확실하게 보정 탑재
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZ5Osd_jAv2oTOl9eswtpUQuWwupEXEul_T5S3d8h_zgTFarmjUNoKbjrERDnR1i6BMw/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
 
         // GLOBAL STATES
         let currentClass = "";
@@ -1023,30 +1023,20 @@
                 quizCurrentIndex++;
                 loadQuizQuestion();
             } else {
+                // 퀴즈 창을 닫음
                 quizModal.classList.add('hidden');
                 
+                // 완주했다면 점수와 상관없이 스케치북(그림그리기 페이지)으로 즉시 무사 통과 시켜줌
                 if (quizWrongCount === 0) {
-                    showToast("도전 성공! 뱅크시 미술 퀴즈를 모두 정복해 스케치북이 활성화되었습니다.", "success");
-                    sketchModal.classList.remove('hidden');
-                    resetSketchWorkspace();
+                    showToast("🎉 대단합니다! 6문제 모두 만점으로 뱅크시 도전 과제를 정복했습니다!", "success");
                 } else {
-                    showToast(`만점에 실패했습니다. 틀린 부분(${quizWrongCount}개)을 정답 해설로 다시 연습해보세요!`, "error");
-                    
-                    // Custom Confirm 대체 호출
-                    setTimeout(() => {
-                        showCustomConfirm(
-                            "퀴즈 불합격",
-                            `총 ${banksyQuizList.length}문항 중 ${quizWrongCount}문항을 틀렸습니다. 다시 도전하여 만점을 달성하시겠습니까?`,
-                            () => {
-                                quizCurrentIndex = 0;
-                                quizWrongCount = 0;
-                                quizModal.classList.remove('hidden');
-                                loadQuizQuestion();
-                            },
-                            false
-                        );
-                    }, 500);
+                    const correctCount = banksyQuizList.length - quizWrongCount;
+                    showToast(`👍 멋진 도전입니다! 6문제 중 ${correctCount}문제를 해결했습니다. 이제 창의적인 그림을 시작해 봅시다!`, "success");
                 }
+                
+                // 스케치북 모달을 활성화하고 캔버스를 초기화해 줌
+                sketchModal.classList.remove('hidden');
+                resetSketchWorkspace();
             }
         });
 
