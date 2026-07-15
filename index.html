@@ -87,11 +87,11 @@
                     거리의 예술가 뱅크시처럼 평범하고 당연한 우리 학교의 공간(소화기, 계단, 벽면 등)에 기발한 상상력을 발휘해 보세요. 일상 사물에 생각을 덧대어 고정관념을 깨는 특별한 공간 예술을 직접 기획하고 표현해 봅시다.
                 </p>
                 <div class="mt-5 flex flex-wrap gap-3">
-                    <button id="start-banksy-challenge-btn" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-lg hover:shadow-indigo-500/20 flex items-center gap-2">
+                    <button id="start-banksy-challenge-btn" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-lg hover:shadow-indigo-500/20 flex items-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-unlock-keyhole"></i> 도전장 열고 뱅크시 퀴즈 풀기
                     </button>
                     <!-- 새로 추가된 퀴즈 건너뛰기 다이렉트 버튼 -->
-                    <button id="direct-draw-skip-btn" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-extrabold text-sm rounded-xl transition-all shadow-lg flex items-center gap-2 border border-slate-700">
+                    <button id="direct-draw-skip-btn" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-extrabold text-sm rounded-xl transition-all shadow-lg flex items-center gap-2 border border-slate-700 cursor-pointer">
                         <i class="fa-solid fa-palette"></i> 퀴즈 없이 바로 그리기판 열기
                     </button>
                 </div>
@@ -130,7 +130,7 @@
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 font-semibold focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all cursor-pointer">
                     인증하고 모둠 갤러리 진입하기
                 </button>
             </form>
@@ -141,10 +141,10 @@
             
             <!-- 상단 탭 전환 바 -->
             <div class="flex border-b border-slate-200 bg-white p-1 rounded-2xl shadow-sm max-w-md mx-auto w-full">
-                <button id="tab-gallery-btn" class="flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm">
+                <button id="tab-gallery-btn" class="flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm cursor-pointer">
                     <i class="fa-solid fa-images mr-1"></i> 실시간 모둠 갤러리
                 </button>
-                <button id="tab-vote-btn" class="flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50">
+                <button id="tab-vote-btn" class="flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 cursor-pointer">
                     <i class="fa-solid fa-square-poll-vertical mr-1"></i> 투표 & 퀴즈
                 </button>
             </div>
@@ -160,10 +160,10 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">선택한 학급 전용 보드이며, 모둠별로 좌우 스크롤하며 친구들의 작품을 실시간 감상할 수 있습니다.</p>
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto">
-                        <button id="refresh-gallery-btn" class="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5">
+                        <button id="refresh-gallery-btn" class="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-rotate text-xs"></i> 새로고침
                         </button>
-                        <button id="direct-upload-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5">
+                        <button id="direct-upload-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-upload"></i> 자료 수동 올리기
                         </button>
                     </div>
@@ -186,7 +186,7 @@
                         <p class="text-[11px] text-slate-400 mt-0.5">오늘 모둠 협력 및 뱅크시 철학에 대한 학급 전체의 생각을 실시간 집계로 모아봅니다.</p>
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto">
-                        <button id="reset-votes-btn" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="설문 초기화">
+                        <button id="reset-votes-btn" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="설문 초기화">
                             <i class="fa-solid fa-trash-can text-xs"></i> 투표 초기화
                         </button>
                     </div>
@@ -209,10 +209,12 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <!-- 헤더 영역 언제든지 건너뛰기 버튼 -->
-                    <button id="skip-quiz-header-btn" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[10px] rounded-lg transition-all flex items-center gap-1">
+                    <button id="skip-quiz-header-btn" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[10px] rounded-lg transition-all flex items-center gap-1 cursor-pointer">
                         퀴즈 건너뛰기 <i class="fa-solid fa-chevron-right"></i>
                     </button>
-                    <button id="close-quiz-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    <button id="close-quiz-btn" class="text-slate-400 hover:text-white cursor-pointer relative z-50 pointer-events-auto">
+                        <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
+                    </button>
                 </div>
             </div>
             
@@ -241,7 +243,7 @@
 
             <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
                 <!-- 하단에도 건너뛰기 옵션 지원 -->
-                <button id="skip-quiz-footer-btn" class="text-xs text-slate-400 hover:text-indigo-600 font-bold transition-all">
+                <button id="skip-quiz-footer-btn" class="text-xs text-slate-400 hover:text-indigo-600 font-bold transition-all cursor-pointer">
                     <i class="fa-solid fa-forward"></i> 그냥 건너뛰고 바로 그릴래요
                 </button>
                 <button id="quiz-next-btn" disabled class="px-5 py-2.5 bg-slate-300 text-slate-500 font-extrabold text-xs rounded-xl cursor-not-allowed transition-all">
@@ -259,7 +261,9 @@
                     <i class="fa-solid fa-pen-nib"></i>
                     <h3 class="font-bold text-xs sm:text-sm">고정관념 파괴 스케치북 (드로잉 캔버스)</h3>
                 </div>
-                <button id="close-sketch-btn" class="text-indigo-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button id="close-sketch-btn" class="text-indigo-200 hover:text-white cursor-pointer relative z-50 pointer-events-auto">
+                    <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
+                </button>
             </div>
 
             <div class="p-4 space-y-4 overflow-y-auto flex-grow flex flex-col">
@@ -294,11 +298,11 @@
                             </div>
 
                             <!-- 기본 색상 버튼 (32px 크기) -->
-                            <button class="color-dot w-8 h-8 rounded-full bg-rose-600 border-2 border-white ring-2 ring-indigo-500 shadow-sm transition-all transform hover:scale-110" data-color="#dc2626"></button>
-                            <button class="color-dot w-8 h-8 rounded-full bg-amber-400 border-2 border-white shadow-sm transition-all transform hover:scale-110" data-color="#fbbf24"></button>
-                            <button class="color-dot w-8 h-8 rounded-full bg-indigo-600 border-2 border-white shadow-sm transition-all transform hover:scale-110" data-color="#4f46e5"></button>
-                            <button class="color-dot w-8 h-8 rounded-full bg-emerald-500 border-2 border-white shadow-sm transition-all transform hover:scale-110" data-color="#10b981"></button>
-                            <button class="color-dot w-8 h-8 rounded-full bg-slate-900 border-2 border-white shadow-sm transition-all transform hover:scale-110" data-color="#0f172a"></button>
+                            <button class="color-dot w-8 h-8 rounded-full bg-rose-600 border-2 border-white ring-2 ring-indigo-500 shadow-sm transition-all transform hover:scale-110 cursor-pointer" data-color="#dc2626"></button>
+                            <button class="color-dot w-8 h-8 rounded-full bg-amber-400 border-2 border-white shadow-sm transition-all transform hover:scale-110 cursor-pointer" data-color="#fbbf24"></button>
+                            <button class="color-dot w-8 h-8 rounded-full bg-indigo-600 border-2 border-white shadow-sm transition-all transform hover:scale-110 cursor-pointer" data-color="#4f46e5"></button>
+                            <button class="color-dot w-8 h-8 rounded-full bg-emerald-500 border-2 border-white shadow-sm transition-all transform hover:scale-110 cursor-pointer" data-color="#10b981"></button>
+                            <button class="color-dot w-8 h-8 rounded-full bg-slate-900 border-2 border-white shadow-sm transition-all transform hover:scale-110 cursor-pointer" data-color="#0f172a"></button>
                             
                             <!-- 무지개 그라데이션 커스텀 컬러 피커 수동 단추 -->
                             <div class="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm hover:scale-110 transform transition-all cursor-pointer">
@@ -306,7 +310,7 @@
                                 <div class="absolute inset-0 w-full h-full z-10" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></div>
                             </div>
 
-                            <button id="tool-eraser" class="w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs" title="지우개">
+                            <button id="tool-eraser" class="w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs cursor-pointer" title="지우개">
                                 <i class="fa-solid fa-eraser text-sm"></i>
                             </button>
                         </div>
@@ -317,7 +321,7 @@
                                 <span class="text-xs font-bold text-slate-500">두께:</span>
                                 <input id="brush-width" type="range" min="3" max="30" value="8" class="w-20 accent-indigo-600 cursor-pointer">
                             </div>
-                            <button id="clear-draw-btn" class="px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg border border-rose-100 transition-all">
+                            <button id="clear-draw-btn" class="px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg border border-rose-100 transition-all cursor-pointer">
                                 <i class="fa-solid fa-trash-can mr-0.5"></i> 낙서 지우기
                             </button>
                         </div>
@@ -326,7 +330,7 @@
                     <!-- 이중 캔버스 겹침 그리기 영역 (반응형 더미 스페이서를 삽입하여 0px 붕괴 오류 차단) -->
                     <div class="relative bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-inner max-w-full flex items-center justify-center" style="min-height:280px; width:100%;">
                         <div class="relative w-full flex justify-center items-center" id="canvas-wrapper">
-                            <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10"></canvas>
+                            <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10 pointer-events-auto"></canvas>
                             <img id="sketch-bg-preview" class="object-contain w-full h-auto hidden" src="" alt="배경공간">
                             <!-- 빈 도화지일 때 높이 공간을 완벽하게 확보해주는 반응형 스페이서 -->
                             <div id="canvas-dummy-spacer" class="w-full" style="height: 412px;"></div>
@@ -352,7 +356,9 @@
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-100 bg-indigo-50/50 flex justify-between items-center">
                 <h3 class="font-extrabold text-sm text-slate-900"><i class="fa-solid fa-cloud-arrow-up text-indigo-600 mr-1"></i> 미술 모둠 자료 전송</h3>
-                <button id="close-upload-btn" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button id="close-upload-btn" class="text-slate-400 hover:text-slate-600 cursor-pointer relative z-50 pointer-events-auto">
+                    <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
+                </button>
             </div>
 
             <form id="upload-form" class="p-5 space-y-4">
@@ -360,7 +366,7 @@
                     <!-- 모둠 목록 선택 드롭다운 (배경을 완전 백색으로 고정하고 그림자를 주어 가혹한 모바일 환경에서도 즉각 클릭 가능하게 세팅) -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">제출 모둠</label>
-                        <select id="input-group" required class="w-full bg-white border-2 border-indigo-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-sm relative z-30">
+                        <select id="input-group" required class="w-full bg-white border-2 border-indigo-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-sm relative z-30 pointer-events-auto">
                             <!-- 교사용 세팅된 모둠 개수가 동적으로 렌더링됩니다 -->
                         </select>
                     </div>
@@ -390,8 +396,8 @@
                 <div id="manual-file-selector-section" class="space-y-1">
                     <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">작품 이미지 첨부 (자동 압축 최적화)</label>
                     <div id="upload-file-trigger" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl mb-1"></i>
-                        <span class="text-xs font-bold text-slate-600">사진 파일 선택 (기기 앨범 또는 촬영)</span>
+                        <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl mb-1 pointer-events-none"></i>
+                        <span class="text-xs font-bold text-slate-600 pointer-events-none">사진 파일 선택 (기기 앨범 또는 촬영)</span>
                     </div>
                 </div>
                 <!-- 버블링 격리 완료된 input 태그 -->
@@ -403,7 +409,7 @@
                     <div id="form-image-preview-container" class="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
                         <img id="form-image-preview" src="" alt="첨부 미리보기" class="w-full h-36 object-contain">
                         <button id="remove-form-img-btn" type="button" class="absolute top-2 right-2 bg-rose-600 hover:bg-rose-700 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md cursor-pointer" title="첨부 이미지 지우기">
-                            <i class="fa-solid fa-xmark text-xs"></i>
+                            <i class="fa-solid fa-xmark text-xs pointer-events-none"></i>
                         </button>
                     </div>
                 </div>
@@ -420,7 +426,9 @@
         <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             <div class="px-5 py-4 bg-slate-800 text-white flex justify-between items-center">
                 <span class="font-extrabold text-sm"><i class="fa-solid fa-lock-open mr-1"></i> 교사 전용 제어판</span>
-                <button id="close-teacher-btn" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button id="close-teacher-btn" class="text-slate-400 hover:text-white cursor-pointer relative z-50 pointer-events-auto">
+                    <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
+                </button>
             </div>
 
             <div class="p-5 space-y-4 overflow-y-auto flex-grow">
@@ -469,8 +477,8 @@
                 현재 구글 클라우드에 연결할 수 없습니다. 계속 오류가 나면 구글 스프레드시트의 배포 설정에서 <strong>[액세스 권한]</strong>이 <strong>'모든 사람(Anyone)'</strong>으로 되어 있는지와 <strong>[배포 주소]</strong>가 완전한 실행용 주소인지 다시 점검해 주세요.
             </p>
             <div class="flex justify-end gap-2">
-                <button id="close-guide-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">닫기</button>
-                <button id="guide-ok-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer">임시 모드로 강제 우회 로그인</button>
+                <button id="close-guide-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer relative z-50 pointer-events-auto">닫기</button>
+                <button id="guide-ok-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl cursor-pointer relative z-50 pointer-events-auto">임시 모드로 강제 우회 로그인</button>
             </div>
         </div>
     </div>
@@ -481,8 +489,8 @@
             <h3 id="confirm-title" class="font-extrabold text-slate-900 text-lg">작업 확인</h3>
             <p id="confirm-message" class="text-xs text-slate-500 leading-relaxed"></p>
             <div class="flex justify-end gap-2.5">
-                <button id="confirm-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer">취소</button>
-                <button id="confirm-action" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer">실행</button>
+                <button id="confirm-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer relative z-50 pointer-events-auto">취소</button>
+                <button id="confirm-action" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer relative z-50 pointer-events-auto">실행</button>
             </div>
         </div>
     </div>
@@ -571,7 +579,7 @@
                 reason: "정답은 '쓰레기통 속의 사랑'입니다! 미술 시장의 권위주의와 자본화를 풍자하기 위해 낙찰되는 즉시 스스로 분쇄되는 파격적인 장치를 내부에 장착해두었습니다."
             },
             {
-                q: "🏰 3. 디즈니랜드의 디스토피아적 현실을 기괴하고 음침하게 풍자하고자 영국의 한 수영장 유휴부지에 임시 설립했던 디스멀(Dismal, 우울한) 테마파크 프로젝트 이름은?",
+                q: "🏰 3. 디즈니랜드의 디스토피아적 현실을 기괴하고 음침하게 풍자하고자 영국의 한 수영장 유휴부지에 임시 설립했던 디스멀 (Dismal, 우울한) 테마파크 프로젝트 이름은?",
                 options: [
                     "다크 랜드 (Darkland)",
                     "불쾌한 나라의 앨리스 (Alice in Malice)",
@@ -931,16 +939,16 @@
 
         // --- 탭 전환 시 자동 데이터 동기화 리셋 보강 ---
         tabGalleryBtn.addEventListener('click', () => {
-            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
-            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
+            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm cursor-pointer";
+            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 cursor-pointer";
             galleryPanel.classList.remove('hidden');
             votePanel.classList.add('hidden');
             loadGalleryData(); // 갤러리 진입 시 실시간 데이터 자동 재적재
         });
 
         tabVoteBtn.addEventListener('click', () => {
-            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-amber-500 text-white shadow-sm";
-            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
+            tabVoteBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all bg-amber-500 text-white shadow-sm cursor-pointer";
+            tabGalleryBtn.className = "flex-1 py-2.5 text-center rounded-xl font-bold text-xs transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 cursor-pointer";
             votePanel.classList.remove('hidden');
             galleryPanel.classList.add('hidden');
             loadVotesData(); // 투표 탭 진입 시 누적 설문 데이터 자동 동기화
@@ -1022,7 +1030,7 @@
                                 </div>
                                 <div class="pt-2 mt-2 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
                                     <span class="font-bold text-indigo-600"><i class="fa-solid fa-user-pen mr-1"></i>${item.author}</span>
-                                    <button onclick="deleteGalleryPost('${item.timestamp}')" class="text-rose-500 hover:text-rose-700 font-bold transition-all flex items-center gap-0.5" title="자료 삭제">
+                                    <button onclick="deleteGalleryPost('${item.timestamp}')" class="text-rose-500 hover:text-rose-700 font-bold transition-all flex items-center gap-0.5 cursor-pointer" title="자료 삭제">
                                         <i class="fa-solid fa-trash-can text-[10px]"></i> 삭제
                                     </button>
                                 </div>
@@ -1241,7 +1249,7 @@
         document.querySelectorAll('.color-dot').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 isEraserMode = false;
-                toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
+                toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs cursor-pointer";
                 
                 document.querySelectorAll('.color-dot').forEach(b => {
                     b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
@@ -1256,10 +1264,10 @@
             });
         });
 
-        // 무지개 커스텀 컬러 피커 선택 이벤트 (선택 완료 시 그리기 즉시 반영)
+        // 무지개 그라데이션 커스텀 컬러 피커 선택 이벤트 (선택 완료 시 그리기 즉시 반영)
         customColorPicker.addEventListener('input', (e) => {
             isEraserMode = false;
-            toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
+            toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs cursor-pointer";
             
             document.querySelectorAll('.color-dot').forEach(b => {
                 b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
@@ -1276,10 +1284,65 @@
             document.querySelectorAll('.color-dot').forEach(b => {
                 b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
             });
-            toolEraser.className = "w-8 h-8 bg-indigo-50 border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center transition-all shadow-xs";
+            toolEraser.className = "w-8 h-8 bg-indigo-50 border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center transition-all shadow-xs cursor-pointer";
         });
 
         brushWidthInput.addEventListener('input', (e) => brushWidth = e.target.value);
+
+        // 일원화된 모둠 전송 팝업 호출 함수 (수동/드로잉 불문하고 제출 모둠 리스트를 완벽 주입)
+        function openUploadModal(isDrawing = true) {
+            uploadForm.reset();
+            initGroupUploadDropdown(); // 언제나 확실하게 모둠 콤보박스 채워넣기 보장!
+            
+            if (isDrawing) {
+                manualFileSelectorSection.classList.add('hidden');
+                formImagePreviewContainer.classList.remove('hidden');
+            } else {
+                uploadFileInput.value = "";
+                document.getElementById('form-image-preview').src = "";
+                formImagePreviewContainer.classList.add('hidden');
+                manualFileSelectorSection.classList.remove('hidden');
+                uploadFileTrigger.classList.remove('hidden');
+            }
+            uploadModal.classList.remove('hidden');
+        }
+
+        // 드로잉 완성작 변환 및 폼 전달 이벤트 (배경 사진 유무에 상관없이 완벽 병합 및 모둠 선택기 활성화)
+        applySketchBtn.addEventListener('click', () => {
+            showToast("그림 데이터를 전송용 규격으로 인코딩하고 있습니다...", "info");
+
+            const offscreenCanvas = document.createElement('canvas');
+            offscreenCanvas.width = 800;
+            
+            if (backgroundImgObject) {
+                const aspect = backgroundImgObject.height / backgroundImgObject.width;
+                offscreenCanvas.height = 800 * aspect;
+            } else {
+                offscreenCanvas.height = 600; // 흰 백지 스케치북일 때 고정 해상도 4:3 수립
+            }
+
+            const offCtx = offscreenCanvas.getContext('2d');
+            
+            if (backgroundImgObject) {
+                // 배경 사진이 있으면 하단에 그립니다.
+                offCtx.drawImage(backgroundImgObject, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            } else {
+                // 배경 사진이 없으면 정갈한 흰 도화지로 바닥을 채웁니다.
+                offCtx.fillStyle = "#ffffff";
+                offCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            }
+            
+            // 덧그린 모둠 학생들의 낙서 흔적을 레이어식으로 전사하여 병합
+            offCtx.drawImage(sketchCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+            const base64MergedResult = offscreenCanvas.toDataURL('image/jpeg', 0.85);
+
+            // 전송 대기 양식 미리보기 이미지에 주입
+            document.getElementById('form-image-preview').src = base64MergedResult;
+            
+            sketchModal.classList.add('hidden');
+            openUploadModal(true); // 드로잉 제출 모드로 안전하게 등록 창 기동!
+        });
 
         // 수동 파일 업로드 처리 로직 (CORS 우회 고속 압축 지원)
         uploadFileTrigger.addEventListener('click', () => uploadFileInput.click());
@@ -1334,23 +1397,13 @@
             uploadFileTrigger.classList.remove('hidden');
         });
 
+        // 우측 상단 수동 올리기 단추 기동
         directUploadBtn.addEventListener('click', () => {
             if (!currentClass) {
                 showToast("먼저 학급 공간에 로그인해 주세요.", "error");
                 return;
             }
-            uploadForm.reset();
-            uploadFileInput.value = "";
-            document.getElementById('form-image-preview').src = "";
-            formImagePreviewContainer.classList.add('hidden');
-            
-            // 수동 제출 시 다이렉트로 드롭다운 재주입하여 잔상 및 무선택 버그 완벽 방지
-            initGroupUploadDropdown();
-            
-            manualFileSelectorSection.classList.remove('hidden');
-            uploadFileTrigger.classList.remove('hidden');
-            
-            uploadModal.classList.remove('hidden');
+            openUploadModal(false); // 수동 파일 업로드 모드로 안전하게 전송 창 기동!
         });
 
         closeUploadBtn.addEventListener('click', () => uploadModal.classList.add('hidden'));
@@ -1374,7 +1427,7 @@
             const originalBtnText = submitBtn.innerHTML;
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i> 드라이브 전송 및 링크 구축 중...`;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5 pointer-events-none"></i> 드라이브 전송 및 링크 구축 중...`;
 
             const payload = {
                 action: "addGallery",
@@ -1531,7 +1584,7 @@
 
                         <div class="mt-5 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
                             <span><i class="fa-solid fa-users mr-1"></i> 총 제출 학생수: <strong>${total}</strong>명</span>
-                            <span class="text-indigo-600 font-bold cursor-pointer" onclick="loadVotesData()"><i class="fa-solid fa-arrows-rotate mr-1"></i> 즉시 갱신</span>
+                            <span class="text-indigo-600 font-bold cursor-pointer" onclick="loadVotesData()"><i class="fa-solid fa-arrows-rotate mr-1 animate-spin-hover"></i> 즉시 갱신</span>
                         </div>
                     </div>
                 `;
