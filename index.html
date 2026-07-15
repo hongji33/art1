@@ -86,7 +86,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">입장 비밀번호</label>
-                    <input id="class-password" type="password" required placeholder="선생님이 정해준 비밀번호" 
+                    <input id="class-password" type="password" required placeholder="선생님이 정해준 비밀번호 (예: 1234)" 
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 font-semibold focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
 
@@ -162,7 +162,7 @@
                             <h3 class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
                                 <span class="w-1.5 h-4 bg-indigo-600 rounded-full"></span> 2단계. 디지털 낙서 스케치북
                             </h3>
-                            <p class="text-[11px] text-slate-400 mt-0.5">학교 주변에서 촬영한 사진을 배경에 깔아 보거나 빈 도화지 위에 기발한 생각을 덧그려 보세요.</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">학교 주변에서 촬영한 사진을 배경에 깔거나 빈 도화지 위에 기발한 생각을 덧그려 보세요.</p>
                         </div>
                         <button id="save-canvas-image" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i> 💾 이미지로 다운로드
@@ -171,7 +171,7 @@
                     
                     <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl text-[11px] text-amber-800 leading-normal flex items-start gap-1.5">
                         <i class="fa-solid fa-lightbulb mt-0.5 text-xs"></i>
-                        <span>완성한 작품은 위의 <strong>[💾 이미지로 다운로드]</strong> 버튼을 눌러 소장한 뒤, 선생님이 지정해 주신 <strong>패들렛(Padlet)</strong> 공간에 자유롭게 업로드하세요. 이 플랫폼 내부에는 이미지가 적재되지 않아 부하 없이 빠르게 동작합니다!</span>
+                        <span>완성한 작품은 위의 <strong>[💾 이미지로 다운로드]</strong> 버튼을 눌러 스마트기기에 소장한 뒤, 선생님이 제공해 주시는 <strong>패들렛(Padlet)</strong>에 편리하게 공유하세요! 이 사이트 내에는 작품이 적재되지 않으므로 속도가 매우 쾌적합니다.</span>
                     </div>
                 </div>
 
@@ -182,7 +182,7 @@
                         <!-- 사진 로드 트리거 -->
                         <div id="draw-upload-box" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
                             <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
-                            <span class="text-xs font-bold text-slate-600">학교 주변 사진 불러오기</span>
+                            <span class="text-xs font-bold text-slate-600">학교 주변 사진 불러오기 (배경 설정)</span>
                         </div>
                         <!-- 중첩 방지 독립 파일 바인더 -->
                         <input id="bg-photo-input" type="file" accept="image/*" class="hidden">
@@ -191,7 +191,6 @@
                         <div class="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center min-h-[350px]">
                             <div class="relative w-full flex justify-center items-center" id="canvas-aspect-wrapper">
                                 <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10 pointer-events-auto"></canvas>
-                                <img id="sketch-bg-img" class="object-contain w-full h-auto hidden" src="" alt="드로잉배경">
                                 <div id="canvas-dummy-placeholder" class="w-full" style="height: 380px;"></div>
                             </div>
                         </div>
@@ -202,10 +201,10 @@
                                 <span class="text-[10px] font-bold text-slate-400">색상</span>
                                 <div id="color-lamp" class="w-4 h-4 rounded-full border border-slate-300" style="background-color: #dc2626;"></div>
                                 
-                                <button class="color-dot w-6 h-6 rounded-full bg-rose-600 border border-white ring-1 ring-offset-1 ring-indigo-500 transition-all cursor-pointer" data-color="#dc2626"></button>
+                                <button class="color-dot w-6 h-6 rounded-full bg-rose-600 border-2 border-white ring-2 ring-offset-1 ring-indigo-500 transition-all cursor-pointer" data-color="#dc2626"></button>
                                 <button class="color-dot w-6 h-6 rounded-full bg-amber-400 border border-white transition-all cursor-pointer" data-color="#fbbf24"></button>
                                 <button class="color-dot w-6 h-6 rounded-full bg-indigo-600 border border-white transition-all cursor-pointer" data-color="#4f46e5"></button>
-                                <button class="color-dot w-6 h-6 rounded-full bg-emerald-500 border-2 border-white transition-all cursor-pointer" data-color="#10b981"></button>
+                                <button class="color-dot w-6 h-6 rounded-full bg-emerald-500 border border-white transition-all cursor-pointer" data-color="#10b981"></button>
                                 <button class="color-dot w-6 h-6 rounded-full bg-slate-900 border border-white transition-all cursor-pointer" data-color="#0f172a"></button>
                                 
                                 <div class="relative w-6 h-6 rounded-full overflow-hidden border border-slate-200 cursor-pointer">
@@ -245,7 +244,7 @@
                                 </div>
                             </div>
                             <p class="text-[10px] text-slate-400 leading-normal leading-relaxed">
-                                사진 낙서를 재미있게 하셨다면, 파일 저장을 완료하시고 아래의 버튼을 클릭하여 마지막 3단계인 **생각 투표 공간**으로 이동하세요.
+                                사진 낙서를 재미있게 마쳤다면, 이미지를 기기에 안전하게 저장하시고 아래 버튼을 눌러 다음 과정인 **실시간 설문 투표**에 참여하세요.
                             </p>
                         </div>
 
@@ -261,7 +260,7 @@
                 <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 flex items-center justify-between shadow-3xs">
                     <div>
                         <h3 class="font-black text-sm text-indigo-900">3단계. 우리 반 실시간 생각 투표 결과</h3>
-                        <p class="text-[10px] text-indigo-500 mt-0.5">선택사항을 고르는 순간 구글 시트에 즉시 누적되며, 각반 학생들이 실시간 투표 집계를 함께 공유합니다.</p>
+                        <p class="text-[10px] text-indigo-500 mt-0.5">선택지를 고르는 즉시 구글 스프레드시트에 저장되며, 다같이 실시간 집계를 즉석에서 나눕니다.</p>
                     </div>
                     <button id="refresh-votes-final" class="px-3.5 py-1.5 bg-white hover:bg-indigo-100 text-indigo-600 font-extrabold text-xs rounded-lg transition-all border border-indigo-200 shadow-2xs cursor-pointer">
                         <i class="fa-solid fa-arrows-rotate"></i> 즉시 집계 갱신
@@ -298,22 +297,48 @@
 
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
-        // 백엔드 구글 스프레드시트 실행 URL (최종 제공해주신 실사용 주소 완벽 세팅)
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxirZ6CEd3PL1Mfo2RJv6m6AGR-a7JUlgo9S7HS1an5YeiloiSj6Zv-pYTbQiUsQWu_JQ/exec";
 
-        // GLOBAL STATES
+        // Query DOM elements carefully using ID selectors to avoid reference errors
+        const loginSection = document.getElementById('login-section');
+        const loginForm = document.getElementById('login-form');
+        const selectClass = document.getElementById('select-class');
+        const classPasswordInput = document.getElementById('class-password');
+        const mainContent = document.getElementById('main-content');
+        const classBadge = document.getElementById('class-badge');
+        const currentClassName = document.getElementById('current-class-name');
+        const logoutBtn = document.getElementById('logout-btn');
+        const resetVotesBtn = document.getElementById('reset-votes-btn');
+
+        const step1Panel = document.getElementById('step-1-quiz');
+        const step2Panel = document.getElementById('step-2-drawing');
+        const step3Panel = document.getElementById('step-3-voting');
+
+        const quizStepProgress = document.getElementById('quiz-progress-badge');
+        const quizQuestionTitle = document.getElementById('quiz-question-title');
+        const quizOptionsBox = document.getElementById('quiz-options-box');
+        const quizStepRationale = document.getElementById('quiz-rationale-box');
+        const quizStepNextBtn = document.getElementById('quiz-next-btn');
+        const quizSkipBtn = document.getElementById('quiz-skip-btn');
+
+        const drawUploadBox = document.getElementById('draw-upload-box');
+        const sketchCanvas = document.getElementById('sketch-canvas');
+        const ctx = sketchCanvas.getContext('2d');
+        const brushColorPicker = document.getElementById('brush-color-picker');
+        const brushSizeInput = document.getElementById('brush-size');
+        const brushEraser = document.getElementById('brush-eraser');
+
+        // STATES
         let currentClass = "";
         let classPassword = "";
-        let classGroupCount = 7; 
         let localVotesData = {};
-        
-        let activeStep = 1; // 1: 퀴즈, 2: 드로잉, 3: 실시간 투표
-        let isOfflineMode = false; // 오프라인 모드 플래그
-        
+        let activeStep = 1;
+        let isOfflineMode = false;
+
         // Banksy 에센셜 5문항 수립
         const banksyQuizList = [
             {
-                q: "🎨 1. 뱅크시가 경찰의 검문을 신속하게 피하기 위해 판판한 도안 위에 스프레이를 고속 분사하여 그렸던 특유의 대표 기법은?",
+                q: "🎨 1. 뱅크시가 경찰의 검문을 신속하게 피하기 위해 도안을 미리 오려두고 벽에 댄 뒤 스프레이를 신속하게 고속 분사하여 그렸던 특유의 기법은?",
                 options: [
                     "스포티 기법",
                     "스텐실(Stencil) 기법",
@@ -321,10 +346,10 @@
                     "실크스크린 가공법"
                 ],
                 answerIdx: 1,
-                reason: "정답은 '스텐실 기법'입니다! 체포를 피해 신속히 도망칠 수 있도록 도판 밑작업을 작업실에서 미리 해두고, 장소에서 락카 스프레이만 고속 분사하는 영리한 거리 전술입니다."
+                reason: "정답은 '스텐실 기법'입니다! 체포를 피해 빠르게 도망칠 수 있도록 도판 밑작업을 작업실에서 미리 해두고 현장에서는 스프레이만 쏘고 튀는 영리한 거리 전술입니다."
             },
             {
-                q: "🔨 2. 소더비 경매장에 걸린 뱅크시의 그림이 최고 가격에 낙찰되는 즉시 내장 분쇄 장치를 통해 액자 밑으로 스스로를 찢었던 작품의 명제는?",
+                q: "🔨 2. 소더비 경매장에 걸린 뱅크시의 그림이 최고 가격에 낙찰되는 즉시 내장 분쇄 장치를 통해 스스로 파쇄되어 자본 시장을 조롱한 작품의 이름은?",
                 options: [
                     "쓰레기통 속의 사랑 (Love is in the Bin)",
                     "자본주의의 침몰",
@@ -332,10 +357,10 @@
                     "풍선은 어디로 가나"
                 ],
                 answerIdx: 0,
-                reason: "정답은 '쓰레기통 속의 사랑'입니다! 자산가들만의 상업적 예술 소비와 미술 시장의 허례허식을 풍자하기 위해 자폭 분쇄되는 파격적인 장치를 내부에 숨겨두었습니다."
+                reason: "정답은 '쓰레기통 속의 사랑'입니다! 미술 경매 시장의 지나친 상업주의를 조롱하기 위해, 낙찰 완료 벨소리가 울리자마자 캔버스 절반을 자동 파쇄시키는 엄청난 이벤트를 기획했습니다."
             },
             {
-                q: "🏰 3. 뱅크시가 디즈니랜드의 미화된 모형 뒤에 숨은 우울한 현대 사회의 어둠과 현실을 고발하고자 임시 설립했던 가상 테마파크 프로젝트 이름은?",
+                q: "🏰 3. 뱅크시가 디즈니랜드의 미화된 패러디 뒤에 우울한 현대 사회의 진실을 폭로하고자 한시적으로 건설한 가짜 테마파크 이름은?",
                 options: [
                     "헬게이트 랜드",
                     "우울의 앨리스",
@@ -343,10 +368,10 @@
                     "다크 팩토리"
                 ],
                 answerIdx: 2,
-                reason: "정답은 '디스멀랜드(Dismaland)'입니다! 우울하다는 뜻의 Dismal과 랜드의 합성어로, 위조된 판타지 테마 이면의 진짜 현실을 가혹하지만 재치 있게 폭로했습니다."
+                reason: "정답은 '디스멀랜드(Dismaland)'입니다! 'Dismal(우울한)'과 '랜드'의 합성어로 가짜 행복으로 유도하는 자본 테마파크를 유쾌하게 풍자했습니다."
             },
             {
-                q: "🪨 4. 대영박물관에 뱅크시가 몰래 원시인 복장으로 가짜 돌조각을 수일 동안 무단으로 도둑 전시했던 유명한 장난감 유물의 이름은?",
+                q: "🪨 4. 대영박물관에 뱅크시가 원시인으로 몰래 분장해 쇼핑카트를 밀고 달리는 유물 조각 가짜를 도둑 전시한 장난 유물은?",
                 options: [
                     "펙햄 록(Peckham Rock)",
                     "원시 쇼핑스톤",
@@ -354,10 +379,10 @@
                     "진흙 속의 카트"
                 ],
                 answerIdx: 0,
-                reason: "정답은 '펙햄 록'입니다! 쇼핑카트를 밀고 있는 고대 가짜 유물을 몰래 전시해 두었는데, 세계적 박물관이 그 가짜 조각을 정식 유물처럼 다뤄 제도의 맹점을 비판했습니다."
+                reason: "정답은 '펙햄 록'입니다! 쇼핑 카트를 밀고 다니는 고대 원시인을 돌에 새긴 가짜 유물을 몰래 걸어 박물관 제도의 허상을 꼬집었습니다."
             },
             {
-                q: "🌸 5. 이스라엘 베들레헴의 살벌한 콘크리트 분리 장벽에 청년이 폭탄이나 화염병 대신 꽃다발을 던지려 쥐고 있는 벽화가 시사하는 철학은?",
+                q: "🌸 5. 콘크리트 분리 장벽 위에 청년이 폭탄이나 화염병 대신 꽃다발을 멀리 던지려 쥐고 있는 벽화가 시사하는 철학은?",
                 options: [
                     "무장 봉기 선동",
                     "평화주의와 비폭력 저항",
@@ -365,17 +390,58 @@
                     "조경 문화 미화"
                 ],
                 answerIdx: 1,
-                reason: "정답은 '평화와 비폭력 저항'입니다! 가장 강력하고 울림 있는 저항은 파괴를 부르는 물리 무기가 아닌 연대와 생명, 평화를 상징하는 꽃다발임을 상기시킵니다."
+                reason: "정답은 '평화주의와 비폭력 저항'입니다! 폭력이나 억압에 대항하는 가장 강력한 저항은 피를 흘리는 파괴적인 수단이 아닌 연대와 조화, 평화임을 알려줍니다."
             }
         ];
 
         let quizCurrentIndex = 0;
-        let quizWrongCount = 0;
 
-        // Custom Confirm Callback
-        let pendingConfirmAction = null;
+        // TOAST SYSTEM
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl shadow-lg text-white font-bold text-xs flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto`;
+            if (type === "success") toast.classList.add('bg-emerald-600');
+            else if (type === "error") toast.classList.add('bg-rose-600');
+            else if (type === "info") toast.classList.add('bg-indigo-600');
+            else toast.classList.add('bg-slate-700');
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-exclamation' : 'fa-info-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
 
-        // --- UI SENSOR ACTIONS ---
+        // CONFIRM SYSTEM
+        function showCustomConfirm(title, message, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').innerHTML = message;
+            modal.classList.remove('hidden');
+            
+            const cancelBtn = document.getElementById('confirm-cancel');
+            const actionBtn = document.getElementById('confirm-action');
+            
+            const clearEvents = () => {
+                cancelBtn.onclick = null;
+                actionBtn.onclick = null;
+            };
+            
+            cancelBtn.onclick = () => {
+                modal.classList.add('hidden');
+                clearEvents();
+            };
+            actionBtn.onclick = () => {
+                modal.classList.add('hidden');
+                clearEvents();
+                onConfirm();
+            };
+        }
+
         function updateStepsLayout() {
             if (activeStep === 1) {
                 step1Panel.classList.remove('hidden');
@@ -396,7 +462,7 @@
                 step3Panel.classList.add('hidden');
                 
                 document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
+                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-50 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
                 document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
@@ -411,11 +477,11 @@
                 step3Panel.classList.remove('hidden');
 
                 document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
+                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-50 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
                 document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
-                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
+                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-50 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-2').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
                 document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
@@ -435,6 +501,7 @@
             showToast("보안 검증 처리 중...", "info");
 
             try {
+                // Fetch to verify class password
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=verify&classId=${chosen}&password=${pass}`);
                 const result = await response.json();
 
@@ -461,11 +528,11 @@
                     showToast("비밀번호가 일치하지 않습니다.", "error");
                 }
             } catch (err) {
-                console.error("Login verify failed, fallback to local bypass", err);
+                console.error("Login verification network failed, fall back to offline/bypass mode.", err);
+                // IF NETWORK FAILS (SCHOOL INTRANET BLOCK), ALLOW ENTRANCE AS BYPASS
                 isOfflineMode = true;
                 currentClass = chosen || "3-1";
                 classPassword = pass || "1234";
-                classGroupCount = 7;
 
                 loginSection.classList.add('hidden');
                 mainContent.classList.remove('hidden');
@@ -473,9 +540,9 @@
                 logoutBtn.classList.remove('hidden');
                 resetVotesBtn.classList.remove('hidden');
 
-                currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (임시 모드)`;
+                currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (안전모드)`;
                 document.getElementById('current-class-badge').textContent = currentClassName.textContent;
-                showToast("임시 로컬 모드로 가볍게 로그인 완료되었습니다.", "info");
+                showToast("인터넷 불안정으로 '안전 로컬 모드'로 진입했습니다. 수업 정상 진행이 가능합니다!", "info");
 
                 activeStep = 1;
                 updateStepsLayout();
@@ -534,12 +601,11 @@
             quizStepRationale.classList.remove('hidden');
             if (selectedIndex === item.answerIdx) {
                 quizStepRationale.className = "p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs leading-relaxed space-y-1";
-                quizStepRationale.innerHTML = `<strong>👍 정답입니다! 아주 잘 골랐어요.</strong><p>${item.reason}</p>`;
+                quizStepRationale.innerHTML = `<strong>👍 정답입니다! 아주 훌륭한 창의력입니다.</strong><p>${item.reason}</p>`;
                 quizStepNextBtn.innerHTML = "다음 문제 풀기 <i class='fa-solid fa-arrow-right ml-1'></i>";
             } else {
-                quizWrongCount++;
                 quizStepRationale.className = "p-4 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs leading-relaxed space-y-1";
-                quizStepRationale.innerHTML = `<strong>😢 아쉽습니다. 오답입니다!</strong><p>${item.reason}</p>`;
+                quizStepRationale.innerHTML = `<strong>😢 아쉽습니다. 다른 생각을 가졌군요!</strong><p>${item.reason}</p>`;
                 quizStepNextBtn.innerHTML = "해설 공부하고 넘어가기 <i class='fa-solid fa-arrow-right ml-1'></i>";
             }
 
@@ -552,24 +618,49 @@
                 quizCurrentIndex++;
                 loadStepQuizQuestion();
             } else {
-                activeStep = 2; // 드로잉 단계로 무조건 이양
+                activeStep = 2; // Move to step 2 Drawing board
                 updateStepsLayout();
-                showToast("스케치북 드로잉판으로 이동했습니다!", "success");
+                showToast("디지털 스케치북 낙서 공간으로 입장했습니다!", "success");
             }
         });
 
         quizSkipBtn.addEventListener('click', () => {
             activeStep = 2;
             updateStepsLayout();
-            showToast("퀴즈를 건너뛰고 드로잉판으로 진입했습니다.", "success");
+            showToast("드로잉 공간으로 바로 스킵했습니다.", "success");
         });
 
 
-        // --- STEP 2: DIGITAL DRAWING WORKSPACE (그리기 전담 설계) ---
-        let lastPoint = null;
+        // --- STEP 2: CANVAS CORE ENGINE ---
         let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
         let brushColor = "#dc2626";
+        let brushSize = 8;
+        let isEraserMode = false;
+        let backgroundImgObject = null;
 
+        function initCanvas() {
+            const container = document.getElementById('canvas-aspect-wrapper');
+            sketchCanvas.width = container.clientWidth || 600;
+            sketchCanvas.height = 380;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        function getCoordinates(e) {
+            const rect = sketchCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (sketchCanvas.width / rect.width),
+                y: (clientY - rect.top) * (sketchCanvas.height / rect.height)
+            };
+        }
+
+        // TRIGGER BACKGROUND FILE
         drawUploadBox.addEventListener('click', () => document.getElementById('bg-photo-input').click());
         
         document.getElementById('bg-photo-input').addEventListener('change', function(e) {
@@ -581,39 +672,35 @@
                 const img = new Image();
                 img.onload = function() {
                     backgroundImgObject = img;
-                    sketchBgImg.src = evt.target.result;
-                    sketchBgImg.classList.remove('hidden');
-
-                    const wrapper = document.getElementById('canvas-aspect-wrapper');
-                    const targetWidth = wrapper.clientWidth || 700;
+                    
+                    const container = document.getElementById('canvas-aspect-wrapper');
+                    const targetWidth = container.clientWidth || 600;
                     const aspect = img.height / img.width;
                     
                     sketchCanvas.width = targetWidth;
                     sketchCanvas.height = targetWidth * aspect;
-
-                    if (canvasDummySpacer) {
-                        canvasDummySpacer.style.height = 'auto';
-                        canvasDummySpacer.style.aspectRatio = `${img.width} / ${img.height}`;
-                    }
-
+                    
+                    // Draw background to canvas directly
+                    ctx.drawImage(img, 0, 0, sketchCanvas.width, sketchCanvas.height);
+                    
+                    // Restore pen options as resize overrides context properties
                     ctx.lineCap = 'round';
                     ctx.lineJoin = 'round';
-                    ctx.strokeStyle = brushColor;
-                    ctx.lineWidth = brushWidth;
-
+                    
+                    document.getElementById('canvas-dummy-placeholder').style.height = `${sketchCanvas.height}px`;
                     drawUploadBox.classList.add('hidden');
-                    changeBgBtn.classList.remove('hidden');
                     
                     document.getElementById('drawing-state-badge').textContent = "사진 낙서 중";
                     document.getElementById('drawing-state-badge').className = "font-bold text-indigo-600";
-                    showToast("배경 사진 적재 완료!");
+                    showToast("학교 배경 이미지가 로딩되어 도화지에 정렬되었습니다!", "success");
                 };
                 img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
         });
 
-        function startSketching(e) {
+        // CANVAS EVENTS
+        function startDrawing(e) {
             if (e.cancelable) e.preventDefault();
             isDrawing = true;
             const coords = getCoordinates(e);
@@ -622,7 +709,7 @@
 
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.lineWidth = brushWidth;
+            ctx.lineWidth = brushSize;
             if (isEraserMode) {
                 ctx.globalCompositeOperation = 'destination-out';
             } else {
@@ -631,7 +718,7 @@
             }
         }
 
-        function sketch(e) {
+        function draw(e) {
             if (!isDrawing) return;
             if (e.cancelable) e.preventDefault();
 
@@ -645,98 +732,102 @@
             lastY = coords.y;
         }
 
-        function stopSketching() {
+        function stopDrawing() {
             isDrawing = false;
         }
 
-        sketchCanvas.addEventListener('mousedown', startSketching);
-        sketchCanvas.addEventListener('mousemove', sketch);
-        sketchCanvas.addEventListener('mouseup', stopSketching);
-        sketchCanvas.addEventListener('mouseleave', stopSketching);
+        sketchCanvas.addEventListener('mousedown', startDrawing);
+        sketchCanvas.addEventListener('mousemove', draw);
+        sketchCanvas.addEventListener('mouseup', stopDrawing);
+        sketchCanvas.addEventListener('mouseleave', stopDrawing);
 
-        sketchCanvas.addEventListener('touchstart', startSketching, { passive: false });
-        sketchCanvas.addEventListener('touchmove', sketch, { passive: false });
-        sketchCanvas.addEventListener('touchend', stopSketching);
+        sketchCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+        sketchCanvas.addEventListener('touchmove', draw, { passive: false });
+        sketchCanvas.addEventListener('touchend', stopDrawing);
 
-        // 브러시 조작
+        // PEN CONTROL
         document.querySelectorAll('.color-dot').forEach(dot => {
             dot.addEventListener('click', (e) => {
                 isEraserMode = false;
                 brushColor = e.target.dataset.color;
                 document.getElementById('color-lamp').style.backgroundColor = brushColor;
-                customColorPicker.value = brushColor;
+                brushColorPicker.value = brushColor;
                 
                 document.querySelectorAll('.color-dot').forEach(b => {
                     b.className = "color-dot w-6 h-6 rounded-full border border-slate-200 transition-all cursor-pointer";
                 });
-                e.target.className = "color-dot w-6 h-6 rounded-full border-2 border-white ring-1 ring-offset-1 ring-indigo-500 transition-all cursor-pointer";
+                e.target.className = "color-dot w-6 h-6 rounded-full border-2 border-white ring-2 ring-offset-1 ring-indigo-500 transition-all cursor-pointer";
+                brushEraser.className = "w-6 h-6 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xs";
             });
         });
 
-        customColorPicker.addEventListener('input', (e) => {
+        brushColorPicker.addEventListener('input', (e) => {
             isEraserMode = false;
             brushColor = e.target.value;
             document.getElementById('color-lamp').style.backgroundColor = brushColor;
+            document.querySelectorAll('.color-dot').forEach(b => {
+                b.className = "color-dot w-6 h-6 rounded-full border border-slate-200 transition-all cursor-pointer";
+            });
+            brushEraser.className = "w-6 h-6 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xs";
         });
 
-        toolEraser.addEventListener('click', () => {
+        brushEraser.addEventListener('click', () => {
             isEraserMode = true;
             document.querySelectorAll('.color-dot').forEach(b => {
                 b.className = "color-dot w-6 h-6 rounded-full border border-slate-200 transition-all cursor-pointer";
             });
-            toolEraser.className = "w-6 h-6 bg-indigo-50 border border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center cursor-pointer shadow-xs";
+            brushEraser.className = "w-6 h-6 bg-indigo-50 border border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center cursor-pointer shadow-xs";
         });
 
-        brushWidthInput.addEventListener('input', (e) => brushWidth = e.target.value);
+        brushSizeInput.addEventListener('input', (e) => {
+            brushSize = e.target.value;
+        });
         
         document.getElementById('brush-clear-btn').addEventListener('click', () => {
             ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
-            if (!backgroundImgObject) {
+            if (backgroundImgObject) {
+                ctx.drawImage(backgroundImgObject, 0, 0, sketchCanvas.width, sketchCanvas.height);
+            } else {
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
             }
+            showToast("도판을 깨끗이 초기화했습니다!");
         });
 
-        // 💾 이미지 로컬 다운로드 저장 처리 (스마트 소장 후 패들렛 직접 업로드 연동)
+        // DOWNLOAD LOCAL IMAGE
         document.getElementById('save-canvas-image').addEventListener('click', () => {
-            showToast("작품 이미지를 인코딩 및 압축하고 있습니다...", "info");
+            showToast("작품 이미지를 정밀 인코딩하는 중...", "info");
 
-            const offscreen = document.createElement('canvas');
-            offscreen.width = 1024;
-            
-            if (backgroundImgObject) {
-                const aspect = backgroundImgObject.height / backgroundImgObject.width;
-                offscreen.height = 1024 * aspect;
-            } else {
-                offscreen.height = 768; // 4:3
-            }
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = sketchCanvas.width;
+            tempCanvas.height = sketchCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
 
-            const offCtx = offscreen.getContext('2d');
-            if (backgroundImgObject) {
-                offCtx.drawImage(backgroundImgObject, 0, 0, offscreen.width, offscreen.height);
-            } else {
-                offCtx.fillStyle = "#ffffff";
-                offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+            // Draw background white if no image loaded
+            if (!backgroundImgObject) {
+                tempCtx.fillStyle = "#ffffff";
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
             }
             
-            offCtx.drawImage(sketchCanvas, 0, 0, offscreen.width, offscreen.height);
+            // Draw sketch layer (which contains the background if loaded)
+            tempCtx.drawImage(sketchCanvas, 0, 0);
 
-            // 다운로드 유도 링크 수립
-            const url = offscreen.toDataURL('image/jpeg', 0.88);
+            // Execute local download anchor
+            const url = tempCanvas.toDataURL('image/jpeg', 0.9);
             const anchor = document.createElement('a');
             anchor.href = url;
-            anchor.download = `${currentClass}_낙서도전작_${Date.now()}.jpg`;
+            anchor.download = `${currentClass}_Banksy_Project_${Date.now()}.jpg`;
             document.body.appendChild(anchor);
             anchor.click();
             document.body.removeChild(anchor);
 
-            showToast("기기에 완성작 저장이 완료되었습니다! 소장한 파일을 패들렛에 공유하세요.", "success");
+            showToast("기기에 고화질 저장이 완료되었습니다! 소장한 파일을 패들렛에 업로드하세요.", "success");
         });
 
         document.getElementById('go-to-step-3-btn').addEventListener('click', () => {
             activeStep = 3;
             updateStepsLayout();
-            showToast("마지막 생각 투표 단계에 도달했습니다!", "success");
+            showToast("마지막 실시간 생각 투표로 이동했습니다!", "success");
         });
 
 
@@ -777,6 +868,7 @@
                 renderPolls();
             } catch (err) {
                 console.error("Load Votes Error, fallback dummy", err);
+                // Fallback dummy rendering
                 localVotesData = {
                     q1: { "스텐실 게릴라 낙서 기획": 2, "뱅크시의 분쇄 소녀 풍자": 4 },
                     q2: { "⭐⭐⭐⭐⭐ (모든 것이 영감 넘치고 완벽했다)": 5 }
@@ -833,7 +925,7 @@
                 if (!localVotesData[topicId]) localVotesData[topicId] = {};
                 localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
                 renderPolls();
-                showToast("임시 로컬 데이터 베이스에 투표가 소장되었습니다!");
+                showToast("임시 로컬 데이터베이스에 투표가 누적되었습니다!");
                 return;
             }
 
@@ -864,6 +956,7 @@
                 if (!localVotesData[topicId]) localVotesData[topicId] = {};
                 localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
                 renderPolls();
+                showToast("네트워크 임시 단절로 내부 적재되었습니다.", "info");
             }
         };
 
@@ -912,14 +1005,13 @@
                         localVotesData = {};
                         renderPolls();
                     }
-                },
-                true
+                }
             );
         });
 
         // --- INITIAL SYSTEM BOOTSTRAP ---
         window.onload = function() {
-            initCanvas(null); // 최초 캔버스 흰 백지 장착
+            initCanvas(); // 최초 캔버스 흰 백지 장착
         };
     </script>
 </body>
