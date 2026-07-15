@@ -187,10 +187,11 @@
                         <!-- 중첩 방지 독립 파일 바인더 -->
                         <input id="bg-photo-input" type="file" accept="image/*" class="hidden">
 
-                        <!-- 캔버스 실물 에어리어 -->
+                        <!-- 캔버스 실물 에어리어 (투명 레이어화하여 렉 방지) -->
                         <div class="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center min-h-[350px]">
                             <div class="relative w-full flex justify-center items-center" id="canvas-aspect-wrapper">
-                                <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10 pointer-events-auto"></canvas>
+                                <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10 pointer-events-auto" style="background-color: transparent;"></canvas>
+                                <img id="sketch-bg-img" class="object-contain w-full h-auto hidden" src="" alt="드로잉배경">
                                 <div id="canvas-dummy-placeholder" class="w-full" style="height: 380px;"></div>
                             </div>
                         </div>
@@ -323,10 +324,12 @@
 
         const drawUploadBox = document.getElementById('draw-upload-box');
         const sketchCanvas = document.getElementById('sketch-canvas');
+        const sketchBgImg = document.getElementById('sketch-bg-img');
         const ctx = sketchCanvas.getContext('2d');
         const brushColorPicker = document.getElementById('brush-color-picker');
         const brushSizeInput = document.getElementById('brush-size');
         const brushEraser = document.getElementById('brush-eraser');
+        const canvasDummyPlaceholder = document.getElementById('canvas-dummy-placeholder');
 
         // STATES
         let currentClass = "";
@@ -335,62 +338,62 @@
         let activeStep = 1;
         let isOfflineMode = false;
 
-        // Banksy 에센셜 5문항 수립
+        // 구글 슬라이드 기반 최적화 5문항 퀴즈 탑재
         const banksyQuizList = [
             {
-                q: "🎨 1. 뱅크시가 경찰의 검문을 신속하게 피하기 위해 도안을 미리 오려두고 벽에 댄 뒤 스프레이를 신속하게 고속 분사하여 그렸던 특유의 기법은?",
+                q: "🎨 1. 뱅크시가 주로 활동하는 분야이자, 길거리 벽면 등 공공장소의 열린 공간에 글을 쓰거나 기발한 낙서를 남기는 저항적 '길거리 미술'의 명칭은?",
                 options: [
-                    "스포티 기법",
-                    "스텐실(Stencil) 기법",
-                    "수묵 담채화 기법",
-                    "실크스크린 가공법"
-                ],
-                answerIdx: 1,
-                reason: "정답은 '스텐실 기법'입니다! 체포를 피해 빠르게 도망칠 수 있도록 도판 밑작업을 작업실에서 미리 해두고 현장에서는 스프레이만 쏘고 튀는 영리한 거리 전술입니다."
-            },
-            {
-                q: "🔨 2. 소더비 경매장에 걸린 뱅크시의 그림이 최고 가격에 낙찰되는 즉시 내장 분쇄 장치를 통해 스스로 파쇄되어 자본 시장을 조롱한 작품의 이름은?",
-                options: [
-                    "쓰레기통 속의 사랑 (Love is in the Bin)",
-                    "자본주의의 침몰",
-                    "해프닝 아티스트",
-                    "풍선은 어디로 가나"
-                ],
-                answerIdx: 0,
-                reason: "정답은 '쓰레기통 속의 사랑'입니다! 미술 경매 시장의 지나친 상업주의를 조롱하기 위해, 낙찰 완료 벨소리가 울리자마자 캔버스 절반을 자동 파쇄시키는 엄청난 이벤트를 기획했습니다."
-            },
-            {
-                q: "🏰 3. 뱅크시가 디즈니랜드의 미화된 패러디 뒤에 우울한 현대 사회의 진실을 폭로하고자 한시적으로 건설한 가짜 테마파크 이름은?",
-                options: [
-                    "헬게이트 랜드",
-                    "우울의 앨리스",
-                    "디스멀랜드(Dismaland)",
-                    "다크 팩토리"
+                    "팝 아트 (Pop Art)",
+                    "다카포 디자인 (Da Capo)",
+                    "그래피티 (Graffiti)",
+                    "추상 표현주의 (Abstract Expressionism)"
                 ],
                 answerIdx: 2,
-                reason: "정답은 '디스멀랜드(Dismaland)'입니다! 'Dismal(우울한)'과 '랜드'의 합성어로 가짜 행복으로 유도하는 자본 테마파크를 유쾌하게 풍자했습니다."
+                reason: "정답은 '그래피티(Graffiti)'입니다! 소수를 위해 닫힌 공간인 미술관에서 벗어나 길거리의 대중들과 소통하는 가장 강력하고 대담한 형태의 야외 미술 기법입니다."
             },
             {
-                q: "🪨 4. 대영박물관에 뱅크시가 원시인으로 몰래 분장해 쇼핑카트를 밀고 달리는 유물 조각 가짜를 도둑 전시한 장난 유물은?",
+                q: "⚡ 2. 뱅크시가 경찰 검문을 단 몇 초 내로 빠르게 피하기 위해 종이에 미리 모양을 오려둔 뒤, 벽에 가져다 대고 락카 스프레이를 뿌리는 판화 기법은?",
                 options: [
-                    "펙햄 록(Peckham Rock)",
-                    "원시 쇼핑스톤",
-                    "런던 스톤",
-                    "진흙 속의 카트"
+                    "스포티 무늬 기법",
+                    "에칭 판화 가공법",
+                    "실크스크린 다색 도안",
+                    "스텐실 (Stencil) 기법"
+                ],
+                answerIdx: 3,
+                reason: "정답은 '스텐실 기법'입니다! 현장에서는 빠르게 완성하고 즉시 도망쳐야 체포를 피할 수 있으므로, 뱅크시가 야외 현장에서 적극적으로 애용하는 영리한 전술입니다."
+            },
+            {
+                q: "🏛️ 3. 뱅크시가 대영박물관이나 현대미술관에 잠입하여 자기 가짜 석판이나 유머 작품을 몰래 접착제로 붙여두고 온 '게릴라식 도둑 전시'의 교육적 의도는?",
+                options: [
+                    "소수 부자들 중심으로 운영되는 권위적인 미술관 제도의 허상을 비판하기 위해",
+                    "도난 경보기 감도 테스트를 도와주기 위해",
+                    "낙서 작품을 고가에 강제 판매하기 위해",
+                    "가짜 유물에 대한 고고학적 지식을 홍보하기 위해"
                 ],
                 answerIdx: 0,
-                reason: "정답은 '펙햄 록'입니다! 쇼핑 카트를 밀고 다니는 고대 원시인을 돌에 새긴 가짜 유물을 몰래 걸어 박물관 제도의 허상을 꼬집었습니다."
+                reason: "정답은 '권위적인 미술관 제도의 비판'입니다! 미술관의 가치를 결정하는 미술계의 절대 권력을 우스꽝스럽고 기발하게 해학으로 조롱했습니다."
             },
             {
-                q: "🌸 5. 콘크리트 분리 장벽 위에 청년이 폭탄이나 화염병 대신 꽃다발을 멀리 던지려 쥐고 있는 벽화가 시사하는 철학은?",
+                q: "🎈 4. 소더비 경매장에서 최고 가격에 낙찰되는 벨소리가 울리자마자 뱅크시의 그림이 액자 속에 감춰둔 칼날에 의해 스스로 잘려 나갔던 작품의 이름은?",
                 options: [
-                    "무장 봉기 선동",
-                    "평화주의와 비폭력 저항",
-                    "가드닝 기법 권장",
-                    "조경 문화 미화"
+                    "쓰레기통 속의 사랑 (Love is in the Bin)",
+                    "자본주의의 대침몰",
+                    "조각난 풍선과 소녀들",
+                    "스케치북 파괴 퍼포먼스"
                 ],
-                answerIdx: 1,
-                reason: "정답은 '평화주의와 비폭력 저항'입니다! 폭력이나 억압에 대항하는 가장 강력한 저항은 피를 흘리는 파괴적인 수단이 아닌 연대와 조화, 평화임을 알려줍니다."
+                answerIdx: 0,
+                reason: "정답은 '쓰레기통 속의 사랑'입니다! 낙찰 가격에 의해 작품의 등급과 가치가 결정되는 과도한 상업주의 미술 시장을 직관적으로 풍자하여 세상을 놀라게 했습니다."
+            },
+            {
+                q: "🏫 5. 이번 수업에서 진행할 '학교 공간의 고정관념 깨기' 창의적 낙서 프로젝트의 궁극적인 목적으로 가장 옳은 것은?",
+                options: [
+                    "학교 건물의 시멘트 벽면을 실제로 파손하기 위해",
+                    "미술 실기 가산점을 완벽히 독식하기 위해",
+                    "매일 무의식적으로 지나는 무표정한 학교 공간을 새로운 눈으로 관찰하고 질문을 던져보기 위해",
+                    "화방용 스프레이 락카를 구매하고 기분을 내기 위해"
+                ],
+                answerIdx: 2,
+                reason: "정답은 '학교 공간을 새로운 눈으로 관찰하고 의미 부여하기'입니다! 당연하게 통제받던 계단, 벽면, 기물들을 나만의 예술적 아이디어로 재해석하는 즐거움을 가져봅시다."
             }
         ];
 
@@ -508,7 +511,6 @@
                 if (result.status === "success") {
                     currentClass = chosen;
                     classPassword = pass;
-                    classGroupCount = result.groupCount || 7;
                     isOfflineMode = false;
 
                     loginSection.classList.add('hidden');
@@ -529,7 +531,7 @@
                 }
             } catch (err) {
                 console.error("Login verification network failed, fall back to offline/bypass mode.", err);
-                // IF NETWORK FAILS (SCHOOL INTRANET BLOCK), ALLOW ENTRANCE AS BYPASS
+                // 만약 학교 와이파이 차단 등으로 통신이 불가능할 경우, 수업이 멈추지 않도록 자동 바이패스 안전모드 진입!
                 isOfflineMode = true;
                 currentClass = chosen || "3-1";
                 classPassword = pass || "1234";
@@ -540,9 +542,9 @@
                 logoutBtn.classList.remove('hidden');
                 resetVotesBtn.classList.remove('hidden');
 
-                currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (안전모드)`;
+                currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (안전 모드)`;
                 document.getElementById('current-class-badge').textContent = currentClassName.textContent;
-                showToast("인터넷 불안정으로 '안전 로컬 모드'로 진입했습니다. 수업 정상 진행이 가능합니다!", "info");
+                showToast("인터넷 불안정으로 '안전 로컬 모드'로 자동 진입하여 정상 수업이 진행됩니다!", "info");
 
                 activeStep = 1;
                 updateStepsLayout();
@@ -601,11 +603,11 @@
             quizStepRationale.classList.remove('hidden');
             if (selectedIndex === item.answerIdx) {
                 quizStepRationale.className = "p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs leading-relaxed space-y-1";
-                quizStepRationale.innerHTML = `<strong>👍 정답입니다! 아주 훌륭한 창의력입니다.</strong><p>${item.reason}</p>`;
+                quizStepRationale.innerHTML = `<strong>👍 정답입니다! 아주 훌륭한 이해도입니다.</strong><p>${item.reason}</p>`;
                 quizStepNextBtn.innerHTML = "다음 문제 풀기 <i class='fa-solid fa-arrow-right ml-1'></i>";
             } else {
                 quizStepRationale.className = "p-4 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs leading-relaxed space-y-1";
-                quizStepRationale.innerHTML = `<strong>😢 아쉽습니다. 다른 생각을 가졌군요!</strong><p>${item.reason}</p>`;
+                quizStepRationale.innerHTML = `<strong>😢 아쉽습니다. 오답입니다! 해설을 확인해 보세요.</strong><p>${item.reason}</p>`;
                 quizStepNextBtn.innerHTML = "해설 공부하고 넘어가기 <i class='fa-solid fa-arrow-right ml-1'></i>";
             }
 
@@ -644,8 +646,7 @@
             const container = document.getElementById('canvas-aspect-wrapper');
             sketchCanvas.width = container.clientWidth || 600;
             sketchCanvas.height = 380;
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+            ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
         }
@@ -672,6 +673,8 @@
                 const img = new Image();
                 img.onload = function() {
                     backgroundImgObject = img;
+                    sketchBgImg.src = evt.target.result;
+                    sketchBgImg.classList.remove('hidden');
                     
                     const container = document.getElementById('canvas-aspect-wrapper');
                     const targetWidth = container.clientWidth || 600;
@@ -680,19 +683,16 @@
                     sketchCanvas.width = targetWidth;
                     sketchCanvas.height = targetWidth * aspect;
                     
-                    // Draw background to canvas directly
-                    ctx.drawImage(img, 0, 0, sketchCanvas.width, sketchCanvas.height);
-                    
                     // Restore pen options as resize overrides context properties
                     ctx.lineCap = 'round';
                     ctx.lineJoin = 'round';
                     
-                    document.getElementById('canvas-dummy-placeholder').style.height = `${sketchCanvas.height}px`;
+                    canvasDummyPlaceholder.style.height = `${sketchCanvas.height}px`;
                     drawUploadBox.classList.add('hidden');
                     
                     document.getElementById('drawing-state-badge').textContent = "사진 낙서 중";
                     document.getElementById('drawing-state-badge').className = "font-bold text-indigo-600";
-                    showToast("학교 배경 이미지가 로딩되어 도화지에 정렬되었습니다!", "success");
+                    showToast("학교 배경 이미지가 성공적으로 정렬되었습니다!", "success");
                 };
                 img.src = evt.target.result;
             };
@@ -785,34 +785,31 @@
         
         document.getElementById('brush-clear-btn').addEventListener('click', () => {
             ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
-            if (backgroundImgObject) {
-                ctx.drawImage(backgroundImgObject, 0, 0, sketchCanvas.width, sketchCanvas.height);
-            } else {
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
-            }
-            showToast("도판을 깨끗이 초기화했습니다!");
+            showToast("낙서 드로잉 레이어를 깨끗이 초기화했습니다!");
         });
 
         // DOWNLOAD LOCAL IMAGE
         document.getElementById('save-canvas-image').addEventListener('click', () => {
-            showToast("작품 이미지를 정밀 인코딩하는 중...", "info");
+            showToast("작품 이미지를 정밀 컴포지트 합성 인코딩 중...", "info");
 
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = sketchCanvas.width;
             tempCanvas.height = sketchCanvas.height;
             const tempCtx = tempCanvas.getContext('2d');
 
-            // Draw background white if no image loaded
+            // 1단계: 흰 배경 설정 (배경 업로드가 안 됐을 경우 흰 도화지)
             if (!backgroundImgObject) {
                 tempCtx.fillStyle = "#ffffff";
                 tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            } else {
+                // 2단계: 배경 사진이 있으면 먼저 그리기
+                tempCtx.drawImage(backgroundImgObject, 0, 0, tempCanvas.width, tempCanvas.height);
             }
             
-            // Draw sketch layer (which contains the background if loaded)
+            // 3단계: 투명 캔버스에 그린 붓자국 위에 합성하기
             tempCtx.drawImage(sketchCanvas, 0, 0);
 
-            // Execute local download anchor
+            // 로컬 파일로 저장 트리거
             const url = tempCanvas.toDataURL('image/jpeg', 0.9);
             const anchor = document.createElement('a');
             anchor.href = url;
@@ -821,7 +818,7 @@
             anchor.click();
             document.body.removeChild(anchor);
 
-            showToast("기기에 고화질 저장이 완료되었습니다! 소장한 파일을 패들렛에 업로드하세요.", "success");
+            showToast("기기에 고화질 합성이 완료되었습니다! 소장한 파일을 패들렛에 업로드하세요.", "success");
         });
 
         document.getElementById('go-to-step-3-btn').addEventListener('click', () => {
@@ -831,26 +828,26 @@
         });
 
 
-        // --- STEP 3: 실시간 생각 투표 제어부 (구글 시트 누적 최적화 설계) ---
+        // --- STEP 3: 실시간 생각 투표 제어부 (슬라이드 연계 핵심 문항 수립) ---
         const pollTopics = [
             {
                 id: "q1",
-                question: "💡 오늘 경험한 미술 시간 중 가장 기발한 상상력을 발휘하게 만들었던 요소는 무엇인가요?",
+                question: "💡 Q1. 오늘 학교 공간에 가상의 낙서 디자인을 할 때, 어떤 종류의 고정관념을 비틀면서 가장 기발한 창의적 희열을 느꼈나요?",
                 options: [
-                    "스텐실 게릴라 낙서 기획",
-                    "뱅크시의 분쇄 소녀 풍자",
-                    "디스멀랜드 음침한 테마파크 우회",
-                    "거리 벽면의 꽃 던지는 비폭력 상상"
+                    "🚫 표지판 비틀기 (뛰지마, 조용히 등 통제 규칙에 귀여운 장난치기)",
+                    "🏢 평범한 복도/계단/벽면 재해석 (지루한 통로를 미끄럼틀이나 무한한 우주로 그리기)",
+                    "🧯 평범한 사물에 생명력 불어넣기 (소화기, 수전 등을 소나기나 장난기 넘치는 동물로 덧그리기)",
+                    "🏫 학교 제도의 딱딱함 풍자하기 (시험, 규범, 시간표 등 현대 교육 시스템에 위트있는 질문 던지기)"
                 ]
             },
             {
                 id: "q2",
-                question: "👥 오늘 우리 모둠 혹은 나 자신의 공간 관념 파괴 미술 만족도는?",
+                question: "👥 Q2. 오늘 뱅크시 수업을 재미있게 마친 이후, 매일 등교하던 '학교 공간'을 바라보는 우리반의 시선은 어떻게 달라졌나요?",
                 options: [
-                    "⭐⭐⭐⭐⭐ (모든 것이 영감 넘치고 완벽했다)",
-                    "⭐⭐⭐⭐ (재미있게 창의적인 구상을 마쳤다)",
-                    "⭐⭐⭐ (주변 공간에 낙서하며 가볍게 즐겼다)",
-                    "⭐⭐ (다음에는 더 대담한 상상을 하고 싶다)"
+                    "📐 단순한 통제와 교칙만 있는 차갑고 지루한 상자에서, 무한한 스케치북처럼 느껴진다.",
+                    "🔍 평소엔 보이지 않던 학교 구석구석의 사소한 기물들과 장소들이 다시 눈에 밟히기 시작했다.",
+                    "🎨 미술은 미술실 안에서만 갇혀하는게 아닌 일상생활 속 모든 장벽에 존재함을 알게 됐다.",
+                    "🎭 익숙한 상식이나 고정관념에 기분 좋은 유쾌한 물음을 던져보는 태도의 중요성을 알게 됐다."
                 ]
             }
         ];
@@ -870,8 +867,8 @@
                 console.error("Load Votes Error, fallback dummy", err);
                 // Fallback dummy rendering
                 localVotesData = {
-                    q1: { "스텐실 게릴라 낙서 기획": 2, "뱅크시의 분쇄 소녀 풍자": 4 },
-                    q2: { "⭐⭐⭐⭐⭐ (모든 것이 영감 넘치고 완벽했다)": 5 }
+                    q1: { "🚫 표지판 비틀기 (뛰지마, 조용히 등 통제 규칙에 귀여운 장난치기)": 2, "🏢 평범한 복도/계단/벽면 재해석 (지루한 통로를 미끄럼틀이나 무한한 우주로 그리기)": 4 },
+                    q2: { "📐 단순한 통제와 교칙만 있는 차갑고 지루한 상자에서, 무한한 스케치북처럼 느껴진다.": 5 }
                 };
                 renderPolls();
             }
