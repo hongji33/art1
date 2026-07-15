@@ -114,7 +114,7 @@
                     <div class="h-0.5 bg-slate-200 flex-grow -translate-y-2.5 mx-1"></div>
                     <div id="step-indicator-3" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer" onclick="navigateDirectStep(3)">
                         <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10">3</div>
-                        <span>[3단계] 우리 반 투표 공유</span>
+                        <span>[3단계] 전체 투표 공유</span>
                     </div>
                 </div>
             </div>
@@ -265,8 +265,8 @@
             <section id="step-3-voting" class="hidden w-full max-w-2xl mx-auto flex flex-col space-y-4 animate-fade-in">
                 <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 flex items-center justify-between shadow-3xs">
                     <div>
-                        <h3 class="font-black text-sm text-indigo-900">3단계. 우리 반 실시간 생각 투표 결과</h3>
-                        <p class="text-[10px] text-indigo-500 mt-0.5">선택지를 고르는 즉시 구글 스프레드시트에 저장되며, 다같이 실시간 집계를 즉석에서 나눕니다.</p>
+                        <h3 class="font-black text-sm text-indigo-900">3단계. 전체 실시간 생각 투표 결과</h3>
+                        <p class="text-[10px] text-indigo-500 mt-0.5">선택지를 고르는 즉시 구글 스프레드시트에 저장되며, 모든 반 아이들의 실시간 통합 집계를 즉석에서 나눕니다.</p>
                     </div>
                     <button id="refresh-votes-final" class="px-3.5 py-1.5 bg-white hover:bg-indigo-100 text-indigo-600 font-extrabold text-xs rounded-lg transition-all border border-indigo-200 shadow-2xs cursor-pointer">
                         <i class="fa-solid fa-arrows-rotate"></i> 즉시 집계 갱신
@@ -347,7 +347,7 @@
         // STATES
         let currentClass = "";
         let classPassword = "";
-        let localVotesData = {};
+        let localVotesData = {}; // 이제 전체 학급의 데이터를 포함하는 객체로 활용됩니다.
         let activeStep = 1;
         let isOfflineMode = false;
 
@@ -412,7 +412,7 @@
 
         let quizCurrentIndex = 0;
 
-        // 5가지 실시간 정리용 명품 피드백 설문 (싱글 쿼테이션 충돌을 막기 위해 한글 스마트 따옴표 ‘, ’ 를 완벽 적용)
+        // 5가지 실시간 정리용 명품 피드백 설문
         const pollTopics = [
             {
                 id: "q1",
@@ -933,7 +933,7 @@
         });
 
 
-        // --- STEP 3: 실시간 생각 투표 제어부 (슬라이드 연계 핵심 문항 수립) ---
+        // --- STEP 3: 실시간 생각 투표 제어부 (전체 반 통합 집계 개편) ---
         async function loadVotesData() {
             if (isOfflineMode) {
                 renderPolls();
@@ -941,29 +941,59 @@
             }
 
             try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?action=getVotes&classId=${currentClass}`);
+                // [수정 핵심] className 제한(필터) 파라미터를 제외하고 API를 요청하여 모든 학급 투표 데이터를 받아옵니다.
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=getVotes`);
                 const data = await response.json();
                 localVotesData = data;
                 renderPolls();
             } catch (err) {
                 console.error("Load Votes Error, fallback dummy", err);
-                // Fallback dummy rendering
+                // 오프라인/통신에러 시 임시 예시 데이터 제공
                 localVotesData = {
-                    q1: { "🚫 통제와 금지 규칙으로만 다가오던 [복도/계단의 여러 안내 표지판]": 2, "🏫 매일 지루하고 지치게 오르내리던 [차가운 시멘트 계단과 복도 빈 벽면]": 4 },
-                    q2: { "🎈 최고가에 팔리자마자 잘려나가 상업적 경매장 시스템을 허망하게 조롱한 분쇄 퍼포먼스": 5 }
+                    "3-1": {
+                        q1: { "🚫 통제와 금지 규칙으로만 다가오던 [복도/계단의 여러 안내 표지판]": 2, "🏫 매일 지루하고 지치게 오르내리던 [차가운 시멘트 계단과 복도 빈 벽면]": 4 }
+                    },
+                    "3-2": {
+                        q1: { "🚫 통제와 금지 규칙으로만 다가오던 [복도/계단의 여러 안내 표지판]": 3, "🧯 늘 그 자리에 똑같이 서 있어서 지나치던 [소화기, 정수기, 소화전 등 학교 기물]": 5 }
+                    }
                 };
                 renderPolls();
             }
         }
 
-        // 5개 설문 렌더링 (각 학생은 LocalStorage 기록을 기반으로 1번만 투표 가능)
+        // 5개 설문 렌더링 (구글 시트의 전체 학급 투표 결과를 합산하여 보여줌)
         function renderPolls() {
             const list = document.getElementById('live-vote-list-container');
+            
+            // 1. 구글 시트에서 가져온 모든 반(학급)의 투표를 하나의 통계 정보로 누적 합산합니다.
+            const accumulatedStats = {};
+            pollTopics.forEach(t => {
+                accumulatedStats[t.id] = {};
+                t.options.forEach(opt => {
+                    accumulatedStats[t.id][opt] = 0;
+                });
+            });
+
+            // 데이터 포맷팅 분석 후 합산 작업 수행
+            if (localVotesData) {
+                Object.keys(localVotesData).forEach(classKey => {
+                    const classVotes = localVotesData[classKey] || {};
+                    Object.keys(classVotes).forEach(topicId => {
+                        if (accumulatedStats[topicId]) {
+                            const optCounts = classVotes[topicId] || {};
+                            Object.keys(optCounts).forEach(opt => {
+                                accumulatedStats[topicId][opt] = (accumulatedStats[topicId][opt] || 0) + optCounts[opt];
+                            });
+                        }
+                    });
+                });
+            }
+
             list.innerHTML = pollTopics.map(topic => {
-                const stats = localVotesData[topic.id] || {};
+                const stats = accumulatedStats[topic.id] || {};
                 const total = Object.values(stats).reduce((a, b) => a + b, 0) || 0;
                 
-                // 해당 학급의 이 질문에 사용자가 이미 투표했는지 체크
+                // 사용자가 이 설문에 이미 답했는지는 로그인한 '현재 소속 반' 키로 검증 유지
                 const votedOption = localStorage.getItem(`voted_${currentClass}_${topic.id}`);
 
                 return `
@@ -971,7 +1001,7 @@
                         <div>
                             <div class="flex justify-between items-center mb-3">
                                 <span class="inline-block bg-indigo-50 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">
-                                    실시간 정리 설문
+                                    실시간 정리 설문 (전체 누적)
                                 </span>
                                 ${votedOption ? `
                                     <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-black">
@@ -991,10 +1021,10 @@
                                     const percent = total > 0 ? Math.round((count / total) * 100) : 0;
                                     const isUserChoice = votedOption === option;
 
-                                    // Escape quotes carefully inside inline event properties to completely avoid breaking quotes
+                                    // HTML 파괴 방지용 특수문자 이스케이프 처리
                                     const safeOptionParam = option.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                                     const clickHandler = votedOption 
-                                        ? `showToast('이미 투표에 참여한 질문입니다. 실시간으로 집계된 우리 반의 생각 통계를 공유해 보세요!', 'error')`
+                                        ? `showToast('이미 투표에 참여한 질문입니다. 실시간으로 집계된 모든 반의 생각 통계를 공유해 보세요!', 'error')`
                                         : `submitLiveVote('${topic.id}', '${safeOptionParam}')`;
 
                                     return `
@@ -1014,7 +1044,7 @@
                         </div>
 
                         <div class="mt-5 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
-                            <span><i class="fa-solid fa-users mr-1"></i> 우리 반 누적 참여자: <strong>${total}</strong>명</span>
+                            <span><i class="fa-solid fa-users mr-1"></i> 전체 학년 누적 참여자: <strong>${total}</strong>명</span>
                             <span class="text-indigo-600 font-bold cursor-pointer" onclick="loadVotesData()"><i class="fa-solid fa-arrows-rotate mr-1"></i> 다시 갱신</span>
                         </div>
                     </div>
@@ -1032,8 +1062,9 @@
             showToast("선택 정보를 시트에 반영하는 중...", "info");
 
             if (isOfflineMode) {
-                if (!localVotesData[topicId]) localVotesData[topicId] = {};
-                localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
+                if (!localVotesData[currentClass]) localVotesData[currentClass] = {};
+                if (!localVotesData[currentClass][topicId]) localVotesData[currentClass][topicId] = {};
+                localVotesData[currentClass][topicId][selectedOption] = (localVotesData[currentClass][topicId][selectedOption] || 0) + 1;
                 localStorage.setItem(voteKey, selectedOption);
                 renderPolls();
                 showToast("임시 로컬 데이터베이스에 투표가 누적되었습니다!");
@@ -1065,8 +1096,9 @@
                 }
             } catch (err) {
                 console.error("Submit live vote failed", err);
-                if (!localVotesData[topicId]) localVotesData[topicId] = {};
-                localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
+                if (!localVotesData[currentClass]) localVotesData[currentClass] = {};
+                if (!localVotesData[currentClass][topicId]) localVotesData[currentClass][topicId] = {};
+                localVotesData[currentClass][topicId][selectedOption] = (localVotesData[currentClass][topicId][selectedOption] || 0) + 1;
                 localStorage.setItem(voteKey, selectedOption);
                 renderPolls();
                 showToast("네트워크 임시 단절로 내부 적재되었습니다.", "info");
