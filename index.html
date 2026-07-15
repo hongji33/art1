@@ -202,7 +202,7 @@
                                 <span class="text-[10px] font-bold text-slate-400">색상</span>
                                 <div id="color-lamp" class="w-4 h-4 rounded-full border border-slate-300" style="background-color: #dc2626;"></div>
                                 
-                                <button class="color-dot w-6 h-6 rounded-full bg-rose-600 border-2 border-white ring-2 ring-offset-1 ring-indigo-500 transition-all cursor-pointer" data-color="#dc2626"></button>
+                                <button class="color-dot w-6 h-6 rounded-full bg-rose-600 border border-white ring-2 ring-offset-1 ring-indigo-500 transition-all cursor-pointer" data-color="#dc2626"></button>
                                 <button class="color-dot w-6 h-6 rounded-full bg-amber-400 border border-white transition-all cursor-pointer" data-color="#fbbf24"></button>
                                 <button class="color-dot w-6 h-6 rounded-full bg-indigo-600 border border-white transition-all cursor-pointer" data-color="#4f46e5"></button>
                                 <button class="color-dot w-6 h-6 rounded-full bg-emerald-500 border border-white transition-all cursor-pointer" data-color="#10b981"></button>
@@ -399,6 +399,60 @@
 
         let quizCurrentIndex = 0;
 
+        // 5가지 실시간 정리용 명품 피드백 설문
+        const pollTopics = [
+            {
+                id: "q1",
+                question: "🏢 Q1. 오늘 가상의 낙서를 기획할 때, 가장 파격적으로 고정관념을 깨뜨려보고 싶었던 학교 공간은 어디였나요?",
+                options: [
+                    "🚫 통제와 금지 규칙으로만 다가오던 [복도/계단의 여러 안내 표지판]",
+                    "🏫 매일 지루하고 지치게 오르내리던 [차가운 시멘트 계단과 복도 빈 벽면]",
+                    "🧯 늘 그 자리에 똑같이 서 있어서 지나치던 [소화기, 정수기, 소화전 등 학교 기물]",
+                    "🔍 아무도 평소에 애정 있게 보지 않던 [학교 건물의 그늘진 틈새나 창고 문 구석]"
+                ]
+            },
+            {
+                id: "q2",
+                question: "🎨 Q2. 오늘 배운 뱅크시(Banksy)의 저항 예술 중 여러분 마음에 가장 큰 감동이나 지적 호기심을 준 개념은?",
+                options: [
+                    "🏛️ 소수 엘리트만 독식하는 닫힌 미술관을 넘어, 거리 대중과 무상으로 소통하는 그래피티 정신",
+                    "✂️ 빠르고 완벽하게 정해진 도안을 남겨 공권력의 검문을 기민하게 피하는 스텐실 기법",
+                    "🎈 최고가에 팔리자마자 잘려나가 상업적 경매장 시스템을 허망하게 조롱한 분쇄 퍼포먼스",
+                    "🌸 무기나 폭력 대신 아름다운 평화의 연대를 꿈꾸며 꽃다발을 던진 베들레헴 청년 벽화"
+                ]
+            },
+            {
+                id: "q3",
+                question: "💡 Q3. 일상의 학교 사물에 디지털 낙서를 덧그려 기획해 보며 느끼게 된 가장 값진 예술적 배움은 무엇인가요?",
+                options: [
+                    "🖼️ 아주 흔하고 평범한 일상의 하찮은 기물도 충분히 훌륭한 창의적 캔버스가 될 수 있다는 점",
+                    "🔨 당연해 보이던 모든 일상과 통제 규범에 유쾌한 질문을 건네며 사고를 넓히는 기분 좋은 재미",
+                    "📢 비난과 시비가 아닌, 예술을 통한 시각적 유머와 풍자가 가지는 사람을 움직이는 평화로운 힘",
+                    "✨ 미술이라는 행위가 한정된 미술실 안에 갇히지 않고, 등교하는 모든 현장에서 꿈틀거릴 수 있다는 점"
+                ]
+            },
+            {
+                id: "q4",
+                question: "🎒 Q4. 오늘 수업을 무사히 마친 후, 매일 반복해서 통과하던 우리 학교는 내일부터 어떻게 다가올 것 같나요?",
+                options: [
+                    "✏️ 그저 따분하게 통과하던 공간이 나만의 상상을 마음껏 그려보는 '거대한 스케치북'처럼 느껴진다.",
+                    "🔍 낡은 소화전이나 구석 계단을 스쳐 지날 때마다 '나만의 새로운 아이디어'가 문득문득 떠오를 것 같다.",
+                    "🏫 예술과 풍자는 먼 파리에만 있는 게 아니라 우리가 발을 붙인 교실 문턱에도 항상 살아있음을 알았다.",
+                    "💭 똑같아 보이겠지만, 일상의 규칙을 비틀어서 생각해보는 '창의적인 제3의 시선'을 문득 기억할 것 같다."
+                ]
+            },
+            {
+                id: "q5",
+                question: "🌟 Q5. 오늘 실시간 Banksy 수업 여정에 참여하며 스스로 평가하는 '나의 창의적 몰입 점수'는 몇 점인가요?",
+                options: [
+                    "💯 ⭐⭐⭐⭐⭐ (뱅크시처럼 눈을 뗄 수 없는 과감한 발상과 뜨거운 몰입으로 가득했다!)",
+                    "✨ ⭐⭐⭐⭐ (공간을 새롭게 관찰하고 구상 아이디어를 이미지화해보며 열심히 몰입했다)",
+                    "🌱 ⭐⭐⭐ (평소 해보지 않은 기발한 생각을 즐겁게 열어본 의미 있는 미술 시간이었다)",
+                    "🤝 ⭐⭐ (생소하고 다소 어렵기도 했지만, 고정관념을 깬다는 취지만큼은 깊게 교감했다)"
+                ]
+            }
+        ];
+
         // TOAST SYSTEM
         function showToast(message, type = "info") {
             const container = document.getElementById('toast-container');
@@ -465,7 +519,7 @@
                 step3Panel.classList.add('hidden');
                 
                 document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-50 text-white flex items-center justify-center font-bold mb-1 z-10";
+                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
                 document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
@@ -480,11 +534,11 @@
                 step3Panel.classList.remove('hidden');
 
                 document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-50 text-white flex items-center justify-center font-bold mb-1 z-10";
+                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
                 document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
-                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-50 text-white flex items-center justify-center font-bold mb-1 z-10";
+                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-2').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
                 document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
@@ -531,7 +585,6 @@
                 }
             } catch (err) {
                 console.error("Login verification network failed, fall back to offline/bypass mode.", err);
-                // 만약 학교 와이파이 차단 등으로 통신이 불가능할 경우, 수업이 멈추지 않도록 자동 바이패스 안전모드 진입!
                 isOfflineMode = true;
                 currentClass = chosen || "3-1";
                 classPassword = pass || "1234";
@@ -756,7 +809,7 @@
                 document.querySelectorAll('.color-dot').forEach(b => {
                     b.className = "color-dot w-6 h-6 rounded-full border border-slate-200 transition-all cursor-pointer";
                 });
-                e.target.className = "color-dot w-6 h-6 rounded-full border-2 border-white ring-2 ring-offset-1 ring-indigo-500 transition-all cursor-pointer";
+                e.target.className = "color-dot w-6 h-6 rounded-full bg-rose-600 border-2 border-white ring-2 ring-offset-1 ring-indigo-500 transition-all cursor-pointer";
                 brushEraser.className = "w-6 h-6 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xs";
             });
         });
@@ -829,29 +882,6 @@
 
 
         // --- STEP 3: 실시간 생각 투표 제어부 (슬라이드 연계 핵심 문항 수립) ---
-        const pollTopics = [
-            {
-                id: "q1",
-                question: "💡 Q1. 오늘 학교 공간에 가상의 낙서 디자인을 할 때, 어떤 종류의 고정관념을 비틀면서 가장 기발한 창의적 희열을 느꼈나요?",
-                options: [
-                    "🚫 표지판 비틀기 (뛰지마, 조용히 등 통제 규칙에 귀여운 장난치기)",
-                    "🏢 평범한 복도/계단/벽면 재해석 (지루한 통로를 미끄럼틀이나 무한한 우주로 그리기)",
-                    "🧯 평범한 사물에 생명력 불어넣기 (소화기, 수전 등을 소나기나 장난기 넘치는 동물로 덧그리기)",
-                    "🏫 학교 제도의 딱딱함 풍자하기 (시험, 규범, 시간표 등 현대 교육 시스템에 위트있는 질문 던지기)"
-                ]
-            },
-            {
-                id: "q2",
-                question: "👥 Q2. 오늘 뱅크시 수업을 재미있게 마친 이후, 매일 등교하던 '학교 공간'을 바라보는 우리반의 시선은 어떻게 달라졌나요?",
-                options: [
-                    "📐 단순한 통제와 교칙만 있는 차갑고 지루한 상자에서, 무한한 스케치북처럼 느껴진다.",
-                    "🔍 평소엔 보이지 않던 학교 구석구석의 사소한 기물들과 장소들이 다시 눈에 밟히기 시작했다.",
-                    "🎨 미술은 미술실 안에서만 갇혀하는게 아닌 일상생활 속 모든 장벽에 존재함을 알게 됐다.",
-                    "🎭 익숙한 상식이나 고정관념에 기분 좋은 유쾌한 물음을 던져보는 태도의 중요성을 알게 됐다."
-                ]
-            }
-        ];
-
         async function loadVotesData() {
             if (isOfflineMode) {
                 renderPolls();
@@ -867,39 +897,63 @@
                 console.error("Load Votes Error, fallback dummy", err);
                 // Fallback dummy rendering
                 localVotesData = {
-                    q1: { "🚫 표지판 비틀기 (뛰지마, 조용히 등 통제 규칙에 귀여운 장난치기)": 2, "🏢 평범한 복도/계단/벽면 재해석 (지루한 통로를 미끄럼틀이나 무한한 우주로 그리기)": 4 },
-                    q2: { "📐 단순한 통제와 교칙만 있는 차갑고 지루한 상자에서, 무한한 스케치북처럼 느껴진다.": 5 }
+                    q1: { "🚫 통제와 금지 규칙으로만 다가오던 [복도/계단의 여러 안내 표지판]": 2, "🏫 매일 지루하고 지치게 오르내리던 [차가운 시멘트 계단과 복도 빈 벽면]": 4 },
+                    q2: { "🎈 최고가에 팔리자마자 잘려나가 상업적 경매장 시스템을 허망하게 조롱한 분쇄 퍼포먼스": 5 }
                 };
                 renderPolls();
             }
         }
 
+        // 5개 설문 렌더링 (각 학생은 LocalStorage 기록을 기반으로 1번만 투표 가능)
         function renderPolls() {
             const list = document.getElementById('live-vote-list-container');
             list.innerHTML = pollTopics.map(topic => {
                 const stats = localVotesData[topic.id] || {};
                 const total = Object.values(stats).reduce((a, b) => a + b, 0) || 0;
+                
+                // 해당 학급의 이 질문에 사용자가 이미 투표했는지 체크
+                const votedOption = localStorage.getItem(`voted_${currentClass}_${topic.id}`);
 
                 return `
                     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
                         <div>
-                            <span class="inline-block bg-indigo-50 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-3 uppercase">
-                                실시간 설문 집계
-                            </span>
-                            <h3 class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug mb-4">${topic.question}</h3>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="inline-block bg-indigo-50 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">
+                                    실시간 정리 설문
+                                </span>
+                                ${votedOption ? `
+                                    <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-black">
+                                        <i class="fa-solid fa-circle-check"></i> 참여 완료
+                                    </span>
+                                ` : `
+                                    <span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-black animate-pulse">
+                                        <i class="fa-solid fa-circle-question"></i> 1인 1회 투표
+                                    </span>
+                                `}
+                            </div>
+                            <h3 class="text-xs sm:text-xs font-extrabold text-slate-900 leading-snug mb-4">${topic.question}</h3>
                             
                             <div class="space-y-2.5">
                                 ${topic.options.map(option => {
                                     const count = stats[option] || 0;
                                     const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+                                    const isUserChoice = votedOption === option;
+
+                                    // 사용자가 이미 이 문항에 투표했다면 중복 투표 안내 토스트 처리, 아니면 정식 제출 처리
+                                    const clickHandler = votedOption 
+                                        ? `onclick="showToast('이미 투표에 참여한 질문입니다. 실시간으로 집계된 우리 반의 생각 통계를 공유해 보세요!', 'error')"`
+                                        : `onclick="submitLiveVote('${topic.id}', '${option}')"`;
 
                                     return `
-                                        <div class="relative group cursor-pointer" onclick="submitLiveVote('${topic.id}', '${option}')">
-                                            <button class="w-full text-left relative z-10 px-3 py-2.5 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 rounded-xl flex justify-between items-center transition-all cursor-pointer">
-                                                <span class="font-semibold text-xs text-slate-700 leading-normal">${option}</span>
-                                                <span class="text-xs font-extrabold text-indigo-600">${count}표 (${percent}%)</span>
+                                        <div class="relative group cursor-pointer" ${vnd = clickHandler}>
+                                            <button class="w-full text-left relative z-10 px-3 py-2.5 bg-slate-50 hover:bg-indigo-50/50 border ${isUserChoice ? 'border-emerald-500 bg-emerald-50/20' : 'border-slate-200'} rounded-xl flex justify-between items-center transition-all cursor-pointer">
+                                                <span class="font-semibold text-xs text-slate-700 leading-normal flex items-center gap-1">
+                                                    ${isUserChoice ? '<i class="fa-solid fa-square-check text-emerald-600 mr-1 text-sm"></i>' : ''}
+                                                    ${option}
+                                                </span>
+                                                <span class="text-xs font-extrabold ${isUserChoice ? 'text-emerald-700 font-black' : 'text-indigo-600'}">${count}표 (${percent}%)</span>
                                             </button>
-                                            <div class="absolute inset-y-0 left-0 bg-indigo-100/20 rounded-xl transition-all duration-500" style="width: ${percent}%"></div>
+                                            <div class="absolute inset-y-0 left-0 ${isUserChoice ? 'bg-emerald-100/20' : 'bg-indigo-100/20'} rounded-xl transition-all duration-500" style="width: ${percent}%"></div>
                                         </div>
                                     `;
                                 }).join('')}
@@ -907,7 +961,7 @@
                         </div>
 
                         <div class="mt-5 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400">
-                            <span><i class="fa-solid fa-users mr-1"></i> 현재 누적 투표: <strong>${total}</strong>표</span>
+                            <span><i class="fa-solid fa-users mr-1"></i> 우리 반 누적 참여자: <strong>${total}</strong>명</span>
                             <span class="text-indigo-600 font-bold cursor-pointer" onclick="loadVotesData()"><i class="fa-solid fa-arrows-rotate mr-1"></i> 다시 갱신</span>
                         </div>
                     </div>
@@ -916,11 +970,18 @@
         }
 
         window.submitLiveVote = async function(topicId, selectedOption) {
+            const voteKey = `voted_${currentClass}_${topicId}`;
+            if (localStorage.getItem(voteKey)) {
+                showToast("이미 투표에 참여하셨습니다. 다른 학생들과 실시간 공유 중입니다!", "error");
+                return;
+            }
+
             showToast("선택 정보를 시트에 반영하는 중...", "info");
 
             if (isOfflineMode) {
                 if (!localVotesData[topicId]) localVotesData[topicId] = {};
                 localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
+                localStorage.setItem(voteKey, selectedOption);
                 renderPolls();
                 showToast("임시 로컬 데이터베이스에 투표가 누적되었습니다!");
                 return;
@@ -943,6 +1004,7 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
+                    localStorage.setItem(voteKey, selectedOption);
                     showToast("투표 제출이 정상 연동 완료되었습니다!", "success");
                     loadVotesData();
                 } else {
@@ -952,6 +1014,7 @@
                 console.error("Submit live vote failed", err);
                 if (!localVotesData[topicId]) localVotesData[topicId] = {};
                 localVotesData[topicId][selectedOption] = (localVotesData[topicId][selectedOption] || 0) + 1;
+                localStorage.setItem(voteKey, selectedOption);
                 renderPolls();
                 showToast("네트워크 임시 단절로 내부 적재되었습니다.", "info");
             }
@@ -965,12 +1028,19 @@
             
             showCustomConfirm(
                 "⚠️ 각반 생각 통계 리셋",
-                `정말로 현재 선택된 반의 모든 설문 투표 결과를 초기화(0표)하시겠습니까?<br>이 작업은 구글 시트의 해당 반 투표 행을 정교하게 분석하여 영구 삭제합니다.`,
+                `정말로 현재 선택된 반의 모든 설문 투표 결과를 초기화(0표)하시겠습니까?<br>이 작업은 구글 시트의 해당 반 투표 행을 정교하게 분석하여 영구 삭제합니다.<br><strong>(테스트를 위해 모든 학생 기기의 투표 흔적 쿠키도 깨끗이 지워집니다)</strong>`,
                 async () => {
+                    // 기기의 모든 투표 쿠키 흔적 제거 (교사용 편의 제어)
+                    for (let key in localStorage) {
+                        if (key.startsWith("voted_")) {
+                            localStorage.removeItem(key);
+                        }
+                    }
+
                     if (isOfflineMode) {
                         localVotesData = {};
                         renderPolls();
-                        showToast("임시 모드 투표 현황이 비워졌습니다.");
+                        showToast("임시 모드 투표 현황 및 잠금 기록이 소거되었습니다.");
                         return;
                     }
 
