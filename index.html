@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학교 고정관념 깨기 - 실시간 미술 프로젝트</title>
+    <title>뱅크시와 고정관념 깨기 - 실시간 미술 프로젝트</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -26,14 +26,14 @@
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- 로고 -->
-                <div class="flex items-center space-x-3">
-                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md">
+                <!-- 로고 (클릭 시 처음/홈 화면 복귀 기능 탑재) -->
+                <div id="header-logo-btn" class="flex items-center space-x-3 cursor-pointer group hover:opacity-80 transition-all" title="처음(로그인) 화면으로 이동">
+                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md group-hover:scale-105 transition-all">
                         <i class="fa-solid fa-spray-can text-lg"></i>
                     </div>
                     <div>
-                        <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">학교 고정관념 깨기</span>
-                        <span class="text-[10px] text-indigo-600 font-bold tracking-widest uppercase mt-1 block">Banksy Interactive Project</span>
+                        <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">뱅크시와 고정관념 깨기</span>
+                        <span class="text-[10px] text-indigo-600 font-bold tracking-widest uppercase mt-1 block"><i class="fa-solid fa-house mr-1"></i>처음으로 / 홈으로 가기</span>
                     </div>
                 </div>
 
@@ -102,17 +102,17 @@
             <!-- 상단 학습 흐름 지시계 (Step Indicator) -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs max-w-xl mx-auto w-full">
                 <div class="flex items-center justify-between text-xs sm:text-xs">
-                    <div id="step-indicator-1" class="flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold">
+                    <div id="step-indicator-1" class="flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer" onclick="navigateDirectStep(1)">
                         <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10">1</div>
                         <span>[1단계] Banksy 퀴즈</span>
                     </div>
                     <div class="h-0.5 bg-slate-200 flex-grow -translate-y-2.5 mx-1"></div>
-                    <div id="step-indicator-2" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold">
+                    <div id="step-indicator-2" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer" onclick="navigateDirectStep(2)">
                         <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10">2</div>
                         <span>[2단계] 사진 디지털 드로잉</span>
                     </div>
                     <div class="h-0.5 bg-slate-200 flex-grow -translate-y-2.5 mx-1"></div>
-                    <div id="step-indicator-3" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold">
+                    <div id="step-indicator-3" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer" onclick="navigateDirectStep(3)">
                         <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10">3</div>
                         <span>[3단계] 우리 반 투표 공유</span>
                     </div>
@@ -230,7 +230,7 @@
                         </div>
                     </div>
 
-                    <!-- 작업 완료 제출 제어부 -->
+                    <!-- 작업 완료 제출 제어부 (이전 단계 복귀 기능 포함) -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
                         <div class="space-y-4">
                             <h4 class="font-extrabold text-xs text-slate-900 pb-2 border-b border-slate-100 uppercase tracking-wider">드로잉 미션 현황</h4>
@@ -249,9 +249,14 @@
                             </p>
                         </div>
 
-                        <button id="go-to-step-3-btn" class="w-full mt-6 py-3.5 bg-slate-800 hover:bg-slate-900 text-amber-400 font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                            다음 단계: 실시간 투표하러 가기 <i class="fa-solid fa-arrow-right"></i>
-                        </button>
+                        <div class="space-y-2 mt-6">
+                            <button id="go-to-step-3-btn" class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-amber-400 font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                다음 단계: 실시간 투표하러 가기 <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="navigateDirectStep(1)" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-arrow-left text-[10px]"></i> 이전 단계 (퀴즈)로 돌아가기
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -270,6 +275,13 @@
 
                 <div id="live-vote-list-container" class="grid grid-cols-1 gap-4">
                     <!-- 투표 집계 질문 카드들이 생성됩니다 -->
+                </div>
+
+                <!-- 이전 단계 복귀 퀵 가이드 -->
+                <div class="pt-4 flex justify-center">
+                    <button onclick="navigateDirectStep(2)" class="px-6 py-3 bg-white border border-slate-200 text-slate-600 font-extrabold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                        <i class="fa-solid fa-paintbrush text-xs"></i> 2단계 (디지털 드로잉)로 다시 돌아가기
+                    </button>
                 </div>
             </section>
 
@@ -310,6 +322,7 @@
         const currentClassName = document.getElementById('current-class-name');
         const logoutBtn = document.getElementById('logout-btn');
         const resetVotesBtn = document.getElementById('reset-votes-btn');
+        const headerLogoBtn = document.getElementById('header-logo-btn');
 
         const step1Panel = document.getElementById('step-1-quiz');
         const step2Panel = document.getElementById('step-2-drawing');
@@ -341,7 +354,7 @@
         // 구글 슬라이드 기반 최적화 5문항 퀴즈 탑재
         const banksyQuizList = [
             {
-                q: "🎨 1. 뱅크시가 주로 활동하는 분야이자, 길거리 벽면 등 공공장소의 열린 공간에 글을 쓰거나 기발한 낙서를 남기는 저항적 '길거리 미술'의 명칭은?",
+                q: "🎨 1. 뱅크시가 주로 활동하는 분야이자, 길거리 벽면 등 공공장소의 열린 공간에 글을 쓰거나 기발한 낙서를 남기는 저항적 ‘길거리 미술’의 명칭은?",
                 options: [
                     "팝 아트 (Pop Art)",
                     "다카포 디자인 (Da Capo)",
@@ -349,7 +362,7 @@
                     "추상 표현주의 (Abstract Expressionism)"
                 ],
                 answerIdx: 2,
-                reason: "정답은 '그래피티(Graffiti)'입니다! 소수를 위해 닫힌 공간인 미술관에서 벗어나 길거리의 대중들과 소통하는 가장 강력하고 대담한 형태의 야외 미술 기법입니다."
+                reason: "정답은 ‘그래피티(Graffiti)’입니다! 소수를 위해 닫힌 공간인 미술관에서 벗어나 길거리의 대중들과 소통하는 가장 강력하고 대담한 형태의 야외 미술 기법입니다."
             },
             {
                 q: "⚡ 2. 뱅크시가 경찰 검문을 단 몇 초 내로 빠르게 피하기 위해 종이에 미리 모양을 오려둔 뒤, 벽에 가져다 대고 락카 스프레이를 뿌리는 판화 기법은?",
@@ -360,10 +373,10 @@
                     "스텐실 (Stencil) 기법"
                 ],
                 answerIdx: 3,
-                reason: "정답은 '스텐실 기법'입니다! 현장에서는 빠르게 완성하고 즉시 도망쳐야 체포를 피할 수 있으므로, 뱅크시가 야외 현장에서 적극적으로 애용하는 영리한 전술입니다."
+                reason: "정답은 ‘스텐실 기법’입니다! 현장에서는 빠르게 완성하고 즉시 도망쳐야 체포를 피할 수 있으므로, 뱅크시가 야외 현장에서 적극적으로 애용하는 영리한 전술입니다."
             },
             {
-                q: "🏛️ 3. 뱅크시가 대영박물관이나 현대미술관에 잠입하여 자기 가짜 석판이나 유머 작품을 몰래 접착제로 붙여두고 온 '게릴라식 도둑 전시'의 교육적 의도는?",
+                q: "🏛️ 3. 뱅크시가 대영박물관이나 현대미술관에 잠입하여 자기 가짜 석판이나 유머 작품을 몰래 접착제로 붙여두고 온 ‘게릴라식 도둑 전시’의 교육적 의도는?",
                 options: [
                     "소수 부자들 중심으로 운영되는 권위적인 미술관 제도의 허상을 비판하기 위해",
                     "도난 경보기 감도 테스트를 도와주기 위해",
@@ -371,7 +384,7 @@
                     "가짜 유물에 대한 고고학적 지식을 홍보하기 위해"
                 ],
                 answerIdx: 0,
-                reason: "정답은 '권위적인 미술관 제도의 비판'입니다! 미술관의 가치를 결정하는 미술계의 절대 권력을 우스꽝스럽고 기발하게 해학으로 조롱했습니다."
+                reason: "정답은 ‘권위적인 미술관 제도의 비판’입니다! 미술관의 가치를 결정하는 미술계의 절대 권력을 우스꽝스럽고 기발하게 해학으로 조롱했습니다."
             },
             {
                 q: "🎈 4. 소더비 경매장에서 최고 가격에 낙찰되는 벨소리가 울리자마자 뱅크시의 그림이 액자 속에 감춰둔 칼날에 의해 스스로 잘려 나갔던 작품의 이름은?",
@@ -382,10 +395,10 @@
                     "스케치북 파괴 퍼포먼스"
                 ],
                 answerIdx: 0,
-                reason: "정답은 '쓰레기통 속의 사랑'입니다! 낙찰 가격에 의해 작품의 등급과 가치가 결정되는 과도한 상업주의 미술 시장을 직관적으로 풍자하여 세상을 놀라게 했습니다."
+                reason: "정답은 ‘쓰레기통 속의 사랑’입니다! 낙찰 가격에 의해 작품의 등급과 가치가 결정되는 과도한 상업주의 미술 시장을 직관적으로 풍자하여 세상을 놀라게 했습니다."
             },
             {
-                q: "🏫 5. 이번 수업에서 진행할 '학교 공간의 고정관념 깨기' 창의적 낙서 프로젝트의 궁극적인 목적으로 가장 옳은 것은?",
+                q: "🏫 5. 이번 수업에서 진행할 ‘학교 공간의 고정관념 깨기’ 창의적 낙서 프로젝트의 궁극적인 목적으로 가장 옳은 것은?",
                 options: [
                     "학교 건물의 시멘트 벽면을 실제로 파손하기 위해",
                     "미술 실기 가산점을 완벽히 독식하기 위해",
@@ -393,13 +406,13 @@
                     "화방용 스프레이 락카를 구매하고 기분을 내기 위해"
                 ],
                 answerIdx: 2,
-                reason: "정답은 '학교 공간을 새로운 눈으로 관찰하고 의미 부여하기'입니다! 당연하게 통제받던 계단, 벽면, 기물들을 나만의 예술적 아이디어로 재해석하는 즐거움을 가져봅시다."
+                reason: "정답은 ‘학교 공간을 새로운 눈으로 관찰하고 의미 부여하기’입니다! 당연하게 통제받던 계단, 벽면, 기물들을 나만의 예술적 아이디어로 재해석하는 즐거움을 가져봅시다."
             }
         ];
 
         let quizCurrentIndex = 0;
 
-        // 5가지 실시간 정리용 명품 피드백 설문
+        // 5가지 실시간 정리용 명품 피드백 설문 (싱글 쿼테이션 충돌을 막기 위해 한글 스마트 따옴표 ‘, ’ 를 완벽 적용)
         const pollTopics = [
             {
                 id: "q1",
@@ -435,15 +448,15 @@
                 id: "q4",
                 question: "🎒 Q4. 오늘 수업을 무사히 마친 후, 매일 반복해서 통과하던 우리 학교는 내일부터 어떻게 다가올 것 같나요?",
                 options: [
-                    "✏️ 그저 따분하게 통과하던 공간이 나만의 상상을 마음껏 그려보는 '거대한 스케치북'처럼 느껴진다.",
-                    "🔍 낡은 소화전이나 구석 계단을 스쳐 지날 때마다 '나만의 새로운 아이디어'가 문득문득 떠오를 것 같다.",
+                    "✏️ 그저 따분하게 통과하던 공간이 나만의 상상을 마음껏 그려보는 ‘거대한 스케치북’처럼 느껴진다.",
+                    "🔍 낡은 소화전이나 구석 계단을 스쳐 지날 때마다 ‘나만의 새로운 아이디어’가 문득문득 떠오를 것 같다.",
                     "🏫 예술과 풍자는 먼 파리에만 있는 게 아니라 우리가 발을 붙인 교실 문턱에도 항상 살아있음을 알았다.",
-                    "💭 똑같아 보이겠지만, 일상의 규칙을 비틀어서 생각해보는 '창의적인 제3의 시선'을 문득 기억할 것 같다."
+                    "💭 똑같아 보이겠지만, 일상의 규칙을 비틀어서 생각해보는 ‘창의적인 제3의 시선’을 문득 기억할 것 같다."
                 ]
             },
             {
                 id: "q5",
-                question: "🌟 Q5. 오늘 실시간 Banksy 수업 여정에 참여하며 스스로 평가하는 '나의 창의적 몰입 점수'는 몇 점인가요?",
+                question: "🌟 Q5. 오늘 실시간 Banksy 수업 여정에 참여하며 스스로 평가하는 ‘나의 창의적 몰입 점수’는 몇 점인가요?",
                 options: [
                     "💯 ⭐⭐⭐⭐⭐ (뱅크시처럼 눈을 뗄 수 없는 과감한 발상과 뜨거운 몰입으로 가득했다!)",
                     "✨ ⭐⭐⭐⭐ (공간을 새롭게 관찰하고 구상 아이디어를 이미지화해보며 열심히 몰입했다)",
@@ -499,49 +512,90 @@
             };
         }
 
+        // DIRECT STEP NAVIGATION (지시계 클릭 시 안전 전환)
+        window.navigateDirectStep = function(stepNum) {
+            if (!currentClass) {
+                showToast("로그인을 먼저 진행해 주세요.", "error");
+                return;
+            }
+            activeStep = stepNum;
+            updateStepsLayout();
+            if (stepNum === 1) {
+                loadStepQuizQuestion();
+            }
+            showToast(`[${stepNum}단계] 화면으로 부드럽게 이동했습니다.`, "info");
+        }
+
+        // LOGO / HOME BUTTON CLICK HANDLER (홈으로 가기)
+        headerLogoBtn.addEventListener('click', function() {
+            if (currentClass) {
+                showCustomConfirm(
+                    "🏠 처음 로그인 화면으로 이동",
+                    "처음 로그인 화면으로 이동하시겠습니까?<br>현재 학급 로그인 상태가 해제(로그아웃)됩니다.",
+                    function() {
+                        logoutRoutine();
+                    }
+                );
+            } else {
+                showToast("현재 이미 로그인 대기 상태입니다.", "info");
+            }
+        });
+
+        function logoutRoutine() {
+            currentClass = "";
+            classPassword = "";
+            loginForm.reset();
+            loginSection.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+            classBadge.classList.add('hidden');
+            logoutBtn.classList.add('hidden');
+            resetVotesBtn.classList.add('hidden');
+            showToast("홈 화면으로 안전하게 초기화 복귀했습니다.");
+        }
+
         function updateStepsLayout() {
             if (activeStep === 1) {
                 step1Panel.classList.remove('hidden');
                 step2Panel.classList.add('hidden');
                 step3Panel.classList.add('hidden');
                 
-                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
+                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer";
                 document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10";
                 
-                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold";
+                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer";
                 document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10";
                 
-                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold";
+                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer";
                 document.getElementById('step-indicator-3').querySelector('div').className = "w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10";
             } else if (activeStep === 2) {
                 step1Panel.classList.add('hidden');
                 step2Panel.classList.remove('hidden');
                 step3Panel.classList.add('hidden');
                 
-                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
+                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold cursor-pointer";
                 document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
-                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
+                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer";
                 document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10";
                 document.getElementById('step-indicator-2').querySelector('div').textContent = "2";
 
-                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold";
+                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer";
                 document.getElementById('step-indicator-3').querySelector('div').className = "w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10";
             } else if (activeStep === 3) {
                 step1Panel.classList.add('hidden');
                 step2Panel.classList.add('hidden');
                 step3Panel.classList.remove('hidden');
 
-                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
+                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold cursor-pointer";
                 document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
-                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold";
+                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold cursor-pointer";
                 document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
                 document.getElementById('step-indicator-2').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
 
-                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold";
+                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer";
                 document.getElementById('step-indicator-3').querySelector('div').className = "w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10";
                 document.getElementById('step-indicator-3').querySelector('div').textContent = "3";
                 
@@ -606,15 +660,9 @@
         });
 
         logoutBtn.addEventListener('click', function() {
-            currentClass = "";
-            classPassword = "";
-            loginForm.reset();
-            loginSection.classList.remove('hidden');
-            mainContent.classList.add('hidden');
-            classBadge.classList.add('hidden');
-            logoutBtn.classList.add('hidden');
-            resetVotesBtn.classList.add('hidden');
-            showToast("로그아웃 되었습니다.");
+            showCustomConfirm("로그아웃", "현재 학급 로그아웃을 진행하시겠습니까?", function() {
+                logoutRoutine();
+            });
         });
 
         // --- STEP 1: QUIZ CONTROLLERS ---
@@ -628,12 +676,16 @@
             quizStepProgress.textContent = `문제 ${quizCurrentIndex + 1} / ${banksyQuizList.length}`;
             quizQuestionTitle.textContent = item.q;
 
-            quizOptionsBox.innerHTML = item.options.map((option, idx) => `
-                <button onclick="handleOptionSelect(${idx})" class="w-full text-left p-3.5 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-200 rounded-xl flex justify-between items-center transition-all cursor-pointer">
-                    <span class="text-xs font-semibold text-slate-700 leading-normal">${idx + 1}. ${option}</span>
-                    <i class="fa-regular fa-circle text-slate-300 text-sm"></i>
-                </button>
-            `).join('');
+            quizOptionsBox.innerHTML = item.options.map((option, idx) => {
+                // Ensure quotes are escaped in the html parameter output to avoid element breakage
+                const escapedOption = option.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                return `
+                    <button onclick="handleOptionSelect(${idx})" class="w-full text-left p-3.5 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-200 rounded-xl flex justify-between items-center transition-all cursor-pointer">
+                        <span class="text-xs font-semibold text-slate-700 leading-normal">${idx + 1}. ${escapedOption}</span>
+                        <i class="fa-regular fa-circle text-slate-300 text-sm"></i>
+                    </button>
+                `;
+            }).join('');
         }
 
         window.handleOptionSelect = function(selectedIndex) {
@@ -939,13 +991,14 @@
                                     const percent = total > 0 ? Math.round((count / total) * 100) : 0;
                                     const isUserChoice = votedOption === option;
 
-                                    // 사용자가 이미 이 문항에 투표했다면 중복 투표 안내 토스트 처리, 아니면 정식 제출 처리
+                                    // Escape quotes carefully inside inline event properties to completely avoid breaking quotes
+                                    const safeOptionParam = option.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                                     const clickHandler = votedOption 
-                                        ? `onclick="showToast('이미 투표에 참여한 질문입니다. 실시간으로 집계된 우리 반의 생각 통계를 공유해 보세요!', 'error')"`
-                                        : `onclick="submitLiveVote('${topic.id}', '${option}')"`;
+                                        ? `showToast('이미 투표에 참여한 질문입니다. 실시간으로 집계된 우리 반의 생각 통계를 공유해 보세요!', 'error')`
+                                        : `submitLiveVote('${topic.id}', '${safeOptionParam}')`;
 
                                     return `
-                                        <div class="relative group cursor-pointer" ${vnd = clickHandler}>
+                                        <div class="relative group cursor-pointer" onclick="${clickHandler}">
                                             <button class="w-full text-left relative z-10 px-3 py-2.5 bg-slate-50 hover:bg-indigo-50/50 border ${isUserChoice ? 'border-emerald-500 bg-emerald-50/20' : 'border-slate-200'} rounded-xl flex justify-between items-center transition-all cursor-pointer">
                                                 <span class="font-semibold text-xs text-slate-700 leading-normal flex items-center gap-1">
                                                     ${isUserChoice ? '<i class="fa-solid fa-square-check text-emerald-600 mr-1 text-sm"></i>' : ''}
