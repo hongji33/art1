@@ -326,7 +326,7 @@
                     <!-- 이중 캔버스 겹침 그리기 영역 (반응형 더미 스페이서를 삽입하여 0px 붕괴 오류 차단) -->
                     <div class="relative bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-inner max-w-full flex items-center justify-center" style="min-height:280px; width:100%;">
                         <div class="relative w-full flex justify-center items-center" id="canvas-wrapper">
-                            <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 cursor-crosshair z-10"></canvas>
+                            <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10"></canvas>
                             <img id="sketch-bg-preview" class="object-contain w-full h-auto hidden" src="" alt="배경공간">
                             <!-- 빈 도화지일 때 높이 공간을 완벽하게 확보해주는 반응형 스페이서 -->
                             <div id="canvas-dummy-spacer" class="w-full" style="height: 412px;"></div>
@@ -357,10 +357,10 @@
 
             <form id="upload-form" class="p-5 space-y-4">
                 <div class="grid grid-cols-2 gap-3">
-                    <!-- 모둠 목록 선택 드롭다운 (cursor-pointer 적용하여 접근성 및 클릭 오류 완치) -->
+                    <!-- 모둠 목록 선택 드롭다운 (배경을 완전 백색으로 고정하고 그림자를 주어 가혹한 모바일 환경에서도 즉각 클릭 가능하게 세팅) -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">제출 모둠</label>
-                        <select id="input-group" required class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
+                        <select id="input-group" required class="w-full bg-white border-2 border-indigo-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-extrabold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-sm relative z-30">
                             <!-- 교사용 세팅된 모둠 개수가 동적으로 렌더링됩니다 -->
                         </select>
                     </div>
@@ -461,7 +461,7 @@
 
     <!-- 모달 5: 앱스스크립트 배포 설정 긴급 진단 안내 창 -->
     <div id="deployment-guide-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-6 space-y-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
             <div class="text-rose-600 text-lg font-extrabold flex items-center gap-2">
                 <i class="fa-solid fa-circle-exclamation"></i> 서버 연동 실패 안내
             </div>
@@ -1083,38 +1083,66 @@
             );
         };
 
-        // --- 2. 스케치북 드로잉 공간 핵심 리뉴얼 (사진 없는 빈 도화지 드로잉 완벽 복원) ---
-        function initCanvas(imgObj = null) {
-            const container = sketchBgPreview.parentElement;
-            const containerWidth = container.clientWidth || 550;
-            const spacer = document.getElementById('canvas-dummy-spacer');
+        // --- 2. 스케치북 드로잉 공간 핵심 리뉴얼 (고정 비율 좌표 스케일링으로 그리기 에러 해결) ---
+        function getCoordinates(event) {
+            const rect = sketchCanvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (event.touches && event.touches.length > 0) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
             
+            // 모바일과 PC 등 디스플레이 크기에 비례해 물리 캔버스 좌표를 스케일링 계산 (그리기 빗나감 및 안그려짐 버그 완전 수정)
+            const scaleX = sketchCanvas.width / rect.width;
+            const scaleY = sketchCanvas.height / rect.height;
+            
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function initCanvas(imgObj = null) {
+            const container = document.getElementById('canvas-wrapper');
+            const spacer = document.getElementById('canvas-dummy-spacer');
+
             if (imgObj) {
                 backgroundImgObject = imgObj;
                 const aspect = imgObj.height / imgObj.width;
-                sketchCanvas.width = containerWidth;
-                sketchCanvas.height = containerWidth * aspect;
+                
+                // 디스플레이 가독성과 업로드 속도의 타협점인 물리 1024px 너비 고정 규격 적용
+                const targetWidth = Math.min(imgObj.width, 1024);
+                sketchCanvas.width = targetWidth;
+                sketchCanvas.height = targetWidth * aspect;
+                
                 sketchBgPreview.src = imgObj.src;
                 sketchBgPreview.classList.remove('hidden');
                 if (spacer) {
-                    spacer.style.height = (containerWidth * aspect) + 'px';
+                    spacer.style.height = 'auto';
+                    spacer.style.aspectRatio = `${imgObj.width} / ${imgObj.height}`;
                 }
             } else {
                 backgroundImgObject = null;
-                sketchCanvas.width = containerWidth;
-                sketchCanvas.height = 412; // 4:3 표준 드로잉 도화지 비율 세팅
+                // 배경사진이 없을 때도 0px로 깨지지 않도록 표준 4:3 800x600 캔버스 물리 해상도 구축
+                sketchCanvas.width = 800;
+                sketchCanvas.height = 600;
+                
                 sketchBgPreview.src = "";
                 sketchBgPreview.classList.add('hidden');
                 if (spacer) {
-                    spacer.style.height = '412px';
+                    spacer.style.height = 'auto';
+                    spacer.style.aspectRatio = '4 / 3';
                 }
-                
-                // 투명 낙서 데이터 유실 방지를 위한 기본 깔끔한 흰색 도판 배경 채우기
+
+                // 낙서 데이터 무손실 적재를 위한 깔끔한 흰색 도판 배경 채우기
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
             }
             
-            // 캔버스 드로잉 속성 초기화 및 정상 연동
+            // 캔버스 사이즈가 조정되면 컨텍스트 내부 드로잉 상태값들이 자동으로 리셋되므로 강제 재동기화
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = brushColor;
@@ -1153,54 +1181,107 @@
             reader.readAsDataURL(file);
         });
 
-        applySketchBtn.addEventListener('click', () => {
-            showToast("그림 데이터를 전송용 규격으로 인코딩하고 있습니다...", "info");
-
-            const offscreenCanvas = document.createElement('canvas');
-            offscreenCanvas.width = 800;
+        function startDrawing(e) {
+            if (e.cancelable) e.preventDefault(); // 모바일 환경 스크롤 제스처 강제 차단 (그리기 집중)
+            isDrawing = true;
+            const coords = getCoordinates(e);
+            lastX = coords.x;
+            lastY = coords.y;
             
-            if (backgroundImgObject) {
-                const aspect = backgroundImgObject.height / backgroundImgObject.width;
-                offscreenCanvas.height = 800 * aspect;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = brushWidth;
+            if (isEraserMode) {
+                ctx.globalCompositeOperation = 'destination-out';
             } else {
-                offscreenCanvas.height = 600; // 흰 백지 4:3 해상도 고정 규격
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = brushColor;
             }
+        }
 
-            const offCtx = offscreenCanvas.getContext('2d');
+        function draw(e) {
+            if (!isDrawing) return;
+            if (e.cancelable) e.preventDefault(); 
+
+            const coords = getCoordinates(e);
             
-            if (backgroundImgObject) {
-                offCtx.drawImage(backgroundImgObject, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
-            } else {
-                offCtx.fillStyle = "#ffffff";
-                offCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.stroke();
+
+            lastX = coords.x;
+            lastY = coords.y;
+        }
+
+        function refreshCanvasState() {
+            if (ctx) {
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = brushWidth;
+                ctx.strokeStyle = brushColor;
             }
-            
-            // 덧그린 드로잉 이미지를 800px 규격 위에 자연스럽게 투영 병합
-            offCtx.drawImage(sketchCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        }
 
-            const base64MergedResult = offscreenCanvas.toDataURL('image/jpeg', 0.85);
+        function stopDrawing() {
+            isDrawing = false;
+            refreshCanvasState();
+        }
 
-            // 최종 폼 내부 미리보기 전송
-            document.getElementById('form-image-preview').src = base64MergedResult;
-            
-            // 병합 가공 시 수동 파일 선택부를 감추고 최종 조립작만 노출
-            manualFileSelectorSection.classList.add('hidden');
-            formImagePreviewContainer.classList.remove('hidden');
-            
-            sketchModal.classList.add('hidden');
-            uploadModal.classList.remove('hidden');
+        sketchCanvas.addEventListener('mousedown', startDrawing);
+        sketchCanvas.addEventListener('mousemove', draw);
+        sketchCanvas.addEventListener('mouseup', stopDrawing);
+        sketchCanvas.addEventListener('mouseleave', stopDrawing);
+
+        sketchCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+        sketchCanvas.addEventListener('touchmove', draw, { passive: false });
+        sketchCanvas.addEventListener('touchend', stopDrawing);
+
+        // 기본 팔레트 색상 프리셋 선택 이벤트
+        document.querySelectorAll('.color-dot').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                isEraserMode = false;
+                toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
+                
+                document.querySelectorAll('.color-dot').forEach(b => {
+                    b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
+                });
+                
+                e.target.className = `color-dot w-8 h-8 rounded-full border-2 border-white ring-2 ring-indigo-500 shadow-sm transition-all transform scale-110`;
+                
+                brushColor = e.target.dataset.color;
+                customColorPicker.value = brushColor;
+                currentColorLamp.style.backgroundColor = brushColor;
+                refreshCanvasState();
+            });
         });
 
-        // 캔버스 낙서 전체 지우기 시 흰 백지가 투명/검정으로 죽지 않도록 방어 복원
-        clearDrawBtn.addEventListener('click', () => {
-            ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
-            if (!backgroundImgObject) {
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, sketchCanvas.width, sketchCanvas.height);
-            }
+        // 무지개 커스텀 컬러 피커 선택 이벤트 (선택 완료 시 그리기 즉시 반영)
+        customColorPicker.addEventListener('input', (e) => {
+            isEraserMode = false;
+            toolEraser.className = "w-8 h-8 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 rounded-full flex items-center justify-center transition-all shadow-xs";
+            
+            document.querySelectorAll('.color-dot').forEach(b => {
+                b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
+            });
+
+            brushColor = e.target.value;
+            currentColorLamp.style.backgroundColor = brushColor;
+            refreshCanvasState();
         });
 
-        // 수동 파일 업로드 제어 및 이전 사진 잔상 정밀 리셋
+        // 지우개 작동 토글
+        toolEraser.addEventListener('click', () => {
+            isEraserMode = true;
+            document.querySelectorAll('.color-dot').forEach(b => {
+                b.className = "color-dot w-8 h-8 rounded-full border border-slate-300 shadow-sm transition-all transform hover:scale-110";
+            });
+            toolEraser.className = "w-8 h-8 bg-indigo-50 border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center transition-all shadow-xs";
+        });
+
+        brushWidthInput.addEventListener('input', (e) => brushWidth = e.target.value);
+
+        // 수동 파일 업로드 처리 로직 (CORS 우회 고속 압축 지원)
         uploadFileTrigger.addEventListener('click', () => uploadFileInput.click());
 
         uploadFileInput.addEventListener('change', function(e) {
@@ -1262,6 +1343,9 @@
             uploadFileInput.value = "";
             document.getElementById('form-image-preview').src = "";
             formImagePreviewContainer.classList.add('hidden');
+            
+            // 수동 제출 시 다이렉트로 드롭다운 재주입하여 잔상 및 무선택 버그 완벽 방지
+            initGroupUploadDropdown();
             
             manualFileSelectorSection.classList.remove('hidden');
             uploadFileTrigger.classList.remove('hidden');
