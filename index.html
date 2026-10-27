@@ -105,7 +105,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">입장 비밀번호</label>
-                    <input id="class-password" type="password" required placeholder="선생님이 정해준 비밀번호 (예: 1234)" 
+                    <input id="class-password" type="password" required placeholder="반 비밀번호 4자리를 입력하세요" inputmode="numeric" 
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 font-semibold focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
 
@@ -154,23 +154,37 @@
 
             <!-- STEP 2: 학교 주변 사진 디지털 드로잉판 -->
             <section id="step-2-drawing" class="hidden w-full flex flex-col space-y-4 animate-fade-in">
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col space-y-3">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
-                                <span class="w-1.5 h-4 bg-indigo-600 rounded-full"></span> 2단계. 디지털 낙서 스케치북
-                            </h3>
-                            <p class="text-[11px] text-slate-400 mt-0.5">학교 주변에서 촬영한 사진을 배경에 깔거나 빈 도화지 위에 기발한 생각을 덧그려 보세요.</p>
+                <!-- 2단계 미션 + 안내 (하나로 통합) -->
+                <div class="bg-white rounded-2xl border-2 border-amber-300 shadow-md overflow-hidden">
+                    <!-- 미션 (크게) -->
+                    <div class="bg-amber-300 text-slate-900 px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                        <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-xl bg-slate-900 flex items-center justify-center text-xl">📸</div>
+                            <div class="min-w-0">
+                                <span class="text-[10px] font-black tracking-widest bg-slate-900 text-amber-300 px-2 py-0.5 rounded-full">MISSION 2 · 디지털 낙서 스케치북</span>
+                                <p class="mt-1.5 text-base sm:text-xl font-black leading-snug">학교 주변의 <span class="underline decoration-4 decoration-rose-500 underline-offset-4">식상하고 아이디어가 필요한 곳</span>을 사진 찍어 올리세요!</p>
+                            </div>
                         </div>
-                        <button id="save-canvas-image" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer">
-                            <i class="fa-solid fa-floppy-disk"></i> 💾 이미지로 다운로드
+                        <button id="save-canvas-image" class="shrink-0 self-start sm:self-center px-4 py-2.5 bg-slate-900 hover:bg-indigo-700 text-amber-300 hover:text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-download"></i> 이미지로 다운로드
                         </button>
                     </div>
-                    
-                    <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl text-[11px] text-amber-800 leading-normal flex items-start gap-1.5">
-                        <i class="fa-solid fa-lightbulb mt-0.5 text-xs"></i>
-                        <span>완성한 작품은 위의 <strong>[💾 이미지로 다운로드]</strong> 버튼을 눌러 스마트기기에 소장한 뒤, 선생님이 제공해 주시는 <strong>패들렛(Padlet)</strong>에 편리하게 공유하세요! 이 사이트 내에는 작품이 적재되지 않으므로 속도가 매우 쾌적합니다.</span>
-                    </div>
+
+                    <!-- 진행 순서 3칸 -->
+                    <ol class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3 sm:p-4 text-xs text-slate-600">
+                        <li class="flex items-start gap-2 bg-slate-50 rounded-xl px-3 py-2.5">
+                            <span class="w-5 h-5 shrink-0 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">1</span>
+                            <span><strong class="text-slate-900">사진 찍기</strong><br>학교 주변의 심심한 곳을 촬영해요</span>
+                        </li>
+                        <li class="flex items-start gap-2 bg-slate-50 rounded-xl px-3 py-2.5">
+                            <span class="w-5 h-5 shrink-0 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">2</span>
+                            <span><strong class="text-slate-900">덧그리기</strong><br>사진을 배경으로 불러와 기발한 생각을 그려요</span>
+                        </li>
+                        <li class="flex items-start gap-2 bg-slate-50 rounded-xl px-3 py-2.5">
+                            <span class="w-5 h-5 shrink-0 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">3</span>
+                            <span><strong class="text-slate-900">공유하기</strong><br>[이미지로 다운로드] 후 <strong class="text-slate-900">패들렛(Padlet)</strong>에 올려요</span>
+                        </li>
+                    </ol>
                 </div>
 
                 <!-- 그리기용 실물 도판 -->
@@ -353,6 +367,12 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         // STATES
         let currentClass = "";
         let classPassword = "";
+
+        // ▶ 반별 입장 비밀번호 (바꾸려면 여기만 고치세요)
+        const CLASS_PASSWORDS = {
+            "3-1": "1111", "3-2": "2222", "3-3": "3333", "3-4": "4444", "3-5": "5555",
+            "3-6": "6666", "3-7": "7777", "3-8": "8888", "3-9": "9999", "3-10": "1010"
+        };
         let localVotesData = {}; // 이제 전체 학급의 데이터를 포함하는 객체로 활용됩니다.
         let activeStep = 1;
         let isOfflineMode = false;
@@ -615,6 +635,14 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             const chosen = selectClass.value;
             const pass = classPasswordInput.value;
 
+            // 반별 비밀번호: 1반 1111, 2반 2222 … 9반 9999, 10반 1010
+            if (pass !== CLASS_PASSWORDS[chosen]) {
+                showToast("비밀번호가 일치하지 않습니다. 선생님께 반 비밀번호를 확인하세요.", "error");
+                classPasswordInput.value = "";
+                classPasswordInput.focus();
+                return;
+            }
+
             showToast("보안 검증 처리 중...", "info");
 
             try {
@@ -641,7 +669,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                     activeStep = 2;
                     updateStepsLayout();
                 } else {
-                    showToast("비밀번호가 일치하지 않습니다.", "error");
+                    // 반 비밀번호는 맞지만 서버 시트의 비밀번호가 다를 때 → 안전 모드로 진행
+                    throw new Error("server verify mismatch");
                 }
             } catch (err) {
                 console.error("Login verification network failed, fall back to offline/bypass mode.", err);
