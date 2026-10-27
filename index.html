@@ -318,7 +318,7 @@
     </a>
 
     <footer class="bg-slate-900 text-slate-500 py-6 border-t border-slate-800 text-xs text-center mt-auto">
-        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board</p>
+        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/27 17:15 (갤러리 좋아요)</span></p>
     </footer>
 
     <!-- 커스텀 모달 대화창 (confirm 대체 시스템) -->
@@ -347,8 +347,8 @@
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <label class="block">
-                        <span class="block text-[11px] font-bold text-slate-500 mb-1">이름 또는 모둠명</span>
-                        <input id="upload-name" maxlength="20" placeholder="예: 3모둠" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                        <span class="block text-[11px] font-bold text-slate-500 mb-1">닉네임</span>
+                        <input id="upload-name" maxlength="20" placeholder="예: 계단의 뱅크시" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
                     </label>
                     <label class="block">
                         <span class="block text-[11px] font-bold text-slate-500 mb-1">작품 제목</span>
@@ -386,9 +386,10 @@
         <img id="lightbox-img" alt="작품 크게 보기" class="max-w-full max-h-[78vh] object-contain rounded-lg shadow-2xl transition-all">
         <div class="mt-3 flex items-center gap-3 text-white">
             <div class="text-center">
-                <p id="lightbox-title" class="font-black text-base"></p>
-                <p id="lightbox-meta" class="text-xs text-slate-300"></p>
+                <p class="font-black text-base"><span class="text-amber-300 text-xs font-bold mr-1">제목:</span><span id="lightbox-title"></span></p>
+                <p class="text-sm text-slate-200"><span class="text-amber-300 text-xs font-bold mr-1">닉네임:</span><span id="lightbox-meta"></span></p>
             </div>
+            <button id="lightbox-like" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm font-extrabold cursor-pointer transition-all" title="좋아요">🤍 0</button>
             <button id="lightbox-delete" class="px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:text-white hover:bg-rose-600 border border-rose-400/40 rounded-lg cursor-pointer" title="교사용: 작품 삭제"><i class="fa-solid fa-trash"></i> 삭제</button>
         </div>
     </div>
@@ -1201,21 +1202,75 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                     return;
                 }
                 setGalleryStatus("");
-                galleryGrid.innerHTML = galleryItems.map((it, i) => `
-                    <button onclick="openLightbox(${i})" class="group text-left bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden cursor-pointer">
-                        <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
-                            <img src="${it.thumb}" alt="${escapeHtml(it.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                        </div>
-                        <div class="px-3 py-2">
-                            <p class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${escapeHtml(it.title)}</p>
-                            <p class="text-[11px] text-slate-400 truncate">${escapeHtml(it.name)} · ${formatTime(it.ts)}</p>
-                        </div>
-                    </button>
-                `).join('');
+                renderGalleryGrid();
             } catch (err) {
                 console.error("Gallery load failed", err);
                 setGalleryStatus('갤러리를 불러오지 못했어요. <b>새로고침</b>을 눌러 다시 시도해 주세요.');
             }
+        }
+
+        function isLiked(it) {
+            try { return localStorage.getItem('liked_' + it.id) === '1'; } catch (e) { return false; }
+        }
+
+        function likeLabel(it) {
+            return `${isLiked(it) ? '❤️' : '🤍'} ${it.likes || 0}`;
+        }
+
+        function renderGalleryGrid() {
+            galleryGrid.innerHTML = galleryItems.map((it, i) => `
+                <div class="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden">
+                    <div onclick="openLightbox(${i})" class="aspect-[4/3] bg-slate-100 overflow-hidden cursor-pointer" title="크게 보기">
+                        <img src="${it.thumb}" alt="${escapeHtml(it.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="px-3 py-2 space-y-0.5">
+                        <p class="text-xs sm:text-sm text-slate-900 truncate"><span class="text-[11px] font-bold text-slate-400">제목:</span> <b class="font-extrabold">${escapeHtml(it.title)}</b></p>
+                        <p class="text-xs text-slate-700 truncate"><span class="text-[11px] font-bold text-slate-400">닉네임:</span> ${escapeHtml(it.name)}</p>
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[10px] text-slate-400">${formatTime(it.ts)}</span>
+                            <button onclick="toggleLike(${i})" data-like-index="${i}" class="like-btn px-2.5 py-1 rounded-full text-xs font-extrabold transition-all cursor-pointer ${isLiked(it) ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-50 text-slate-500 border border-slate-200 hover:border-rose-200 hover:text-rose-500'}" title="좋아요">${likeLabel(it)}</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 좋아요: 한 기기에서 작품마다 한 번 (다시 누르면 취소)
+        let likeBusy = {};
+        window.toggleLike = async function(index) {
+            const it = galleryItems[index];
+            if (!it || likeBusy[it.id]) return;
+            likeBusy[it.id] = true;
+            const wasLiked = isLiked(it);
+            const delta = wasLiked ? -1 : 1;
+            // 먼저 화면에 바로 반영
+            it.likes = Math.max(0, (it.likes || 0) + delta);
+            try { wasLiked ? localStorage.removeItem('liked_' + it.id) : localStorage.setItem('liked_' + it.id, '1'); } catch (e) {}
+            refreshLikeViews(it);
+            try {
+                const result = await galleryPost({ action: "like", classId: currentClass, password: classPassword, id: it.id, delta: delta });
+                if (result.status !== "success") throw new Error(result.message);
+                it.likes = result.likes;
+                refreshLikeViews(it);
+            } catch (err) {
+                console.error("Like failed", err);
+                it.likes = Math.max(0, (it.likes || 0) - delta);
+                try { wasLiked ? localStorage.setItem('liked_' + it.id, '1') : localStorage.removeItem('liked_' + it.id); } catch (e) {}
+                refreshLikeViews(it);
+                showToast("좋아요를 반영하지 못했어요. 잠시 후 다시 눌러 주세요.", "error");
+            } finally {
+                likeBusy[it.id] = false;
+            }
+        };
+
+        function refreshLikeViews(it) {
+            const i = galleryItems.indexOf(it);
+            const btn = galleryGrid.querySelector(`[data-like-index="${i}"]`);
+            if (btn) {
+                btn.textContent = likeLabel(it);
+                btn.className = `like-btn px-2.5 py-1 rounded-full text-xs font-extrabold transition-all cursor-pointer ${isLiked(it) ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-slate-50 text-slate-500 border border-slate-200 hover:border-rose-200 hover:text-rose-500'}`;
+            }
+            if (lightboxItem === it) document.getElementById('lightbox-like').textContent = likeLabel(it);
         }
 
         function formatTime(ts) {
@@ -1234,7 +1289,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             img.src = it.thumb;
             img.style.filter = "blur(2px)";
             document.getElementById('lightbox-title').textContent = it.title;
-            document.getElementById('lightbox-meta').textContent = `${it.name} · ${formatTime(it.ts)}`;
+            document.getElementById('lightbox-meta').textContent = it.name;
+            document.getElementById('lightbox-like').textContent = likeLabel(it);
             lightbox.classList.remove('hidden');
             lightbox.classList.add('flex');
             try {
@@ -1290,6 +1346,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             }
         });
 
+        document.getElementById('lightbox-like').addEventListener('click', () => {
+            if (lightboxItem) toggleLike(galleryItems.indexOf(lightboxItem));
+        });
         document.getElementById('open-gallery-btn').addEventListener('click', openGallery);
         document.getElementById('gallery-close').addEventListener('click', closeGallery);
         document.getElementById('gallery-refresh').addEventListener('click', loadGallery);
