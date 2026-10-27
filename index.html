@@ -18,35 +18,50 @@
         .canvas-container {
             touch-action: none;
         }
+        /* 헤더 단계 칩 */
+        .step-chip { display:flex; align-items:center; gap:4px; padding:3px 9px 3px 3px; border-radius:999px; color:#94a3b8; white-space:nowrap; cursor:pointer; transition:all .2s; }
+        .step-chip:hover { background:#f1f5f9; }
+        .step-chip .step-num { width:18px; height:18px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:10px; background:#f1f5f9; border:1px solid #e2e8f0; }
+        .step-chip.is-active { background:#eef2ff; color:#4338ca; }
+        .step-chip.is-active .step-num { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+        .step-chip.is-done { color:#059669; }
+        .step-chip.is-done .step-num { background:#10b981; color:#fff; border-color:#10b981; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-800">
 
-    <!-- 헤더 영역 -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- 로고 (클릭 시 처음/홈 화면 복귀 기능 탑재) -->
-                <div id="header-logo-btn" class="flex items-center space-x-3 cursor-pointer group hover:opacity-80 transition-all" title="처음(로그인) 화면으로 이동">
-                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md group-hover:scale-105 transition-all">
-                        <i class="fa-solid fa-spray-can text-lg"></i>
+    <!-- 헤더 영역 (슬림형: 로고 왼쪽 구석 / 단계 가운데 / 버튼 오른쪽 구석) -->
+    <header class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-40">
+        <div class="px-3 sm:px-4">
+            <div class="flex justify-between items-center h-11 gap-2">
+                <!-- 로고 (클릭 시 처음/홈 화면 복귀) -->
+                <div id="header-logo-btn" class="flex items-center gap-2 cursor-pointer group hover:opacity-80 transition-all shrink-0" title="처음(로그인) 화면으로 이동">
+                    <div class="bg-indigo-600 text-white w-7 h-7 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
+                        <i class="fa-solid fa-spray-can text-xs"></i>
                     </div>
-                    <div>
-                        <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">뱅크시와 고정관념 깨기</span>
-                        <span class="text-[10px] text-indigo-600 font-bold tracking-widest uppercase mt-1 block"><i class="fa-solid fa-house mr-1"></i>처음으로 / 홈으로 가기</span>
-                    </div>
+                    <span class="hidden md:block text-sm font-extrabold text-slate-900 tracking-tight">뱅크시와 고정관념 깨기</span>
+                    <i class="fa-solid fa-house text-[10px] text-indigo-400"></i>
                 </div>
 
-                <!-- 학급 정보 및 로그아웃 버튼 -->
-                <div class="flex items-center space-x-2">
-                    <span id="class-badge" class="hidden px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full border border-indigo-200 shadow-xs">
-                        <i class="fa-solid fa-graduation-cap mr-1"></i> <span id="current-class-name">-</span>
+                <!-- 단계 표시 (로그인 후 노출) -->
+                <nav id="header-steps" class="flex items-center gap-1 text-[11px] font-bold overflow-x-auto">
+                    <button id="step-indicator-1" onclick="navigateDirectStep(1)" class="step-chip"><span class="step-num">1</span><span class="hidden sm:inline">퀴즈</span></button>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300"></i>
+                    <button id="step-indicator-2" onclick="navigateDirectStep(2)" class="step-chip"><span class="step-num">2</span><span class="hidden sm:inline">드로잉</span></button>
+                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300"></i>
+                    <button id="step-indicator-3" onclick="navigateDirectStep(3)" class="step-chip"><span class="step-num">3</span><span class="hidden sm:inline">투표</span></button>
+                </nav>
+
+                <!-- 학급 정보 및 버튼 (오른쪽 구석, 작게) -->
+                <div class="flex items-center gap-1 shrink-0">
+                    <span id="class-badge" class="hidden max-w-[88px] sm:max-w-none truncate px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full border border-indigo-100">
+                        <i class="fa-solid fa-graduation-cap mr-0.5"></i> <span id="current-class-name">-</span>
                     </span>
-                    <button id="reset-votes-btn" class="hidden px-2.5 py-1 text-slate-400 hover:text-rose-600 rounded-lg text-xs font-bold transition-all border border-transparent hover:border-rose-100" title="교사용 전체 투표 리셋">
-                        <i class="fa-solid fa-arrows-rotate"></i> 투표 리셋
+                    <button id="reset-votes-btn" class="hidden w-7 h-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-all" title="교사용 전체 투표 리셋">
+                        <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
-                    <button id="logout-btn" class="hidden px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-lg transition-all cursor-pointer">
-                        로그아웃
+                    <button id="logout-btn" class="hidden w-7 h-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-all cursor-pointer" title="로그아웃">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </div>
             </div>
@@ -54,10 +69,14 @@
     </header>
 
     <!-- 메인 컨텐츠 영역 -->
-    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8 flex flex-col justify-start">
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-3 sm:py-4 flex flex-col justify-start">
         
         <!-- STEP 0: 로그인 섹션 (접속 전에 전면에 배치) -->
-        <section id="login-section" class="max-w-md mx-auto my-auto bg-white rounded-3xl border border-slate-200 shadow-xl p-8 w-full transition-all duration-300">
+        <section id="login-section" class="hidden max-w-md mx-auto my-auto bg-white rounded-3xl border border-slate-200 shadow-xl p-8 w-full transition-all duration-300">
+            <div class="flex items-center justify-between mb-4 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs">
+                <span class="font-bold text-emerald-700">🎉 퀴즈 완료! 이제 드로잉을 시작해요</span>
+                <button type="button" id="back-to-quiz-btn" class="text-slate-400 hover:text-indigo-600 font-bold cursor-pointer"><i class="fa-solid fa-rotate-left mr-0.5"></i>퀴즈 다시</button>
+            </div>
             <div class="text-center mb-6">
                 <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
                     <i class="fa-solid fa-key text-xl"></i>
@@ -97,59 +116,38 @@
         </section>
 
         <!-- 활동 진행 대시보드 (로그인 성공 시 노출) -->
-        <div id="main-content" class="hidden flex-grow flex flex-col space-y-6 animate-fade-in">
+        <div id="main-content" class="flex-grow flex flex-col space-y-4 animate-fade-in">
             
-            <!-- 상단 학습 흐름 지시계 (Step Indicator) -->
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs max-w-xl mx-auto w-full">
-                <div class="flex items-center justify-between text-xs sm:text-xs">
-                    <div id="step-indicator-1" class="flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer" onclick="navigateDirectStep(1)">
-                        <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10">1</div>
-                        <span>[1단계] Banksy 퀴즈</span>
-                    </div>
-                    <div class="h-0.5 bg-slate-200 flex-grow -translate-y-2.5 mx-1"></div>
-                    <div id="step-indicator-2" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer" onclick="navigateDirectStep(2)">
-                        <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10">2</div>
-                        <span>[2단계] 사진 디지털 드로잉</span>
-                    </div>
-                    <div class="h-0.5 bg-slate-200 flex-grow -translate-y-2.5 mx-1"></div>
-                    <div id="step-indicator-3" class="flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer" onclick="navigateDirectStep(3)">
-                        <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10">3</div>
-                        <span>[3단계] 전체 투표 공유</span>
-                    </div>
-                </div>
-            </div>
-
             <!-- STEP 1: 뱅크시 창의성 탐구 퀴즈 (5문제) -->
-            <section id="step-1-quiz" class="w-full max-w-xl mx-auto flex flex-col space-y-4 animate-fade-in">
-                <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <span class="text-[10px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full mb-2 inline-block">MISSION START</span>
-                    <h3 class="font-extrabold text-base">🎨 뱅크시(Banksy) 창의력 검증 퀴즈</h3>
-                    <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">디지털 그림을 그리기 전에, 뱅크시의 사회 비판 및 공간 파괴 철학을 담은 5가지 문제를 맞혀보세요!</p>
-                </div>
-
-                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                        <span class="text-xs font-bold text-slate-500">진행도:</span>
-                        <span id="quiz-progress-badge" class="text-xs font-extrabold text-indigo-600">문제 1 / 5</span>
+            <section id="step-1-quiz" class="w-full max-w-3xl mx-auto flex flex-col animate-fade-in">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <!-- 미션 헤더 (한 줄로 압축) -->
+                    <div class="bg-slate-900 text-white px-5 py-3 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="text-[10px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full shrink-0">MISSION</span>
+                            <h3 class="font-extrabold text-sm truncate">🎨 뱅크시(Banksy) 창의력 검증 퀴즈</h3>
+                        </div>
+                        <span id="quiz-progress-badge" class="text-xs font-extrabold text-amber-300 shrink-0">문제 1 / 5</span>
                     </div>
+                    <div class="h-1 bg-slate-100"><div id="quiz-progress-bar" class="h-1 bg-indigo-500 transition-all duration-300" style="width:20%"></div></div>
 
-                    <div class="space-y-4 min-h-[180px] flex flex-col justify-start">
-                        <h4 id="quiz-question-title" class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug"></h4>
-                        <div id="quiz-options-box" class="space-y-2">
+                    <div class="p-4 sm:p-5 space-y-3">
+                        <h4 id="quiz-question-title" class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug"></h4>
+                        <div id="quiz-options-box" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <!-- JS를 통해 선택 단추 동적 노출 -->
                         </div>
-                        <div id="quiz-rationale-box" class="hidden p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs leading-relaxed text-slate-600">
+                        <div id="quiz-rationale-box" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs leading-relaxed text-slate-600">
                             <!-- 피드백 -->
                         </div>
-                    </div>
 
-                    <div class="flex justify-between items-center pt-3 border-t border-slate-100">
-                        <button id="quiz-skip-btn" class="text-xs text-slate-400 hover:text-indigo-600 font-bold cursor-pointer">
-                            <i class="fa-solid fa-forward"></i> 퀴즈 건너뛰기
-                        </button>
-                        <button id="quiz-next-btn" disabled class="px-5 py-2 bg-slate-300 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed transition-all">
-                            정답 확인
-                        </button>
+                        <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+                            <button id="quiz-skip-btn" class="text-xs text-slate-400 hover:text-indigo-600 font-bold cursor-pointer">
+                                <i class="fa-solid fa-forward"></i> 퀴즈 건너뛰기
+                            </button>
+                            <button id="quiz-next-btn" disabled class="px-5 py-2 bg-slate-300 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed transition-all">
+                                정답 확인
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -289,6 +287,14 @@
     </main>
 
     <!-- FOOTER -->
+    <!-- 오른쪽 아래 구석: 뱅크시 유튜브 영상 보기 -->
+    <a id="banksy-youtube-btn" href="#" target="_blank" rel="noopener"
+       class="fixed bottom-4 right-4 z-50 flex items-center gap-2 pl-2 pr-4 py-2 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-full shadow-lg text-xs font-extrabold text-slate-700 hover:text-rose-600 transition-all hover:-translate-y-0.5"
+       title="뱅크시 관련 유튜브 영상을 새 창으로 엽니다">
+        <span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center"><i class="fa-brands fa-youtube text-sm"></i></span>
+        뱅크시 영상 보기
+    </a>
+
     <footer class="bg-slate-900 text-slate-500 py-6 border-t border-slate-800 text-xs text-center mt-auto">
         <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board</p>
     </footer>
@@ -412,6 +418,10 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
 
         let quizCurrentIndex = 0;
 
+        // ▶ 뱅크시 유튜브 버튼 주소 (보여주고 싶은 영상 링크로 바꿔 넣으세요)
+        const BANKSY_YOUTUBE_URL = "https://www.youtube.com/results?search_query=" + encodeURIComponent("뱅크시 작품 설명");
+        document.getElementById('banksy-youtube-btn').href = BANKSY_YOUTUBE_URL;
+
         // 5가지 실시간 정리용 명품 피드백 설문
         const pollTopics = [
             {
@@ -515,7 +525,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         // DIRECT STEP NAVIGATION (지시계 클릭 시 안전 전환)
         window.navigateDirectStep = function(stepNum) {
             if (!currentClass) {
-                showToast("로그인을 먼저 진행해 주세요.", "error");
+                if (stepNum === 1) { startQuizScreen(); return; }
+                showToast("퀴즈를 마치고 로그인하면 열려요!", "error");
                 return;
             }
             activeStep = stepNum;
@@ -537,70 +548,65 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                     }
                 );
             } else {
-                showToast("현재 이미 로그인 대기 상태입니다.", "info");
+                startQuizScreen();
+                showToast("퀴즈 첫 화면으로 돌아왔습니다.", "info");
             }
         });
+
+        function showHeaderSteps(on) {
+            const nav = document.getElementById('header-steps');
+            nav.classList.toggle('hidden', !on);
+            nav.classList.toggle('flex', on);
+        }
 
         function logoutRoutine() {
             currentClass = "";
             classPassword = "";
             loginForm.reset();
-            loginSection.classList.remove('hidden');
-            mainContent.classList.add('hidden');
             classBadge.classList.add('hidden');
             logoutBtn.classList.add('hidden');
             resetVotesBtn.classList.add('hidden');
-            showToast("홈 화면으로 안전하게 초기화 복귀했습니다.");
+            startQuizScreen();
+            showToast("처음 퀴즈 화면으로 돌아왔습니다.");
+        }
+
+        // 첫 화면: 퀴즈부터 시작 (로그인 전)
+        function startQuizScreen() {
+            quizCurrentIndex = 0;
+            activeStep = 1;
+            loginSection.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            showHeaderSteps(true);
+            updateStepsLayout();
+            loadStepQuizQuestion();
+        }
+
+        // 퀴즈를 마치면 로그인 화면 등장
+        function showLoginAfterQuiz() {
+            mainContent.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+            setStepChip(1, 'is-done');
+            setStepChip(2, 'is-active');
+            showToast("퀴즈 완료! 반을 선택하고 로그인하세요.", "success");
+            selectClass.focus();
+        }
+
+        document.getElementById('back-to-quiz-btn').addEventListener('click', startQuizScreen);
+
+        function setStepChip(n, state) {
+            const chip = document.getElementById('step-indicator-' + n);
+            if (!chip) return;
+            chip.classList.remove('is-active', 'is-done');
+            if (state) chip.classList.add(state);
+            chip.querySelector('.step-num').innerHTML = state === 'is-done' ? '<i class="fa-solid fa-check"></i>' : String(n);
         }
 
         function updateStepsLayout() {
-            if (activeStep === 1) {
-                step1Panel.classList.remove('hidden');
-                step2Panel.classList.add('hidden');
-                step3Panel.classList.add('hidden');
-                
-                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10";
-                
-                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer";
-                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10";
-                
-                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer";
-                document.getElementById('step-indicator-3').querySelector('div').className = "w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10";
-            } else if (activeStep === 2) {
-                step1Panel.classList.add('hidden');
-                step2Panel.classList.remove('hidden');
-                step3Panel.classList.add('hidden');
-                
-                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold cursor-pointer";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
-                document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
-
-                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer";
-                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10";
-                document.getElementById('step-indicator-2').querySelector('div').textContent = "2";
-
-                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-slate-400 font-semibold cursor-pointer";
-                document.getElementById('step-indicator-3').querySelector('div').className = "w-7 h-7 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center font-bold mb-1 z-10";
-            } else if (activeStep === 3) {
-                step1Panel.classList.add('hidden');
-                step2Panel.classList.add('hidden');
-                step3Panel.classList.remove('hidden');
-
-                document.getElementById('step-indicator-1').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold cursor-pointer";
-                document.getElementById('step-indicator-1').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
-                document.getElementById('step-indicator-1').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
-
-                document.getElementById('step-indicator-2').className = "flex flex-col items-center flex-1 relative text-emerald-600 font-bold cursor-pointer";
-                document.getElementById('step-indicator-2').querySelector('div').className = "w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold mb-1 z-10";
-                document.getElementById('step-indicator-2').querySelector('div').innerHTML = '<i class="fa-solid fa-check"></i>';
-
-                document.getElementById('step-indicator-3').className = "flex flex-col items-center flex-1 relative text-indigo-600 font-extrabold cursor-pointer";
-                document.getElementById('step-indicator-3').querySelector('div').className = "w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm mb-1 z-10";
-                document.getElementById('step-indicator-3').querySelector('div').textContent = "3";
-                
-                loadVotesData();
-            }
+            step1Panel.classList.toggle('hidden', activeStep !== 1);
+            step2Panel.classList.toggle('hidden', activeStep !== 2);
+            step3Panel.classList.toggle('hidden', activeStep !== 3);
+            [1, 2, 3].forEach(n => setStepChip(n, n < activeStep ? 'is-done' : (n === activeStep ? 'is-active' : '')));
+            if (activeStep === 3) loadVotesData();
         }
 
         // --- AUTHENTICATION ---
@@ -625,15 +631,15 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                     mainContent.classList.remove('hidden');
                     classBadge.classList.remove('hidden');
                     logoutBtn.classList.remove('hidden');
+                    showHeaderSteps(true);
                     resetVotesBtn.classList.remove('hidden');
 
                     currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반`;
                     document.getElementById('current-class-badge').textContent = currentClassName.textContent;
                     showToast(`${currentClassName.textContent}에 로그인 완료되었습니다!`, "success");
 
-                    activeStep = 1;
+                    activeStep = 2;
                     updateStepsLayout();
-                    loadStepQuizQuestion();
                 } else {
                     showToast("비밀번호가 일치하지 않습니다.", "error");
                 }
@@ -647,15 +653,15 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                 mainContent.classList.remove('hidden');
                 classBadge.classList.remove('hidden');
                 logoutBtn.classList.remove('hidden');
+                    showHeaderSteps(true);
                 resetVotesBtn.classList.remove('hidden');
 
                 currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (안전 모드)`;
                 document.getElementById('current-class-badge').textContent = currentClassName.textContent;
                 showToast("인터넷 불안정으로 '안전 로컬 모드'로 자동 진입하여 정상 수업이 진행됩니다!", "info");
 
-                activeStep = 1;
+                activeStep = 2;
                 updateStepsLayout();
-                loadStepQuizQuestion();
             }
         });
 
@@ -675,12 +681,14 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             const item = banksyQuizList[quizCurrentIndex];
             quizStepProgress.textContent = `문제 ${quizCurrentIndex + 1} / ${banksyQuizList.length}`;
             quizQuestionTitle.textContent = item.q;
+            const bar = document.getElementById('quiz-progress-bar');
+            if (bar) bar.style.width = `${((quizCurrentIndex + 1) / banksyQuizList.length) * 100}%`;
 
             quizOptionsBox.innerHTML = item.options.map((option, idx) => {
                 // Ensure quotes are escaped in the html parameter output to avoid element breakage
                 const escapedOption = option.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                 return `
-                    <button onclick="handleOptionSelect(${idx})" class="w-full text-left p-3.5 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-200 rounded-xl flex justify-between items-center transition-all cursor-pointer">
+                    <button onclick="handleOptionSelect(${idx})" class="w-full h-full text-left px-3.5 py-3 gap-2 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-200 rounded-xl flex justify-between items-center transition-all cursor-pointer">
                         <span class="text-xs font-semibold text-slate-700 leading-normal">${idx + 1}. ${escapedOption}</span>
                         <i class="fa-regular fa-circle text-slate-300 text-sm"></i>
                     </button>
@@ -725,6 +733,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                 quizCurrentIndex++;
                 loadStepQuizQuestion();
             } else {
+                if (!currentClass) { showLoginAfterQuiz(); return; }
                 activeStep = 2; // Move to step 2 Drawing board
                 updateStepsLayout();
                 showToast("디지털 스케치북 낙서 공간으로 입장했습니다!", "success");
@@ -732,6 +741,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         });
 
         quizSkipBtn.addEventListener('click', () => {
+            if (!currentClass) { showLoginAfterQuiz(); return; }
             activeStep = 2;
             updateStepsLayout();
             showToast("드로잉 공간으로 바로 스킵했습니다.", "success");
@@ -1164,6 +1174,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         // --- INITIAL SYSTEM BOOTSTRAP ---
         window.onload = function() {
             initCanvas(); // 최초 캔버스 흰 백지 장착
+            startQuizScreen(); // 첫 화면 = 뱅크시 퀴즈
         };
     </script>
 </body>
