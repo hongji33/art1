@@ -57,6 +57,9 @@
                     <span id="class-badge" class="hidden max-w-[88px] sm:max-w-none truncate px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full border border-indigo-100">
                         <i class="fa-solid fa-graduation-cap mr-0.5"></i> <span id="current-class-name">-</span>
                     </span>
+                    <button id="open-gallery-btn" class="hidden px-2.5 py-1 bg-amber-300 hover:bg-amber-400 text-slate-900 text-[11px] font-extrabold rounded-full transition-all cursor-pointer" title="우리 반 작품 갤러리 보기">
+                        🖼️ 갤러리
+                    </button>
                     <button id="reset-votes-btn" class="hidden w-7 h-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-all" title="교사용 전체 투표 리셋">
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
@@ -165,9 +168,14 @@
                                 <p class="mt-1.5 text-base sm:text-xl font-black leading-snug">학교 주변의 <span class="underline decoration-4 decoration-rose-500 underline-offset-4">식상하고 아이디어가 필요한 곳</span>을 사진 찍어 올리세요!</p>
                             </div>
                         </div>
-                        <button id="save-canvas-image" class="shrink-0 self-start sm:self-center px-4 py-2.5 bg-slate-900 hover:bg-indigo-700 text-amber-300 hover:text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-download"></i> 이미지로 다운로드
-                        </button>
+                        <div class="shrink-0 self-start sm:self-center flex items-center gap-2">
+                            <button id="open-upload-btn" class="px-4 py-2.5 bg-slate-900 hover:bg-indigo-700 text-amber-300 hover:text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                                🖼️ 갤러리에 올리기
+                            </button>
+                            <button id="save-canvas-image" class="w-9 h-9 bg-white/70 hover:bg-white text-slate-700 rounded-xl shadow-sm transition-all flex items-center justify-center cursor-pointer" title="내 기기에 이미지로 다운로드">
+                                <i class="fa-solid fa-download"></i><span class="sr-only">이미지로 다운로드</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 진행 순서 3칸 -->
@@ -182,7 +190,7 @@
                         </li>
                         <li class="flex items-start gap-2 bg-slate-50 rounded-xl px-3 py-2.5">
                             <span class="w-5 h-5 shrink-0 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">3</span>
-                            <span><strong class="text-slate-900">공유하기</strong><br>[이미지로 다운로드] 후 <strong class="text-slate-900">패들렛(Padlet)</strong>에 올려요</span>
+                            <span><strong class="text-slate-900">공유하기</strong><br>[🖼️ 갤러리에 올리기]로 <strong class="text-slate-900">우리 반 갤러리</strong>에서 함께 봐요</span>
                         </li>
                     </ol>
                 </div>
@@ -326,7 +334,79 @@
     </div>
 
     <!-- 토스트 알림창 컨테이너 -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+    <!-- 갤러리에 올리기 모달 -->
+    <div id="upload-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+            <div class="bg-amber-300 px-5 py-3 flex items-center justify-between">
+                <h3 class="font-black text-slate-900">🖼️ 우리 반 갤러리에 올리기</h3>
+                <button type="button" id="upload-close" class="w-8 h-8 rounded-lg hover:bg-amber-400 text-slate-900 cursor-pointer" title="닫기">✕</button>
+            </div>
+            <form id="upload-form" class="p-5 space-y-3 overflow-y-auto">
+                <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                    <img id="upload-preview" alt="올릴 작품 미리보기" class="w-full max-h-56 object-contain">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="block">
+                        <span class="block text-[11px] font-bold text-slate-500 mb-1">이름 또는 모둠명</span>
+                        <input id="upload-name" maxlength="20" placeholder="예: 3모둠" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                    </label>
+                    <label class="block">
+                        <span class="block text-[11px] font-bold text-slate-500 mb-1">작품 제목</span>
+                        <input id="upload-title" maxlength="40" required placeholder="예: 계단 위 괴물" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                    </label>
+                </div>
+                <p class="text-[11px] text-rose-700 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">⚠️ 친구 얼굴이나 이름표가 나온 사진은 올리지 마세요. 올린 작품은 우리 반 친구들만 볼 수 있어요.</p>
+                <button id="upload-submit" type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-xl shadow transition-all cursor-pointer disabled:bg-slate-300 disabled:cursor-wait">올리기</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 반별 갤러리 (전체 화면) -->
+    <div id="gallery-modal" class="fixed inset-0 bg-slate-100 z-[60] hidden flex-col">
+        <div class="bg-slate-900 text-white px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shrink-0">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="text-xl">🖼️</span>
+                <h3 class="font-black text-sm sm:text-base truncate"><span id="gallery-class-name">우리 반</span> 갤러리</h3>
+                <span id="gallery-count" class="text-[11px] font-bold bg-amber-300 text-slate-900 px-2 py-0.5 rounded-full">0점</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button id="gallery-refresh" class="px-3 py-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 rounded-lg cursor-pointer"><i class="fa-solid fa-arrows-rotate"></i> 새로고침</button>
+                <button id="gallery-close" class="px-3 py-1.5 text-xs font-bold bg-amber-300 hover:bg-amber-400 text-slate-900 rounded-lg cursor-pointer">닫기 ✕</button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div id="gallery-status" class="text-center text-sm text-slate-500 py-16 hidden"></div>
+            <div id="gallery-grid" class="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+        </div>
+    </div>
+
+    <!-- 작품 크게 보기 -->
+    <div id="lightbox" class="fixed inset-0 bg-slate-950/90 z-[70] hidden flex-col items-center justify-center p-4">
+        <button id="lightbox-close" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-lg cursor-pointer" title="닫기">✕</button>
+        <img id="lightbox-img" alt="작품 크게 보기" class="max-w-full max-h-[78vh] object-contain rounded-lg shadow-2xl transition-all">
+        <div class="mt-3 flex items-center gap-3 text-white">
+            <div class="text-center">
+                <p id="lightbox-title" class="font-black text-base"></p>
+                <p id="lightbox-meta" class="text-xs text-slate-300"></p>
+            </div>
+            <button id="lightbox-delete" class="px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:text-white hover:bg-rose-600 border border-rose-400/40 rounded-lg cursor-pointer" title="교사용: 작품 삭제"><i class="fa-solid fa-trash"></i> 삭제</button>
+        </div>
+    </div>
+
+    <!-- 교사 비밀번호 입력 -->
+    <div id="teacher-modal" class="fixed inset-0 bg-slate-900/70 z-[80] hidden items-center justify-center p-4">
+        <form id="teacher-form" class="bg-white w-full max-w-xs rounded-2xl shadow-2xl p-5 space-y-3">
+            <h3 class="font-extrabold text-slate-900">🔒 교사 확인</h3>
+            <p class="text-xs text-slate-500">작품을 삭제하려면 교사 비밀번호를 입력하세요.</p>
+            <input id="teacher-password" type="password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-rose-500">
+            <div class="flex justify-end gap-2">
+                <button type="button" id="teacher-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">취소</button>
+                <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl cursor-pointer">삭제</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[90] flex flex-col space-y-2 pointer-events-none"></div>
 
     <!-- JAVASCRIPT LOGIC WORKSPACE -->
     <script>
@@ -500,7 +580,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         function showToast(message, type = "info") {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `px-4 py-3 rounded-xl shadow-lg text-white font-bold text-xs flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto`;
+            toast.className = `px-4 py-3 rounded-xl shadow-lg text-white font-bold text-xs flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-none`;
             if (type === "success") toast.classList.add('bg-emerald-600');
             else if (type === "error") toast.classList.add('bg-rose-600');
             else if (type === "info") toast.classList.add('bg-indigo-600');
@@ -583,9 +663,15 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             currentClass = "";
             classPassword = "";
             loginForm.reset();
+            isOfflineMode = false;
+            localVotesData = {};
             classBadge.classList.add('hidden');
             logoutBtn.classList.add('hidden');
             resetVotesBtn.classList.add('hidden');
+            document.getElementById('open-gallery-btn').classList.add('hidden');
+            closeGallery(); closeLightbox(); closeUploadModal(); closeTeacherModal();
+            galleryItems = [];
+            resetDrawingBoard();
             startQuizScreen();
             showToast("처음 퀴즈 화면으로 돌아왔습니다.");
         }
@@ -660,6 +746,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                     classBadge.classList.remove('hidden');
                     logoutBtn.classList.remove('hidden');
                     showHeaderSteps(true);
+                    document.getElementById('open-gallery-btn').classList.remove('hidden');
                     resetVotesBtn.classList.remove('hidden');
 
                     currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반`;
@@ -683,6 +770,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                 classBadge.classList.remove('hidden');
                 logoutBtn.classList.remove('hidden');
                     showHeaderSteps(true);
+                    document.getElementById('open-gallery-btn').classList.remove('hidden');
                 resetVotesBtn.classList.remove('hidden');
 
                 currentClassName.textContent = `${currentClass.split('-')[0]}학년 ${currentClass.split('-')[1]}반 (안전 모드)`;
@@ -744,17 +832,27 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
 
             quizStepRationale.classList.remove('hidden');
             if (selectedIndex === item.answerIdx) {
-                quizStepRationale.className = "p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs leading-relaxed space-y-1";
-                quizStepRationale.innerHTML = `<strong>👍 정답입니다! 아주 훌륭한 이해도입니다.</strong><p>${item.reason}</p>`;
+                quizStepRationale.className = "p-4 rounded-xl bg-emerald-50 text-emerald-800 border-2 border-emerald-300 text-sm leading-relaxed space-y-1";
+                quizStepRationale.innerHTML = `<strong>👍 정답입니다! 아주 훌륭한 이해도입니다.</strong><p class="mt-1"><b>📖 해설</b> ${item.reason}</p>`;
                 quizStepNextBtn.innerHTML = "다음 문제 풀기 <i class='fa-solid fa-arrow-right ml-1'></i>";
             } else {
-                quizStepRationale.className = "p-4 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs leading-relaxed space-y-1";
-                quizStepRationale.innerHTML = `<strong>😢 아쉽습니다. 오답입니다! 해설을 확인해 보세요.</strong><p>${item.reason}</p>`;
+                quizStepRationale.className = "p-4 rounded-xl bg-rose-50 text-rose-800 border-2 border-rose-300 text-sm leading-relaxed space-y-1";
+                quizStepRationale.innerHTML = `<strong>😢 아쉽습니다. 오답입니다! 아래 해설을 읽어 보세요.</strong><p class="mt-1"><b>📖 해설</b> ${item.reason}</p>`;
                 quizStepNextBtn.innerHTML = "해설 공부하고 넘어가기 <i class='fa-solid fa-arrow-right ml-1'></i>";
             }
 
             quizStepNextBtn.disabled = false;
             quizStepNextBtn.className = "px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer";
+            // 해설이 화면 아래로 밀려 안 보이지 않도록 해설+버튼까지 자동으로 보여주기
+            setTimeout(() => {
+                const r = quizStepRationale.getBoundingClientRect();
+                const btnBottom = quizStepNextBtn.getBoundingClientRect().bottom;
+                const headerH = 56;
+                // 해설 윗부분이 헤더 바로 아래 오도록, 단 버튼까지 다 보이면 그대로 둠
+                if (r.top < headerH || btnBottom > window.innerHeight) {
+                    window.scrollBy({ top: Math.min(r.top - headerH, btnBottom - window.innerHeight + 12), behavior: 'smooth' });
+                }
+            }, 50);
         }
 
         quizStepNextBtn.addEventListener('click', () => {
@@ -793,6 +891,23 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             ctx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
+        }
+
+        // 반이 바뀌면 이전 반의 사진·낙서가 남지 않도록 드로잉판 완전 초기화
+        function resetDrawingBoard() {
+            isDrawing = false;
+            isEraserMode = false;
+            backgroundImgObject = null;
+            sketchBgImg.src = "";
+            sketchBgImg.classList.add('hidden');
+            document.getElementById('bg-photo-input').value = "";
+            canvasDummyPlaceholder.style.height = "380px";
+            drawUploadBox.classList.remove('hidden');
+            ctx.globalCompositeOperation = 'source-over';
+            initCanvas();
+            const badge = document.getElementById('drawing-state-badge');
+            badge.textContent = "진행 중";
+            badge.className = "font-bold text-amber-500";
         }
 
         function getCoordinates(e) {
@@ -932,37 +1047,260 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             showToast("낙서 드로잉 레이어를 깨끗이 초기화했습니다!");
         });
 
-        // DOWNLOAD LOCAL IMAGE
-        document.getElementById('save-canvas-image').addEventListener('click', () => {
-            showToast("작품 이미지를 정밀 컴포지트 합성 인코딩 중...", "info");
-
+        // 배경 사진 + 낙서를 한 장으로 합성 (maxWidth로 크기 줄이기)
+        function composeArtwork(maxWidth, quality) {
+            const scale = Math.min(1, maxWidth / sketchCanvas.width);
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = sketchCanvas.width;
-            tempCanvas.height = sketchCanvas.height;
+            tempCanvas.width = Math.round(sketchCanvas.width * scale);
+            tempCanvas.height = Math.round(sketchCanvas.height * scale);
             const tempCtx = tempCanvas.getContext('2d');
-
-            // 1단계: 흰 배경 설정 (배경 업로드가 안 됐을 경우 흰 도화지)
-            if (!backgroundImgObject) {
-                tempCtx.fillStyle = "#ffffff";
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            } else {
-                // 2단계: 배경 사진이 있으면 먼저 그리기
+            tempCtx.fillStyle = "#ffffff";
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            if (backgroundImgObject) {
                 tempCtx.drawImage(backgroundImgObject, 0, 0, tempCanvas.width, tempCanvas.height);
             }
-            
-            // 3단계: 투명 캔버스에 그린 붓자국 위에 합성하기
-            tempCtx.drawImage(sketchCanvas, 0, 0);
+            tempCtx.drawImage(sketchCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+            return tempCanvas.toDataURL('image/jpeg', quality);
+        }
 
-            // 로컬 파일로 저장 트리거
-            const url = tempCanvas.toDataURL('image/jpeg', 0.9);
+        function isArtworkEmpty() {
+            if (backgroundImgObject) return false;
+            const d = ctx.getImageData(0, 0, sketchCanvas.width, sketchCanvas.height).data;
+            for (let i = 3; i < d.length; i += 4) if (d[i]) return false;
+            return true;
+        }
+
+        // DOWNLOAD LOCAL IMAGE
+        document.getElementById('save-canvas-image').addEventListener('click', () => {
             const anchor = document.createElement('a');
-            anchor.href = url;
+            anchor.href = composeArtwork(4000, 0.9);
             anchor.download = `${currentClass}_Banksy_Project_${Date.now()}.jpg`;
             document.body.appendChild(anchor);
             anchor.click();
             document.body.removeChild(anchor);
+            showToast("내 기기에 작품 이미지를 저장했습니다!", "success");
+        });
 
-            showToast("기기에 고화질 합성이 완료되었습니다! 소장한 파일을 패들렛에 업로드하세요.", "success");
+        // ===================== 반별 갤러리 =====================
+        // ▶ 갤러리 서버 주소: gallery.gs 를 웹 앱으로 배포한 뒤 그 URL을 따옴표 안에 붙여넣으세요
+        const GALLERY_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOF7fCwtoviuQ5sYqYjqFH6LMRTOfZA_QyaMX3e3bu0TfYEhXju_j-I2vqEtF8YHQv/exec";
+
+        const galleryModal = document.getElementById('gallery-modal');
+        const galleryGrid = document.getElementById('gallery-grid');
+        const galleryStatus = document.getElementById('gallery-status');
+        const uploadModal = document.getElementById('upload-modal');
+        const lightbox = document.getElementById('lightbox');
+        const teacherModal = document.getElementById('teacher-modal');
+        let galleryItems = [];
+        let lightboxItem = null;
+        let lightboxToken = 0;
+
+        function escapeHtml(t) {
+            return String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        function galleryReady() {
+            if (!GALLERY_SCRIPT_URL) {
+                showToast("아직 선생님이 갤러리를 연결하지 않았어요. 지금은 다운로드로 저장해 주세요.", "error");
+                return false;
+            }
+            return true;
+        }
+
+        async function galleryGet(params) {
+            const qs = new URLSearchParams(Object.assign({ classId: currentClass, password: classPassword }, params));
+            const res = await fetch(`${GALLERY_SCRIPT_URL}?${qs.toString()}`);
+            return res.json();
+        }
+
+        async function galleryPost(body) {
+            const res = await fetch(GALLERY_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(body)
+            });
+            return res.json();
+        }
+
+        // --- 올리기 ---
+        document.getElementById('open-upload-btn').addEventListener('click', () => {
+            if (!galleryReady()) return;
+            if (isArtworkEmpty()) {
+                showToast("먼저 사진을 불러오거나 낙서를 그려 주세요!", "error");
+                return;
+            }
+            document.getElementById('upload-preview').src = composeArtwork(900, 0.8);
+            uploadModal.classList.remove('hidden');
+            setTimeout(() => document.getElementById('upload-title').focus(), 50);
+        });
+
+        function closeUploadModal() { uploadModal.classList.add('hidden'); }
+        document.getElementById('upload-close').addEventListener('click', closeUploadModal);
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('upload-submit');
+            btn.disabled = true;
+            btn.textContent = "올리는 중... 잠시만 기다려요";
+            try {
+                const result = await galleryPost({
+                    action: "upload",
+                    classId: currentClass,
+                    password: classPassword,
+                    name: document.getElementById('upload-name').value,
+                    title: document.getElementById('upload-title').value,
+                    image: composeArtwork(1280, 0.82),
+                    thumb: composeArtwork(420, 0.7)
+                });
+                if (result.status === "success") {
+                    showToast("갤러리에 작품을 올렸어요! 🎉", "success");
+                    document.getElementById('upload-title').value = "";
+                    closeUploadModal();
+                    openGallery();
+                } else {
+                    showToast("올리기 실패: " + (result.message || "다시 시도해 주세요"), "error");
+                }
+            } catch (err) {
+                console.error("Gallery upload failed", err);
+                showToast("인터넷 연결을 확인하고 다시 올려 주세요.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "올리기";
+            }
+        });
+
+        // --- 갤러리 보기 ---
+        function setGalleryStatus(msg) {
+            galleryStatus.innerHTML = msg || "";
+            galleryStatus.classList.toggle('hidden', !msg);
+        }
+
+        async function openGallery() {
+            if (!currentClass || !galleryReady()) return;
+            document.getElementById('gallery-class-name').textContent = currentClassName.textContent.replace(/\s*\(.*\)$/, "");
+            galleryModal.classList.remove('hidden');
+            galleryModal.classList.add('flex');
+            await loadGallery();
+        }
+
+        function closeGallery() {
+            galleryModal.classList.add('hidden');
+            galleryModal.classList.remove('flex');
+        }
+
+        async function loadGallery() {
+            galleryGrid.innerHTML = "";
+            setGalleryStatus('<i class="fa-solid fa-spinner fa-spin mr-1"></i> 작품을 불러오는 중...');
+            try {
+                const result = await galleryGet({ action: "list" });
+                if (result.status !== "success") throw new Error(result.message);
+                galleryItems = result.items || [];
+                document.getElementById('gallery-count').textContent = `${galleryItems.length}점`;
+                if (!galleryItems.length) {
+                    setGalleryStatus('<div class="text-4xl mb-2">🎨</div>아직 올라온 작품이 없어요.<br>첫 번째 작품의 주인공이 되어 보세요!');
+                    return;
+                }
+                setGalleryStatus("");
+                galleryGrid.innerHTML = galleryItems.map((it, i) => `
+                    <button onclick="openLightbox(${i})" class="group text-left bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden cursor-pointer">
+                        <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
+                            <img src="${it.thumb}" alt="${escapeHtml(it.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+                        <div class="px-3 py-2">
+                            <p class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${escapeHtml(it.title)}</p>
+                            <p class="text-[11px] text-slate-400 truncate">${escapeHtml(it.name)} · ${formatTime(it.ts)}</p>
+                        </div>
+                    </button>
+                `).join('');
+            } catch (err) {
+                console.error("Gallery load failed", err);
+                setGalleryStatus('갤러리를 불러오지 못했어요. <b>새로고침</b>을 눌러 다시 시도해 주세요.');
+            }
+        }
+
+        function formatTime(ts) {
+            if (!ts) return "";
+            const d = new Date(ts);
+            return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+        }
+
+        // --- 크게 보기 ---
+        window.openLightbox = async function(index) {
+            const it = galleryItems[index];
+            if (!it) return;
+            lightboxItem = it;
+            const token = ++lightboxToken;
+            const img = document.getElementById('lightbox-img');
+            img.src = it.thumb;
+            img.style.filter = "blur(2px)";
+            document.getElementById('lightbox-title').textContent = it.title;
+            document.getElementById('lightbox-meta').textContent = `${it.name} · ${formatTime(it.ts)}`;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            try {
+                const result = await galleryGet({ action: "image", id: it.id });
+                if (token === lightboxToken && result.status === "success") img.src = result.image;
+            } catch (err) {
+                console.error("Gallery image failed", err);
+            } finally {
+                if (token === lightboxToken) img.style.filter = "";
+            }
+        };
+
+        function closeLightbox() {
+            lightboxToken++;
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+        }
+
+        // --- 교사 삭제 ---
+        document.getElementById('lightbox-delete').addEventListener('click', () => {
+            document.getElementById('teacher-password').value = "";
+            teacherModal.classList.remove('hidden');
+            teacherModal.classList.add('flex');
+            setTimeout(() => document.getElementById('teacher-password').focus(), 50);
+        });
+
+        function closeTeacherModal() {
+            teacherModal.classList.add('hidden');
+            teacherModal.classList.remove('flex');
+        }
+        document.getElementById('teacher-cancel').addEventListener('click', closeTeacherModal);
+
+        document.getElementById('teacher-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!lightboxItem) return;
+            try {
+                const result = await galleryPost({
+                    action: "delete",
+                    classId: currentClass,
+                    teacherPassword: document.getElementById('teacher-password').value,
+                    id: lightboxItem.id
+                });
+                if (result.status === "success") {
+                    closeTeacherModal();
+                    closeLightbox();
+                    showToast("작품을 삭제했습니다.", "success");
+                    loadGallery();
+                } else {
+                    showToast(result.message || "삭제하지 못했습니다.", "error");
+                }
+            } catch (err) {
+                showToast("인터넷 연결을 확인해 주세요.", "error");
+            }
+        });
+
+        document.getElementById('open-gallery-btn').addEventListener('click', openGallery);
+        document.getElementById('gallery-close').addEventListener('click', closeGallery);
+        document.getElementById('gallery-refresh').addEventListener('click', loadGallery);
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            if (!teacherModal.classList.contains('hidden')) closeTeacherModal();
+            else if (!lightbox.classList.contains('hidden')) closeLightbox();
+            else if (!uploadModal.classList.contains('hidden')) closeUploadModal();
+            else if (!galleryModal.classList.contains('hidden')) closeGallery();
         });
 
         document.getElementById('go-to-step-3-btn').addEventListener('click', () => {
