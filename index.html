@@ -19,13 +19,38 @@
             touch-action: none;
         }
         /* 헤더 단계 칩 */
-        .step-chip { display:flex; align-items:center; gap:4px; padding:3px 9px 3px 3px; border-radius:999px; color:#94a3b8; white-space:nowrap; cursor:pointer; transition:all .2s; }
-        .step-chip:hover { background:#f1f5f9; }
-        .step-chip .step-num { width:18px; height:18px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:10px; background:#f1f5f9; border:1px solid #e2e8f0; }
-        .step-chip.is-active { background:#eef2ff; color:#4338ca; }
-        .step-chip.is-active .step-num { background:#4f46e5; color:#fff; border-color:#4f46e5; }
-        .step-chip.is-done { color:#059669; }
-        .step-chip.is-done .step-num { background:#10b981; color:#fff; border-color:#10b981; }
+        .step-chip { display:flex; align-items:center; gap:8px; padding:5px 16px 5px 5px; border-radius:999px; font-size:15px; font-weight:800; color:#94a3b8; background:#f8fafc; border:2px solid #e2e8f0; white-space:nowrap; cursor:pointer; transition:all .25s; }
+        .step-chip:hover { border-color:#c7d2fe; color:#6366f1; }
+        .step-chip .step-num { width:28px; height:28px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; background:#e2e8f0; color:#64748b; }
+        .step-chip.is-active { background:#4f46e5; border-color:#4f46e5; color:#fff; box-shadow:0 6px 16px -4px rgba(79,70,229,.55); }
+        .step-chip.is-active .step-num { background:#fff; color:#4f46e5; animation:stepPulse 1.8s ease-in-out infinite; }
+        .step-chip.is-done { background:#ecfdf5; border-color:#a7f3d0; color:#059669; }
+        .step-chip.is-done .step-num { background:#10b981; color:#fff; }
+        /* 단계 사이 화살표 */
+        .step-arrow { width:30px; height:16px; flex-shrink:0; fill:none; stroke:#cbd5e1; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; transition:stroke .25s; }
+        .step-arrow.is-done { stroke:#10b981; }
+        .step-arrow.is-next { stroke:#6366f1; }
+        .step-arrow.is-next path { animation:arrowNudge 1.2s ease-in-out infinite; }
+        @keyframes arrowNudge { 0%,100% { transform:translateX(0); } 50% { transform:translateX(3px); } }
+        @keyframes stepPulse { 0%,100% { box-shadow:0 0 0 0 rgba(255,255,255,.7); } 50% { box-shadow:0 0 0 5px rgba(255,255,255,0); } }
+        /* 휴대폰: 지금 단계만 글자 표시 */
+        @media (max-width: 639px) {
+            .step-chip { font-size:13px; padding:4px 4px; gap:6px; }
+            .step-chip .step-num { width:26px; height:26px; }
+            .step-chip .step-label { display:none; }
+            .step-chip.is-active { padding-right:12px; }
+            .step-chip.is-active .step-label { display:inline; }
+            .step-arrow { width:16px; height:12px; }
+        }
+        @media (max-width: 389px) {
+            .step-chip { font-size:12px; }
+            .step-chip .step-num { width:24px; height:24px; font-size:12px; }
+        }
+        @media (max-width: 359px) {
+            .step-chip.is-active .step-label { display:none; }
+            .step-chip.is-active { padding-right:4px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .step-chip.is-active .step-num, .step-arrow.is-next path { animation:none; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-800">
@@ -33,34 +58,34 @@
     <!-- 헤더 영역 (슬림형: 로고 왼쪽 구석 / 단계 가운데 / 버튼 오른쪽 구석) -->
     <header class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-40">
         <div class="px-3 sm:px-4">
-            <div class="flex justify-between items-center h-11 gap-2">
+            <div class="flex justify-between items-center h-14 gap-2">
                 <!-- 로고 (클릭 시 처음/홈 화면 복귀) -->
                 <div id="header-logo-btn" class="flex items-center gap-2 cursor-pointer group hover:opacity-80 transition-all shrink-0" title="처음(로그인) 화면으로 이동">
                     <div class="bg-indigo-600 text-white w-7 h-7 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
                         <i class="fa-solid fa-spray-can text-xs"></i>
                     </div>
-                    <span class="hidden md:block text-sm font-extrabold text-slate-900 tracking-tight">뱅크시와 고정관념 깨기</span>
-                    <i class="fa-solid fa-house text-[10px] text-indigo-400"></i>
+                    <span class="hidden lg:block text-sm font-extrabold text-slate-900 tracking-tight">뱅크시와 고정관념 깨기</span>
+                    <i class="fa-solid fa-house text-[10px] text-indigo-400 hidden sm:inline"></i>
                 </div>
 
                 <!-- 단계 표시 (로그인 후 노출) -->
-                <nav id="header-steps" class="flex items-center gap-1 text-[11px] font-bold overflow-x-auto">
-                    <button id="step-indicator-1" onclick="navigateDirectStep(1)" class="step-chip"><span class="step-num">1</span><span class="hidden sm:inline">퀴즈</span></button>
-                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300"></i>
-                    <button id="step-indicator-2" onclick="navigateDirectStep(2)" class="step-chip"><span class="step-num">2</span><span class="hidden sm:inline">드로잉</span></button>
-                    <i class="fa-solid fa-chevron-right text-[8px] text-slate-300"></i>
-                    <button id="step-indicator-3" onclick="navigateDirectStep(3)" class="step-chip"><span class="step-num">3</span><span class="hidden sm:inline">투표</span></button>
+                <nav id="header-steps" class="flex items-center gap-1.5 sm:gap-2.5 py-1 px-1 overflow-x-auto">
+                    <button id="step-indicator-1" onclick="navigateDirectStep(1)" class="step-chip"><span class="step-num">1</span><span class="step-label">퀴즈</span></button>
+                    <svg id="step-arrow-1" class="step-arrow" viewBox="0 0 32 16" aria-hidden="true"><path d="M2 8h24" /><path d="M20 2l7 6-7 6" /></svg>
+                    <button id="step-indicator-2" onclick="navigateDirectStep(2)" class="step-chip"><span class="step-num">2</span><span class="step-label">드로잉</span></button>
+                    <svg id="step-arrow-2" class="step-arrow" viewBox="0 0 32 16" aria-hidden="true"><path d="M2 8h24" /><path d="M20 2l7 6-7 6" /></svg>
+                    <button id="step-indicator-3" onclick="navigateDirectStep(3)" class="step-chip"><span class="step-num">3</span><span class="step-label">투표</span></button>
                 </nav>
 
                 <!-- 학급 정보 및 버튼 (오른쪽 구석, 작게) -->
                 <div class="flex items-center gap-1 shrink-0">
-                    <span id="class-badge" class="hidden max-w-[88px] sm:max-w-none truncate px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full border border-indigo-100">
+                    <span id="class-badge" class="hidden max-lg:!hidden truncate px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full border border-indigo-100">
                         <i class="fa-solid fa-graduation-cap mr-0.5"></i> <span id="current-class-name">-</span>
                     </span>
                     <button id="open-gallery-btn" class="hidden px-2.5 py-1 bg-amber-300 hover:bg-amber-400 text-slate-900 text-[11px] font-extrabold rounded-full transition-all cursor-pointer" title="우리 반 작품 갤러리 보기">
-                        🖼️ 갤러리
+                        🖼️<span class="hidden lg:inline"> 갤러리</span>
                     </button>
-                    <button id="reset-votes-btn" class="hidden w-7 h-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-all" title="교사용 전체 투표 리셋">
+                    <button id="reset-votes-btn" class="hidden max-sm:!hidden w-7 h-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-all" title="교사용 전체 투표 리셋">
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
                     <button id="logout-btn" class="hidden w-7 h-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs transition-all cursor-pointer" title="로그아웃">
@@ -318,7 +343,7 @@
     </a>
 
     <footer class="bg-slate-900 text-slate-500 py-6 border-t border-slate-800 text-xs text-center mt-auto">
-        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/27 20:16 (좋아요 서버 연결)</span></p>
+        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/27 21:52 (단계 화살표)</span></p>
     </footer>
 
     <!-- 커스텀 모달 대화창 (confirm 대체 시스템) -->
@@ -694,6 +719,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             loginSection.classList.remove('hidden');
             setStepChip(1, 'is-done');
             setStepChip(2, 'is-active');
+            document.getElementById('step-arrow-1').classList.remove('is-next');
+            document.getElementById('step-arrow-1').classList.add('is-done');
+            document.getElementById('step-arrow-2').classList.add('is-next');
             showToast("퀴즈 완료! 반을 선택하고 로그인하세요.", "success");
             selectClass.focus();
         }
@@ -713,6 +741,14 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             step2Panel.classList.toggle('hidden', activeStep !== 2);
             step3Panel.classList.toggle('hidden', activeStep !== 3);
             [1, 2, 3].forEach(n => setStepChip(n, n < activeStep ? 'is-done' : (n === activeStep ? 'is-active' : '')));
+            // 화살표: 지나온 길은 초록, 다음으로 갈 길은 보라색으로 살짝 움직임
+            [1, 2].forEach(n => {
+                const a = document.getElementById('step-arrow-' + n);
+                if (!a) return;
+                a.classList.remove('is-done', 'is-next');
+                if (n < activeStep) a.classList.add('is-done');
+                else if (n === activeStep) a.classList.add('is-next');
+            });
             if (activeStep === 3) loadVotesData();
         }
 
@@ -848,7 +884,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             setTimeout(() => {
                 const r = quizStepRationale.getBoundingClientRect();
                 const btnBottom = quizStepNextBtn.getBoundingClientRect().bottom;
-                const headerH = 56;
+                const headerH = 64;
                 // 해설 윗부분이 헤더 바로 아래 오도록, 단 버튼까지 다 보이면 그대로 둠
                 if (r.top < headerH || btnBottom > window.innerHeight) {
                     window.scrollBy({ top: Math.min(r.top - headerH, btnBottom - window.innerHeight + 12), behavior: 'smooth' });
