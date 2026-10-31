@@ -19,7 +19,7 @@
             touch-action: none;
         }
         /* 휴대폰·태블릿에서 그림 그릴 때는 영상 버튼이 그림판을 가리지 않게 숨김 */
-        @media (max-width: 1023px) { body.drawing-mode #banksy-youtube-btn { display:none; } }
+        body.drawing-mode #banksy-youtube-btn { display:none; }
         /* 그림 단계에서는 화면을 더 넓게 */
         @media (min-width: 1024px) { body.drawing-mode main { max-width: 76rem; } }
         /* 그림 도구: 왼쪽 작은 메뉴 */
@@ -46,6 +46,7 @@
         .layer-chip.is-active .layer-name { color:#fff; }
         .layer-chip.is-hidden .layer-name { text-decoration:line-through; opacity:.6; }
         .layer-eye { padding:3px 2px 3px 5px; font-size:11px; cursor:pointer; }
+        .layer-rename { flex:1; min-width:0; font-size:10px; font-weight:800; padding:2px 4px; margin:2px 3px 2px 0; border-radius:5px; border:0; outline:2px solid #fbbf24; color:#0f172a; background:#fff; }
         .layer-name { flex:1; min-width:0; text-align:left; padding:3px 5px 3px 2px; font-size:10px; font-weight:800; color:#3730a3; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         /* 휴대폰: 그림판 위에 가로로 펼친 작은 도구 막대 */
         @media (max-width: 639px) {
@@ -252,6 +253,7 @@
                                     <div class="side-grid">
                                         <button type="button" id="undo-btn" class="side-btn" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기" disabled>↶</button>
                                         <button type="button" id="redo-btn" class="side-btn" title="다시하기 (Ctrl+Y)" aria-label="다시하기" disabled>↷</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="select" data-name="옮기기" data-icon="✥" title="옮기기: 옮길 부분을 네모로 감싸요. 톡 누르면 이 레이어 그림 전체를 집어요" aria-label="옮기기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3 9.5 5.5M12 3l2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5"/></svg></button>
                                     </div>
                                 </div>
                                 <!-- 붓 -->
@@ -263,7 +265,7 @@
                                         <button type="button" class="side-btn tool-btn" data-tool="marker" data-name="형광펜" title="형광펜: 반투명하게 겹쳐 칠하기" aria-label="형광펜">🖊️</button>
                                         <button type="button" class="side-btn tool-btn" data-tool="spray" data-name="스프레이" title="스프레이: 뱅크시처럼 뿌리기" aria-label="스프레이">💨</button>
                                         <button type="button" class="side-btn tool-btn" data-tool="neon" data-name="네온" title="네온: 빛나는 선" aria-label="네온">✨</button>
-                                        <button type="button" class="side-btn tool-btn" data-tool="eraser" data-name="지우개" id="brush-eraser" title="지우개: 지금 레이어만 지워요" aria-label="지우개">🧽</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="eraser" data-name="지우개" data-icon="🩹" id="brush-eraser" title="지우개: 지금 레이어만 지워요" aria-label="지우개"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><g transform="rotate(-35 12 12)"><rect x="2.5" y="8" width="19" height="8.5" rx="2.2" fill="#f9a8d4" stroke="#334155" stroke-width="1.4"/><rect x="2.5" y="8" width="7.5" height="8.5" rx="2.2" fill="#e0f2fe" stroke="#334155" stroke-width="1.4"/></g><path d="M6 21.2h13" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round"/></svg></button>
                                     </div>
                                 </div>
                                 <!-- 도형 -->
@@ -310,6 +312,7 @@
                                     <div class="side-grid mt-1">
                                         <button type="button" id="layer-add" class="side-btn side-btn-sm" title="새 레이어 추가 (최대 5장)" aria-label="새 레이어">＋</button>
                                         <button type="button" id="layer-up" class="side-btn side-btn-sm" title="지금 레이어를 위로 (앞으로)" aria-label="레이어 위로">▲</button>
+                                        <button type="button" id="layer-rename" class="side-btn side-btn-sm" title="지금 레이어 이름 바꾸기 (레이어 이름을 두 번 눌러도 돼요)" aria-label="레이어 이름 바꾸기">✎</button>
                                         <button type="button" id="layer-clear" class="side-btn side-btn-sm" title="지금 레이어만 비우기 (되돌리기 가능)" aria-label="레이어 비우기">🧹</button>
                                         <button type="button" id="layer-down" class="side-btn side-btn-sm" title="지금 레이어를 아래로 (뒤로)" aria-label="레이어 아래로">▼</button>
                                         <button type="button" id="layer-delete" class="side-btn side-btn-sm" title="지금 레이어 삭제" aria-label="레이어 삭제">🗑</button>
@@ -355,22 +358,23 @@
                                     </div>
                                     <!-- 이미지 넣는 중일 때 나오는 막대 -->
                                     <div id="place-bar" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-slate-900/90 text-white text-xs font-bold px-2 py-1.5 rounded-xl shadow-xl">
-                                        <span class="px-1 text-slate-200 hidden sm:inline whitespace-nowrap">끌어서 옮기고, 모서리 ◢로 크기 조절</span>
+                                        <span id="place-hint" class="px-1 text-slate-200 hidden sm:inline whitespace-nowrap">끌어서 옮기고, 모서리 ◢로 크기 조절</span>
                                         <button type="button" id="place-ok" class="whitespace-nowrap px-3 py-1 bg-emerald-500 hover:bg-emerald-600 rounded-lg cursor-pointer">✔ 붙이기</button>
+                                        <button type="button" id="place-delete" class="hidden whitespace-nowrap px-2 py-1 bg-rose-500 hover:bg-rose-600 rounded-lg cursor-pointer">🗑 지우기</button>
                                         <button type="button" id="place-cancel" class="whitespace-nowrap px-2 py-1 bg-white/15 hover:bg-white/25 rounded-lg cursor-pointer">✖ 취소</button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- 다 그렸으면 바로 올리기 -->
-                        <div class="flex items-stretch gap-2">
-                            <button id="open-upload-btn" class="upload-cta flex-1 py-3.5 sm:py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-base sm:text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
-                                🖼️ 학급 갤러리에 올리기
-                            </button>
-                            <button id="save-canvas-image" class="w-14 sm:w-16 shrink-0 bg-white hover:bg-slate-50 text-slate-600 border-2 border-slate-200 rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer" title="내 기기에 이미지로 다운로드">
-                                <i class="fa-solid fa-download"></i><span class="text-[10px] font-bold">저장</span>
-                            </button>
+                                <!-- 다 그렸으면 바로 올리기 -->
+                                <div class="flex items-stretch gap-2">
+                                    <button id="open-upload-btn" class="upload-cta flex-1 py-3.5 sm:py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-base sm:text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                        🖼️ 학급 갤러리에 올리기
+                                    </button>
+                                    <button id="save-canvas-image" class="w-14 sm:w-16 shrink-0 bg-white hover:bg-slate-50 text-slate-600 border-2 border-slate-200 rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer" title="내 기기에 이미지로 다운로드">
+                                        <i class="fa-solid fa-download"></i><span class="text-[10px] font-bold">저장</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 이전 단계 / 다음 단계 -->
@@ -426,7 +430,7 @@
     </a>
 
     <footer class="bg-slate-900 text-slate-500 py-6 border-t border-slate-800 text-xs text-center mt-auto">
-        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/31 16:00 (넓은 그림판)</span></p>
+        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/31 16:40 (옮기기·레이어 이름·지우개)</span></p>
     </footer>
 
     <!-- 커스텀 모달 대화창 (confirm 대체 시스템) -->
@@ -1025,6 +1029,12 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         let placing = null;          // 이미지 넣는 중: { img, x, y, w, h }
         let placeDrag = null;
         let textPos = null;
+        let selStart = null;          // 옮기기: 네모로 감싸는 중
+        let selEnd = null;
+        let isSelecting = false;
+        let selectHintShown = false;
+        let renamingIdx = -1;
+        let lastLayerTap = { idx: -1, t: 0 };
         let crayonPattern = null;
         let crayonPatternColor = null;
 
@@ -1045,6 +1055,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         function initCanvas() {
             const container = document.getElementById('canvas-aspect-wrapper');
             placing = null; placeDrag = null; strokeBuf = null; shapeStart = shapeEnd = null;
+            selStart = selEnd = null; isSelecting = false; renamingIdx = -1;
             if (sprayTimer) { clearInterval(sprayTimer); sprayTimer = null; }
             const pb = document.getElementById('place-bar');
             if (pb) pb.classList.add('hidden');
@@ -1129,6 +1140,17 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                 }
             });
             if (placing) drawPlacingFrame(ctx);
+            if (selStart && selEnd) {
+                const x = Math.min(selStart.x, selEnd.x), y = Math.min(selStart.y, selEnd.y);
+                const w = Math.abs(selEnd.x - selStart.x), h = Math.abs(selEnd.y - selStart.y);
+                ctx.fillStyle = 'rgba(99,102,241,0.10)';
+                ctx.fillRect(x, y, w, h);
+                ctx.setLineDash([6, 4]);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#4f46e5';
+                ctx.strokeRect(x, y, w, h);
+                ctx.setLineDash([]);
+            }
             ctx.restore();
         }
 
@@ -1433,7 +1455,11 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         textInput.addEventListener('blur', () => setTimeout(commitText, 0));
 
         // ---------- 이미지 넣기 ----------
-        function handleSize() { return Math.max(18, sketchCanvas.width * 0.035); }
+        function handleSize() {
+            const base = Math.max(18, sketchCanvas.width * 0.035);
+            // 작은 그림은 모서리 손잡이도 작게 (가운데를 잡으면 옮겨지도록)
+            return placing ? Math.max(10, Math.min(base, Math.min(placing.w, placing.h) * 0.3)) : base;
+        }
 
         function drawPlacingFrame(c) {
             const p = placing, hs = handleSize();
@@ -1456,7 +1482,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         function hitPlacing(pt) {
             if (!placing) return null;
             const p = placing, hs = handleSize();
-            if (pt.x >= p.x + p.w - hs * 1.2 && pt.x <= p.x + p.w + hs * 0.6 && pt.y >= p.y + p.h - hs * 1.2 && pt.y <= p.y + p.h + hs * 0.6) return 'resize';
+            if (pt.x >= p.x + p.w - hs && pt.x <= p.x + p.w + hs * 0.8 && pt.y >= p.y + p.h - hs && pt.y <= p.y + p.h + hs * 0.8) return 'resize';
             if (pt.x >= p.x && pt.x <= p.x + p.w && pt.y >= p.y && pt.y <= p.y + p.h) return 'move';
             return null;
         }
@@ -1466,32 +1492,108 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             const W = sketchCanvas.width, H = sketchCanvas.height;
             let w = W * 0.4, h = w * img.height / img.width;
             if (h > H * 0.6) { h = H * 0.6; w = h * img.width / img.height; }
-            placing = { img, x: (W - w) / 2, y: (H - h) / 2, w, h };
-            document.getElementById('place-bar').classList.remove('hidden');
+            placing = { img, x: (W - w) / 2, y: (H - h) / 2, w, h, source: 'image', layerId: activeLayer().id };
+            showPlaceBar('image');
             updateUndoButtons();
             render();
             showToast("이미지를 끌어서 옮기고, 오른쪽 아래 ◢로 크기를 바꾼 뒤 [✔ 붙이기]를 누르세요.", "info");
         }
 
+        function showPlaceBar(mode) {
+            const bar = document.getElementById('place-bar');
+            bar.classList.remove('hidden');
+            document.getElementById('place-ok').textContent = mode === 'selection' ? '✔ 놓기' : '✔ 붙이기';
+            document.getElementById('place-delete').classList.toggle('hidden', mode !== 'selection');
+            document.getElementById('place-hint').textContent = mode === 'selection'
+                ? '끌어서 옮기고, 모서리 ◢로 크기 조절'
+                : '끌어서 옮기고, 모서리 ◢로 크기 조절';
+        }
+
+        function hidePlaceBar() {
+            document.getElementById('place-bar').classList.add('hidden');
+        }
+
+        function placingLayer() {
+            return (placing && layers.find(l => l.id === placing.layerId)) || activeLayer();
+        }
+
         function commitPlacing() {
             if (!placing) return;
-            const L = ensureActiveVisible();
-            const snap = snapshotLayers([L]);
+            const L = placingLayer();
+            if (!L.visible) { L.visible = true; renderLayerList(); }
+            const snap = placing.snap || snapshotLayers([L]);
             L.ctx.drawImage(placing.img, placing.x, placing.y, placing.w, placing.h);
             placing = null;
             placeDrag = null;
-            document.getElementById('place-bar').classList.add('hidden');
+            hidePlaceBar();
             pushHistory(snap);
             render();
             markDrawn();
         }
 
         function cancelPlacing() {
+            // 옮기던 그림이면 원래 자리로 되돌려 놓기
+            if (placing && placing.source === 'selection' && placing.snap) applySnapshot(placing.snap);
             placing = null;
             placeDrag = null;
-            document.getElementById('place-bar').classList.add('hidden');
+            hidePlaceBar();
             updateUndoButtons();
             render();
+        }
+
+        function deleteSelection() {
+            if (!placing || placing.source !== 'selection') return;
+            const snap = placing.snap;
+            placing = null;
+            placeDrag = null;
+            hidePlaceBar();
+            pushHistory(snap);
+            render();
+            showToast("고른 부분을 지웠어요. [되돌리기]로 다시 살릴 수 있어요.");
+        }
+
+        // ---------- 옮기기(선택) ----------
+        function contentBounds(L, rect) {
+            const r = rect || { x: 0, y: 0, w: L.canvas.width, h: L.canvas.height };
+            if (r.w < 1 || r.h < 1) return null;
+            const d = L.ctx.getImageData(r.x, r.y, r.w, r.h).data;
+            let minX = r.w, minY = r.h, maxX = -1, maxY = -1;
+            for (let yy = 0; yy < r.h; yy++) {
+                for (let xx = 0; xx < r.w; xx++) {
+                    if (d[(yy * r.w + xx) * 4 + 3] > 0) {
+                        if (xx < minX) minX = xx;
+                        if (xx > maxX) maxX = xx;
+                        if (yy < minY) minY = yy;
+                        if (yy > maxY) maxY = yy;
+                    }
+                }
+            }
+            if (maxX < 0) return null;
+            return { x: r.x + minX, y: r.y + minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+        }
+
+        function makeSelection(a, b) {
+            const L = activeLayer();
+            const W = sketchCanvas.width, H = sketchCanvas.height;
+            const x0 = Math.max(0, Math.floor(Math.min(a.x, b.x))), y0 = Math.max(0, Math.floor(Math.min(a.y, b.y)));
+            const x1 = Math.min(W, Math.ceil(Math.max(a.x, b.x))), y1 = Math.min(H, Math.ceil(Math.max(a.y, b.y)));
+            const tap = (x1 - x0) < 6 || (y1 - y0) < 6;
+            if (!L.visible) {
+                showToast(`'${L.name}'이(가) 숨겨져 있어요. 👁를 눌러 보이게 한 뒤 옮겨 주세요.`, "error");
+                return;
+            }
+            const bb = tap ? contentBounds(L) : contentBounds(L, { x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
+            if (!bb) {
+                showToast(tap ? `'${L.name}'에는 옮길 그림이 없어요. 다른 레이어를 골라 보세요.` : "네모 안에 이 레이어의 그림이 없어요.", "error");
+                return;
+            }
+            const snap = snapshotLayers([L]);
+            const piece = makeCanvas(bb.w, bb.h);
+            piece.getContext('2d').drawImage(L.canvas, bb.x, bb.y, bb.w, bb.h, 0, 0, bb.w, bb.h);
+            L.ctx.clearRect(bb.x, bb.y, bb.w, bb.h);
+            placing = { img: piece, x: bb.x, y: bb.y, w: bb.w, h: bb.h, source: 'selection', snap, layerId: L.id };
+            showPlaceBar('selection');
+            updateUndoButtons();
         }
 
         function finalizePending() {
@@ -1519,9 +1621,11 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         });
 
         document.getElementById('place-ok').addEventListener('click', () => {
+            const wasSelection = placing && placing.source === 'selection';
             commitPlacing();
-            showToast("이미지를 붙였어요! 마음에 안 들면 [되돌리기]를 누르세요.", "success");
+            showToast(wasSelection ? "옮겼어요! 마음에 안 들면 [되돌리기]를 누르세요." : "이미지를 붙였어요! 마음에 안 들면 [되돌리기]를 누르세요.", "success");
         });
+        document.getElementById('place-delete').addEventListener('click', deleteSelection);
         document.getElementById('place-cancel').addEventListener('click', cancelPlacing);
 
         // ---------- 배경 사진 ----------
@@ -1568,11 +1672,23 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
 
             if (placing) {
                 const mode = hitPlacing(p);
-                if (mode) placeDrag = { mode, dx: p.x - placing.x, dy: p.y - placing.y, ratio: placing.h / placing.w };
-                return;
+                if (mode) {
+                    placeDrag = { mode, dx: p.x - placing.x, dy: p.y - placing.y, ratio: placing.h / placing.w };
+                    return;
+                }
+                // 바깥을 누르면 지금 옮기던 것을 그 자리에 내려놓기
+                commitPlacing();
+                if (currentTool !== 'select') return;
             }
             if (currentTool === 'text') { showTextInput(p); return; }
             commitText();
+            if (currentTool === 'select') {
+                selStart = p;
+                selEnd = p;
+                isSelecting = true;
+                render();
+                return;
+            }
 
             const L = ensureActiveVisible();
             pendingSnapshot = snapshotLayers([L]);
@@ -1614,6 +1730,11 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                 }
                 return;
             }
+            if (isSelecting) {
+                selEnd = p;
+                render();
+                return;
+            }
             if (!isDrawing) return;
             e.preventDefault();
             if (SHAPE_TOOLS.includes(currentTool)) {
@@ -1630,6 +1751,14 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
         function finishStroke() {
             if (sprayTimer) { clearInterval(sprayTimer); sprayTimer = null; }
             if (placeDrag) { placeDrag = null; return; }
+            if (isSelecting) {
+                isSelecting = false;
+                const a = selStart, b = selEnd;
+                selStart = selEnd = null;
+                if (a && b) makeSelection(a, b);
+                render();
+                return;
+            }
             if (!isDrawing) return;
             isDrawing = false;
             const L = activeLayer();
@@ -1667,8 +1796,12 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.toggle('is-active', b.dataset.tool === t));
             const btn = document.querySelector(`.tool-btn[data-tool="${t}"]`);
             const st = document.getElementById('tool-status');
-            if (btn && st) st.textContent = `${btn.textContent.trim()} ${btn.dataset.name || ''}`;
+            if (btn && st) st.textContent = `${btn.dataset.icon || btn.textContent.trim()} ${btn.dataset.name || ''}`;
             sketchCanvas.style.cursor = t === 'text' ? 'text' : 'crosshair';
+            if (t === 'select' && !selectHintShown) {
+                selectHintShown = true;
+                showToast("옮길 부분을 네모로 감싸세요. 톡 누르면 지금 레이어 그림 전체를 집어요. (레이어마다 따로 그리면 하나씩 옮기기 쉬워요)", "info");
+            }
         }
         document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.addEventListener('click', () => setTool(b.dataset.tool)));
         document.getElementById('undo-btn').addEventListener('click', undo);
@@ -1712,7 +1845,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             box.innerHTML = layers.map((l, i) => `
                 <div class="layer-chip ${i === activeLayerIdx ? 'is-active' : ''} ${l.visible ? '' : 'is-hidden'}">
                     <button type="button" class="layer-eye" data-eye="${i}" title="${l.visible ? '숨기기' : '보이기'}">${l.visible ? '👁' : '🙈'}</button>
-                    <button type="button" class="layer-name" data-pick="${i}" title="이 레이어에 그리기">${escapeHtml(l.name)}</button>
+                    ${i === renamingIdx
+                        ? `<input class="layer-rename" data-rename="${i}" maxlength="12" value="${escapeHtml(l.name)}" aria-label="레이어 이름">`
+                        : `<button type="button" class="layer-name" data-pick="${i}" title="누르면 이 레이어에 그리기 · 두 번 누르면 이름 바꾸기">${escapeHtml(l.name)}</button>`}
                 </div>`).join('');
             const ls = document.getElementById('layer-status');
             if (ls && activeLayer()) ls.textContent = activeLayer().name.replace('레이어 ', '') + (activeLayer().visible ? '' : ' (숨김)');
@@ -1729,13 +1864,53 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                 const l = layers[Number(eye.dataset.eye)];
                 l.visible = !l.visible;
             } else if (pick) {
+                const idx = Number(pick.dataset.pick);
+                const now = Date.now();
+                // 같은 레이어 이름을 빠르게 두 번 누르면 이름 바꾸기
+                if (lastLayerTap.idx === idx && now - lastLayerTap.t < 450) {
+                    lastLayerTap = { idx: -1, t: 0 };
+                    startRename(idx);
+                    return;
+                }
+                lastLayerTap = { idx, t: now };
                 finalizePending();
-                activeLayerIdx = Number(pick.dataset.pick);
+                activeLayerIdx = idx;
             } else {
                 return;
             }
             renderLayerList();
             render();
+        });
+
+        // 레이어 이름 바꾸기 (✎ 버튼 또는 이름을 두 번 누르기)
+        function startRename(i) {
+            finalizePending();
+            renamingIdx = i;
+            activeLayerIdx = i;
+            renderLayerList();
+            render();
+            const inp = document.querySelector('.layer-rename');
+            if (inp) { inp.focus(); inp.select(); }
+        }
+
+        function finishRename(save) {
+            if (renamingIdx < 0) return;
+            const inp = document.querySelector('.layer-rename');
+            const l = layers[renamingIdx];
+            const v = inp ? inp.value.trim() : "";
+            renamingIdx = -1;
+            if (save && l && v) l.name = v;
+            renderLayerList();
+        }
+
+        document.getElementById('layer-rename').addEventListener('click', () => startRename(activeLayerIdx));
+        document.getElementById('layer-list').addEventListener('keydown', (e) => {
+            if (!e.target.classList.contains('layer-rename')) return;
+            if (e.key === 'Enter') { e.preventDefault(); finishRename(true); }
+            else if (e.key === 'Escape') { e.preventDefault(); finishRename(false); }
+        });
+        document.getElementById('layer-list').addEventListener('focusout', (e) => {
+            if (e.target.classList.contains('layer-rename')) finishRename(true);
         });
 
         document.getElementById('layer-add').addEventListener('click', () => {
@@ -1794,6 +1969,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             if ((e.ctrlKey || e.metaKey) && k === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
             else if ((e.ctrlKey || e.metaKey) && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
             else if (e.key === 'Escape' && placing) { cancelPlacing(); }
+            else if ((e.key === 'Delete' || e.key === 'Backspace') && placing && placing.source === 'selection') { e.preventDefault(); deleteSelection(); }
         });
 
         // 배경 사진 + 보이는 레이어를 한 장으로 합성 (maxWidth로 크기 줄이기)
