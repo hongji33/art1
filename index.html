@@ -20,25 +20,44 @@
         }
         /* 휴대폰·태블릿에서 그림 그릴 때는 영상 버튼이 그림판을 가리지 않게 숨김 */
         @media (max-width: 1023px) { body.drawing-mode #banksy-youtube-btn { display:none; } }
-        /* 그림 도구 */
-        .tool-group-label { font-size:10px; font-weight:800; color:#94a3b8; min-width:26px; }
-        .tool-btn { display:inline-flex; align-items:center; gap:4px; padding:5px 9px; border-radius:10px; border:1.5px solid #e2e8f0; background:#fff; font-size:13px; line-height:1.1; color:#334155; cursor:pointer; transition:all .15s; }
-        .tool-btn span { font-size:11px; font-weight:700; }
-        .tool-btn:hover:not(:disabled) { border-color:#a5b4fc; background:#eef2ff; }
-        .tool-btn.is-active { background:#4f46e5; border-color:#4f46e5; color:#fff; box-shadow:0 3px 8px -2px rgba(79,70,229,.5); }
-        .tool-btn:disabled { opacity:.35; cursor:not-allowed; }
-        .tool-btn-strong { background:#fef3c7; border-color:#fcd34d; }
-        .fill-toggle { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:#475569; padding:4px 8px; border-radius:10px; background:#f8fafc; border:1.5px dashed #cbd5e1; cursor:pointer; }
-        .color-dot { width:24px; height:24px; border-radius:999px; border:1.5px solid #cbd5e1; cursor:pointer; transition:transform .15s; }
-        .color-dot.is-picked { outline:2px solid #6366f1; outline-offset:2px; transform:scale(1.1); }
-        .layer-chip { display:inline-flex; align-items:center; border-radius:999px; border:1.5px solid #c7d2fe; background:#fff; overflow:hidden; }
+        /* 그림 도구: 왼쪽 작은 메뉴 */
+        .draw-layout { display:flex; gap:10px; align-items:flex-start; }
+        #tool-sidebar { width:104px; flex-shrink:0; display:flex; flex-direction:column; gap:6px; padding:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; }
+        .side-sec { display:flex; flex-direction:column; gap:3px; padding-bottom:6px; border-bottom:1px dashed #e2e8f0; }
+        .side-sec:last-child { border-bottom:0; padding-bottom:0; }
+        .side-label { font-size:9px; font-weight:800; color:#94a3b8; letter-spacing:.02em; display:flex; align-items:center; gap:4px; }
+        .side-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:3px; }
+        .side-btn { height:30px; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1.5px solid #e2e8f0; background:#fff; font-size:14px; line-height:1; color:#334155; cursor:pointer; transition:all .15s; }
+        .side-btn:hover:not(:disabled) { border-color:#a5b4fc; background:#eef2ff; }
+        .side-btn.is-active { background:#4f46e5; border-color:#4f46e5; color:#fff; box-shadow:0 3px 8px -2px rgba(79,70,229,.5); }
+        .side-btn:disabled { opacity:.3; cursor:not-allowed; }
+        .side-btn-sm { height:26px; font-size:12px; }
+        .side-btn-strong { background:#fef3c7; border-color:#fcd34d; }
+        .side-fill { display:flex; align-items:center; justify-content:center; gap:3px; font-size:10px; font-weight:700; color:#475569; padding:3px 0; border-radius:8px; border:1.5px dashed #cbd5e1; background:#fff; cursor:pointer; }
+        .side-colors { display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; justify-items:center; }
+        .color-dot { width:20px; height:20px; border-radius:999px; border:1.5px solid #cbd5e1; cursor:pointer; transition:transform .15s; }
+        .color-dot.is-picked { outline:2px solid #6366f1; outline-offset:1px; transform:scale(1.12); }
+        .side-range { width:100%; }
+        #layer-list { display:flex; flex-direction:column-reverse; gap:3px; }
+        .layer-chip { display:flex; align-items:center; border-radius:8px; border:1.5px solid #c7d2fe; background:#fff; overflow:hidden; }
         .layer-chip.is-active { border-color:#4f46e5; background:#4f46e5; }
         .layer-chip.is-active .layer-name { color:#fff; }
         .layer-chip.is-hidden .layer-name { text-decoration:line-through; opacity:.6; }
-        .layer-eye { padding:3px 3px 3px 8px; font-size:12px; cursor:pointer; }
-        .layer-name { padding:3px 10px 3px 3px; font-size:11px; font-weight:800; color:#3730a3; cursor:pointer; }
-        .layer-act { padding:3px 8px; font-size:11px; font-weight:700; border-radius:8px; background:#fff; border:1px solid #c7d2fe; color:#4338ca; cursor:pointer; }
-        .layer-act:disabled { opacity:.35; cursor:not-allowed; }
+        .layer-eye { padding:3px 2px 3px 5px; font-size:11px; cursor:pointer; }
+        .layer-name { flex:1; min-width:0; text-align:left; padding:3px 5px 3px 2px; font-size:10px; font-weight:800; color:#3730a3; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        /* 휴대폰: 그림판 위에 가로로 펼친 작은 도구 막대 */
+        @media (max-width: 639px) {
+            .draw-layout { flex-direction:column; }
+            #tool-sidebar { width:100%; flex-direction:row; overflow-x:auto; gap:8px; padding:6px; -webkit-overflow-scrolling:touch; }
+            .side-sec { flex-shrink:0; border-bottom:0; border-right:1px dashed #e2e8f0; padding:0 8px 0 0; }
+            .side-sec:last-child { border-right:0; }
+            .side-grid { grid-auto-flow:column; grid-template-columns:none; grid-template-rows:repeat(2, 28px); grid-auto-columns:30px; }
+            .side-btn { height:28px; }
+            .side-colors { grid-auto-flow:column; grid-template-columns:none; grid-template-rows:repeat(2, 20px); grid-auto-columns:20px; }
+            .side-range { width:80px; }
+            #layer-list { flex-direction:row; }
+            .layer-chip { min-width:64px; }
+        }
         /* 헤더 단계 칩 */
         .step-chip { display:flex; align-items:center; gap:8px; padding:5px 16px 5px 5px; border-radius:999px; font-size:15px; font-weight:800; color:#94a3b8; background:#f8fafc; border:2px solid #e2e8f0; white-space:nowrap; cursor:pointer; transition:all .25s; }
         .step-chip:hover { border-color:#c7d2fe; color:#6366f1; }
@@ -240,108 +259,121 @@
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                     <div class="lg:col-span-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col space-y-4">
                         
-                        <!-- 사진 로드 트리거 -->
-                        <div id="draw-upload-box" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
-                            <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
-                            <span class="text-xs font-bold text-slate-600">학교 주변 사진 불러오기 (배경 설정)</span>
-                        </div>
-                        <!-- 중첩 방지 독립 파일 바인더 -->
-                        <input id="bg-photo-input" type="file" accept="image/*" class="hidden">
+                        <!-- 왼쪽 작은 도구 메뉴 + 오른쪽 그림판 -->
+                        <div class="draw-layout">
+                            <aside id="tool-sidebar" aria-label="그림 도구">
+                                <!-- 되돌리기 -->
+                                <div class="side-sec">
+                                    <div class="side-grid">
+                                        <button type="button" id="undo-btn" class="side-btn" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기" disabled>↶</button>
+                                        <button type="button" id="redo-btn" class="side-btn" title="다시하기 (Ctrl+Y)" aria-label="다시하기" disabled>↷</button>
+                                    </div>
+                                </div>
+                                <!-- 붓 -->
+                                <div class="side-sec">
+                                    <p class="side-label">붓</p>
+                                    <div class="side-grid">
+                                        <button type="button" class="side-btn tool-btn is-active" data-tool="pen" data-name="펜" title="펜: 또렷한 선" aria-label="펜">✏️</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="crayon" data-name="크레용" title="크레용: 거친 질감" aria-label="크레용">🖍️</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="marker" data-name="형광펜" title="형광펜: 반투명하게 겹쳐 칠하기" aria-label="형광펜">🖊️</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="spray" data-name="스프레이" title="스프레이: 뱅크시처럼 뿌리기" aria-label="스프레이">💨</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="neon" data-name="네온" title="네온: 빛나는 선" aria-label="네온">✨</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="eraser" data-name="지우개" id="brush-eraser" title="지우개: 지금 레이어만 지워요" aria-label="지우개">🧽</button>
+                                    </div>
+                                </div>
+                                <!-- 도형 -->
+                                <div class="side-sec">
+                                    <p class="side-label">도형</p>
+                                    <div class="side-grid">
+                                        <button type="button" class="side-btn tool-btn" data-tool="line" data-name="선" title="직선: 끌어서 그리기" aria-label="선">╱</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="rect" data-name="네모" title="네모: 끌어서 그리기" aria-label="네모">▭</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="circle" data-name="동그라미" title="동그라미: 끌어서 그리기" aria-label="동그라미">◯</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="arrow" data-name="화살표" title="화살표: 끌어서 그리기" aria-label="화살표">➜</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="bubble" data-name="말풍선" title="말풍선: 끌어서 그리기" aria-label="말풍선">💬</button>
+                                        <button type="button" class="side-btn tool-btn" data-tool="text" data-name="글자" title="글자: 누른 곳에 글자 쓰기" aria-label="글자">🅣</button>
+                                    </div>
+                                    <label class="side-fill" title="네모·동그라미·말풍선 안을 색으로 채우기">
+                                        <input id="shape-fill" type="checkbox" class="accent-indigo-600"> 채우기
+                                    </label>
+                                </div>
+                                <!-- 색 -->
+                                <div class="side-sec">
+                                    <p class="side-label">색 <span id="color-lamp" class="inline-block w-2.5 h-2.5 rounded-full border border-slate-300 align-middle" style="background-color: #dc2626;"></span></p>
+                                    <div class="side-colors">
+                                        <button class="color-dot is-picked" style="background:#dc2626" data-color="#dc2626" title="빨강" aria-label="빨강"></button>
+                                        <button class="color-dot" style="background:#f97316" data-color="#f97316" title="주황" aria-label="주황"></button>
+                                        <button class="color-dot" style="background:#fbbf24" data-color="#fbbf24" title="노랑" aria-label="노랑"></button>
+                                        <button class="color-dot" style="background:#10b981" data-color="#10b981" title="초록" aria-label="초록"></button>
+                                        <button class="color-dot" style="background:#4f46e5" data-color="#4f46e5" title="파랑" aria-label="파랑"></button>
+                                        <button class="color-dot" style="background:#ec4899" data-color="#ec4899" title="분홍" aria-label="분홍"></button>
+                                        <button class="color-dot" style="background:#0f172a" data-color="#0f172a" title="검정" aria-label="검정"></button>
+                                        <button class="color-dot" style="background:#ffffff" data-color="#ffffff" title="흰색" aria-label="흰색"></button>
+                                        <div class="color-dot relative overflow-hidden" title="다른 색 고르기" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);">
+                                            <input id="brush-color-picker" type="color" value="#dc2626" aria-label="다른 색 고르기" class="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 두께 -->
+                                <div class="side-sec">
+                                    <p class="side-label">두께 <span id="brush-size-dot" class="inline-block rounded-full bg-slate-700 align-middle" style="width:8px;height:8px"></span></p>
+                                    <input id="brush-size" type="range" min="2" max="40" value="8" class="side-range accent-indigo-600 cursor-pointer" aria-label="두께">
+                                </div>
+                                <!-- 레이어 -->
+                                <div class="side-sec">
+                                    <p class="side-label" title="레이어는 투명한 종이를 겹쳐 쌓는 것과 같아요. 위에 있는 레이어가 앞에 보여요.">레이어</p>
+                                    <div id="layer-list"></div>
+                                    <div class="side-grid mt-1">
+                                        <button type="button" id="layer-add" class="side-btn side-btn-sm" title="새 레이어 추가 (최대 5장)" aria-label="새 레이어">＋</button>
+                                        <button type="button" id="layer-up" class="side-btn side-btn-sm" title="지금 레이어를 위로 (앞으로)" aria-label="레이어 위로">▲</button>
+                                        <button type="button" id="layer-clear" class="side-btn side-btn-sm" title="지금 레이어만 비우기 (되돌리기 가능)" aria-label="레이어 비우기">🧹</button>
+                                        <button type="button" id="layer-down" class="side-btn side-btn-sm" title="지금 레이어를 아래로 (뒤로)" aria-label="레이어 아래로">▼</button>
+                                        <button type="button" id="layer-delete" class="side-btn side-btn-sm" title="지금 레이어 삭제" aria-label="레이어 삭제">🗑</button>
+                                        <button type="button" id="brush-clear-btn" class="side-btn side-btn-sm text-rose-600" title="전체 초기화: 모든 레이어 지우기 (되돌리기 가능)" aria-label="전체 초기화">⟲</button>
+                                    </div>
+                                </div>
+                                <!-- 이미지 -->
+                                <div class="side-sec">
+                                    <p class="side-label">이미지</p>
+                                    <div class="side-grid">
+                                        <button type="button" id="insert-image-btn" class="side-btn side-btn-strong" title="이미지 넣기: 내 사진·그림을 불러와 원하는 곳에 붙이기" aria-label="이미지 넣기">🖼️</button>
+                                        <button type="button" id="change-bg-btn" class="side-btn" title="배경 사진 바꾸기" aria-label="배경 바꾸기">🏫</button>
+                                    </div>
+                                    <input id="sticker-input" type="file" accept="image/*" class="hidden">
+                                </div>
+                            </aside>
 
-                        <!-- 도구 막대: 붓 / 도형 / 이미지 / 되돌리기 -->
-                        <div id="tool-bar" class="space-y-2">
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="tool-group-label">붓</span>
-                                <button type="button" class="tool-btn is-active" data-tool="pen" title="펜: 또렷한 선">✏️<span>펜</span></button>
-                                <button type="button" class="tool-btn" data-tool="crayon" title="크레용: 거친 질감">🖍️<span>크레용</span></button>
-                                <button type="button" class="tool-btn" data-tool="marker" title="형광펜: 반투명하게 겹쳐 칠하기">🖊️<span>형광펜</span></button>
-                                <button type="button" class="tool-btn" data-tool="spray" title="스프레이: 뱅크시처럼 뿌리기">💨<span>스프레이</span></button>
-                                <button type="button" class="tool-btn" data-tool="neon" title="네온: 빛나는 선">✨<span>네온</span></button>
-                                <button type="button" class="tool-btn" data-tool="eraser" id="brush-eraser" title="지우개: 지금 레이어만 지워요">🧽<span>지우개</span></button>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="tool-group-label">도형</span>
-                                <button type="button" class="tool-btn" data-tool="line" title="직선: 끌어서 그리기">╱<span>선</span></button>
-                                <button type="button" class="tool-btn" data-tool="rect" title="네모: 끌어서 그리기">▭<span>네모</span></button>
-                                <button type="button" class="tool-btn" data-tool="circle" title="동그라미: 끌어서 그리기">◯<span>동그라미</span></button>
-                                <button type="button" class="tool-btn" data-tool="arrow" title="화살표: 끌어서 그리기">➜<span>화살표</span></button>
-                                <button type="button" class="tool-btn" data-tool="bubble" title="말풍선: 끌어서 그리기">💬<span>말풍선</span></button>
-                                <button type="button" class="tool-btn" data-tool="text" title="글자: 누른 곳에 글자 쓰기">🅣<span>글자</span></button>
-                                <label class="fill-toggle" title="네모·동그라미·말풍선 안을 색으로 채우기">
-                                    <input id="shape-fill" type="checkbox" class="accent-indigo-600"> 채우기
-                                </label>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <button type="button" id="insert-image-btn" class="tool-btn tool-btn-strong" title="내 사진·그림을 불러와 원하는 곳에 붙이기">🖼️<span>이미지 넣기</span></button>
-                                <button type="button" id="change-bg-btn" class="tool-btn" title="배경 사진 바꾸기">🏫<span>배경 바꾸기</span></button>
-                                <span class="flex-1"></span>
-                                <button type="button" id="undo-btn" class="tool-btn" title="되돌리기 (Ctrl+Z)" disabled>↶<span>되돌리기</span></button>
-                                <button type="button" id="redo-btn" class="tool-btn" title="다시하기 (Ctrl+Y)" disabled>↷<span>다시하기</span></button>
-                            </div>
-                            <input id="sticker-input" type="file" accept="image/*" class="hidden">
-                        </div>
+                            <div class="flex-1 min-w-0 flex flex-col gap-2">
+                                <!-- 사진 로드 트리거 -->
+                                <div id="draw-upload-box" class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50 transition-all flex flex-col items-center justify-center">
+                                    <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
+                                    <span class="text-xs font-bold text-slate-600">📷 학교 주변 사진 불러오기 (배경 설정)</span>
+                                </div>
+                                <input id="bg-photo-input" type="file" accept="image/*" class="hidden">
 
-                        <!-- 캔버스 실물 에어리어 (레이어를 합쳐서 보여주는 화면) -->
-                        <div class="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center min-h-[350px]">
-                            <div class="relative w-full flex justify-center items-center" id="canvas-aspect-wrapper">
-                                <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10 pointer-events-auto" style="background-color: transparent;"></canvas>
-                                <img id="sketch-bg-img" class="object-contain w-full h-auto hidden" src="" alt="드로잉배경">
-                                <div id="canvas-dummy-placeholder" class="w-full" style="height: 380px;"></div>
-                                <input id="text-input" type="text" maxlength="40" placeholder="글자 입력 후 Enter" class="hidden absolute z-20 px-2 py-1 text-sm font-bold bg-white/95 border-2 border-indigo-500 rounded-lg shadow-lg outline-none" style="min-width:140px">
-                            </div>
-                            <!-- 이미지 넣는 중일 때 나오는 막대 -->
-                            <div id="place-bar" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-slate-900/90 text-white text-xs font-bold px-2 py-1.5 rounded-xl shadow-xl">
-                                <span class="px-1 text-slate-200 hidden sm:inline">끌어서 옮기고, 모서리 ◢로 크기 조절</span>
-                                <button type="button" id="place-ok" class="whitespace-nowrap px-3 py-1 bg-emerald-500 hover:bg-emerald-600 rounded-lg cursor-pointer">✔ 붙이기</button>
-                                <button type="button" id="place-cancel" class="whitespace-nowrap px-2 py-1 bg-white/15 hover:bg-white/25 rounded-lg cursor-pointer">✖ 취소</button>
-                            </div>
-                        </div>
+                                <!-- 지금 고른 도구 -->
+                                <p class="text-[11px] text-slate-500 flex items-center gap-1.5">
+                                    <span class="font-bold text-slate-400">지금 도구</span>
+                                    <span id="tool-status" class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-black">✏️ 펜</span>
+                                    <span class="text-slate-400">· 레이어</span>
+                                    <span id="layer-status" class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-black">1</span>
+                                </p>
 
-                        <!-- 색상 · 두께 · 초기화 -->
-                        <div class="flex flex-wrap items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 gap-2">
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[10px] font-bold text-slate-400">색상</span>
-                                <div id="color-lamp" class="w-4 h-4 rounded-full border border-slate-300" style="background-color: #dc2626;"></div>
-                                <button class="color-dot is-picked" style="background:#dc2626" data-color="#dc2626" title="빨강"></button>
-                                <button class="color-dot" style="background:#f97316" data-color="#f97316" title="주황"></button>
-                                <button class="color-dot" style="background:#fbbf24" data-color="#fbbf24" title="노랑"></button>
-                                <button class="color-dot" style="background:#10b981" data-color="#10b981" title="초록"></button>
-                                <button class="color-dot" style="background:#4f46e5" data-color="#4f46e5" title="파랑"></button>
-                                <button class="color-dot" style="background:#ec4899" data-color="#ec4899" title="분홍"></button>
-                                <button class="color-dot" style="background:#0f172a" data-color="#0f172a" title="검정"></button>
-                                <button class="color-dot" style="background:#ffffff" data-color="#ffffff" title="흰색"></button>
-                                <div class="relative w-6 h-6 rounded-full overflow-hidden border border-slate-200 cursor-pointer" title="다른 색 고르기">
-                                    <input id="brush-color-picker" type="color" value="#dc2626" class="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0 z-20">
-                                    <div class="absolute inset-0 w-full h-full z-10" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></div>
+                                <!-- 캔버스 (레이어를 합쳐서 보여주는 화면) -->
+                                <div class="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center min-h-[300px]">
+                                    <div class="relative w-full flex justify-center items-center" id="canvas-aspect-wrapper">
+                                        <canvas id="sketch-canvas" class="canvas-container absolute top-0 left-0 w-full h-full cursor-crosshair z-10 pointer-events-auto" style="background-color: transparent;"></canvas>
+                                        <img id="sketch-bg-img" class="object-contain w-full h-auto hidden" src="" alt="드로잉배경">
+                                        <div id="canvas-dummy-placeholder" class="w-full" style="height: 380px;"></div>
+                                        <input id="text-input" type="text" maxlength="40" placeholder="글자 입력 후 Enter" class="hidden absolute z-20 px-2 py-1 text-sm font-bold bg-white/95 border-2 border-indigo-500 rounded-lg shadow-lg outline-none" style="min-width:140px">
+                                    </div>
+                                    <!-- 이미지 넣는 중일 때 나오는 막대 -->
+                                    <div id="place-bar" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-slate-900/90 text-white text-xs font-bold px-2 py-1.5 rounded-xl shadow-xl">
+                                        <span class="px-1 text-slate-200 hidden sm:inline whitespace-nowrap">끌어서 옮기고, 모서리 ◢로 크기 조절</span>
+                                        <button type="button" id="place-ok" class="whitespace-nowrap px-3 py-1 bg-emerald-500 hover:bg-emerald-600 rounded-lg cursor-pointer">✔ 붙이기</button>
+                                        <button type="button" id="place-cancel" class="whitespace-nowrap px-2 py-1 bg-white/15 hover:bg-white/25 rounded-lg cursor-pointer">✖ 취소</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex items-center gap-1">
-                                    <span class="text-[10px] font-bold text-slate-400">두께</span>
-                                    <input id="brush-size" type="range" min="2" max="40" value="8" class="w-20 accent-indigo-600 cursor-pointer">
-                                    <span id="brush-size-dot" class="inline-block rounded-full bg-slate-700" style="width:8px;height:8px"></span>
-                                </div>
-                                <button id="brush-clear-btn" class="px-2 py-1 text-[10px] text-rose-600 hover:bg-rose-50 border border-rose-100 rounded-md font-bold cursor-pointer" title="모든 레이어의 그림 지우기 (되돌리기 가능)">
-                                    전체 초기화
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 레이어 -->
-                        <div class="p-2.5 bg-indigo-50/60 rounded-xl border border-indigo-100">
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="text-[11px] font-black text-indigo-900 mr-1" title="레이어는 투명한 종이를 겹쳐 쌓는 것과 같아요">🗂️ 레이어</span>
-                                <span class="text-[10px] text-indigo-400">아래</span>
-                                <div id="layer-list" class="flex flex-wrap items-center gap-1.5"></div>
-                                <span class="text-[10px] text-indigo-400">위</span>
-                                <button type="button" id="layer-add" class="layer-act" title="새 레이어 추가 (최대 5장)">＋ 새 레이어</button>
-                                <span class="flex-1"></span>
-                                <button type="button" id="layer-down" class="layer-act" title="지금 레이어를 아래로">◀ 아래로</button>
-                                <button type="button" id="layer-up" class="layer-act" title="지금 레이어를 위로">위로 ▶</button>
-                                <button type="button" id="layer-clear" class="layer-act" title="지금 레이어만 비우기 (되돌리기 가능)">비우기</button>
-                                <button type="button" id="layer-delete" class="layer-act text-rose-600" title="지금 레이어 삭제">🗑</button>
-                            </div>
-                            <p class="mt-1 text-[10px] text-indigo-400">레이어는 투명한 종이를 겹쳐 쌓는 것과 같아요. 사진 위에 그림을 따로 나눠 그리면 고치기 쉬워요. 👁를 누르면 숨길 수 있어요.</p>
                         </div>
 
                         <!-- 다 그렸으면 바로 올리기 -->
@@ -425,7 +457,7 @@
     </a>
 
     <footer class="bg-slate-900 text-slate-500 py-6 border-t border-slate-800 text-xs text-center mt-auto">
-        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/31 15:40 (붓·도형·레이어·이미지 넣기)</span></p>
+        <p class="font-bold text-slate-400">© 2026 Art Classroom Interactive Board <span class="ml-1 text-slate-600 font-normal">· 버전 10/31 15:50 (왼쪽 도구 메뉴)</span></p>
     </footer>
 
     <!-- 커스텀 모달 대화창 (confirm 대체 시스템) -->
@@ -1634,6 +1666,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
             commitText();
             currentTool = t;
             document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.toggle('is-active', b.dataset.tool === t));
+            const btn = document.querySelector(`.tool-btn[data-tool="${t}"]`);
+            const st = document.getElementById('tool-status');
+            if (btn && st) st.textContent = `${btn.textContent.trim()} ${btn.dataset.name || ''}`;
             sketchCanvas.style.cursor = t === 'text' ? 'text' : 'crosshair';
         }
         document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.addEventListener('click', () => setTool(b.dataset.tool)));
@@ -1680,6 +1715,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDvBAtWoPUsDPC
                     <button type="button" class="layer-eye" data-eye="${i}" title="${l.visible ? '숨기기' : '보이기'}">${l.visible ? '👁' : '🙈'}</button>
                     <button type="button" class="layer-name" data-pick="${i}" title="이 레이어에 그리기">${escapeHtml(l.name)}</button>
                 </div>`).join('');
+            const ls = document.getElementById('layer-status');
+            if (ls && activeLayer()) ls.textContent = activeLayer().name.replace('레이어 ', '') + (activeLayer().visible ? '' : ' (숨김)');
             document.getElementById('layer-add').disabled = layers.length >= MAX_LAYERS;
             document.getElementById('layer-delete').disabled = layers.length <= 1;
             document.getElementById('layer-up').disabled = activeLayerIdx >= layers.length - 1;
